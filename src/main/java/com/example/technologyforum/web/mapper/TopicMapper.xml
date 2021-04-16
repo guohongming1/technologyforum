@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.technologyforum.web.mapper.TopicMapper" >
+  <resultMap id="BaseResultMap" type="com.example.technologyforum.web.pojo.Topic" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="tags" property="tags" jdbcType="VARCHAR" />
+    <result column="gr_de_id" property="grDeId" jdbcType="INTEGER" />
+    <result column="group_id" property="groupId" jdbcType="INTEGER" />
+    <result column="group_name" property="groupName" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="INTEGER" />
+    <result column="reply_num" property="replyNum" jdbcType="INTEGER" />
+    <result column="read_num" property="readNum" jdbcType="INTEGER" />
+    <result column="last_reply_id" property="lastReplyId" jdbcType="INTEGER" />
+    <result column="last_reply_date" property="lastReplyDate" jdbcType="TIMESTAMP" />
+    <result column="date" property="date" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, title, tags, gr_de_id, group_id, group_name, user_id, reply_num, read_num, last_reply_id, 
+    last_reply_date, date
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from topic
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from topic
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.example.technologyforum.web.pojo.Topic" >
+    insert into topic (id, title, tags, 
+      gr_de_id, group_id, group_name, 
+      user_id, reply_num, read_num, 
+      last_reply_id, last_reply_date, date
+      )
+    values (#{id,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, #{tags,jdbcType=VARCHAR}, 
+      #{grDeId,jdbcType=INTEGER}, #{groupId,jdbcType=INTEGER}, #{groupName,jdbcType=VARCHAR}, 
+      #{userId,jdbcType=INTEGER}, #{replyNum,jdbcType=INTEGER}, #{readNum,jdbcType=INTEGER}, 
+      #{lastReplyId,jdbcType=INTEGER}, #{lastReplyDate,jdbcType=TIMESTAMP}, #{date,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.example.technologyforum.web.pojo.Topic" >
+    insert into topic
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="title != null" >
+        title,
+      </if>
+      <if test="tags != null" >
+        tags,
+      </if>
+      <if test="grDeId != null" >
+        gr_de_id,
+      </if>
+      <if test="groupId != null" >
+        group_id,
+      </if>
+      <if test="groupName != null" >
+        group_name,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="replyNum != null" >
+        reply_num,
+      </if>
+      <if test="readNum != null" >
+        read_num,
+      </if>
+      <if test="lastReplyId != null" >
+        last_reply_id,
+      </if>
+      <if test="lastReplyDate != null" >
+        last_reply_date,
+      </if>
+      <if test="date != null" >
+        date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="tags != null" >
+        #{tags,jdbcType=VARCHAR},
+      </if>
+      <if test="grDeId != null" >
+        #{grDeId,jdbcType=INTEGER},
+      </if>
+      <if test="groupId != null" >
+        #{groupId,jdbcType=INTEGER},
+      </if>
+      <if test="groupName != null" >
+        #{groupName,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="replyNum != null" >
+        #{replyNum,jdbcType=INTEGER},
+      </if>
+      <if test="readNum != null" >
+        #{readNum,jdbcType=INTEGER},
+      </if>
+      <if test="lastReplyId != null" >
+        #{lastReplyId,jdbcType=INTEGER},
+      </if>
+      <if test="lastReplyDate != null" >
+        #{lastReplyDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="date != null" >
+        #{date,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.example.technologyforum.web.pojo.Topic" >
+    update topic
+    <set >
+      <if test="title != null" >
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="tags != null" >
+        tags = #{tags,jdbcType=VARCHAR},
+      </if>
+      <if test="grDeId != null" >
+        gr_de_id = #{grDeId,jdbcType=INTEGER},
+      </if>
+      <if test="groupId != null" >
+        group_id = #{groupId,jdbcType=INTEGER},
+      </if>
+      <if test="groupName != null" >
+        group_name = #{groupName,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="replyNum != null" >
+        reply_num = #{replyNum,jdbcType=INTEGER},
+      </if>
+      <if test="readNum != null" >
+        read_num = #{readNum,jdbcType=INTEGER},
+      </if>
+      <if test="lastReplyId != null" >
+        last_reply_id = #{lastReplyId,jdbcType=INTEGER},
+      </if>
+      <if test="lastReplyDate != null" >
+        last_reply_date = #{lastReplyDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="date != null" >
+        date = #{date,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.example.technologyforum.web.pojo.Topic" >
+    update topic
+    set title = #{title,jdbcType=VARCHAR},
+      tags = #{tags,jdbcType=VARCHAR},
+      gr_de_id = #{grDeId,jdbcType=INTEGER},
+      group_id = #{groupId,jdbcType=INTEGER},
+      group_name = #{groupName,jdbcType=VARCHAR},
+      user_id = #{userId,jdbcType=INTEGER},
+      reply_num = #{replyNum,jdbcType=INTEGER},
+      read_num = #{readNum,jdbcType=INTEGER},
+      last_reply_id = #{lastReplyId,jdbcType=INTEGER},
+      last_reply_date = #{lastReplyDate,jdbcType=TIMESTAMP},
+      date = #{date,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

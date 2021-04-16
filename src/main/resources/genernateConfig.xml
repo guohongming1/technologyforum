@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN" "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<generatorConfiguration>
+    <classPathEntry location="C:\Mysql\repository\mysql\mysql-connector-java\8.0.15\mysql-connector-java-8.0.15.jar" />
+    <context id="context1">
+        <commentGenerator>
+            <property name="suppressAllComments" value="true"/>
+            <property name="suppressDate" value="false"/>
+        </commentGenerator>
+        <jdbcConnection driverClass="com.mysql.cj.jdbc.Driver" connectionURL="jdbc:mysql://localhost:3306/technologyforum?allowPublicKeyRetrieval=true&amp;useSSL=false&amp;serverTimezone=UTC" userId="root" password="12345678">
+            <!--不会生成其它数据库里的同名表-->
+            <property name="nullCatalogMeansCurrent" value="true"/>
+        </jdbcConnection>
+        <javaModelGenerator targetPackage="com.example.technologyforum.web.pojo" targetProject="src/main/java">
+            <property name="enableSubPackages" value="false"/>
+            <!--是否在strng类型后面加trim()函数-->
+            <property name="trimStrings" value="false"/>
+        </javaModelGenerator>
+        <sqlMapGenerator targetPackage="mapper" targetProject="src/main/resources" />
+        <javaClientGenerator targetPackage="com.example.technologyforum.web.mapper" targetProject="src/main/java" type="XMLMAPPER" />
+        <table schema="technologyforum"  tableName="%" enableCountByExample="false" enableDeleteByExample="false"
+               enableSelectByExample="false"
+               enableUpdateByExample="false">
+            <!--tableName= '%'表示数据库下所有表都生成-->
+            <!-- <columnOverride column="" property="???" /> -->
+        </table>
+
+    </context>
+</generatorConfiguration>
+
+<!--
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+    <properties resource="application.properties" />
+    <classPathEntry location="E:\mavenR\repository\mysql\mysql-connector-java\8.0.15.jar" />
+    <context id="Tables" targetRuntime="MyBatis3">
+        &lt;!&ndash; 注释 &ndash;&gt;
+        <commentGenerator>
+            &lt;!&ndash; 是否生成注释代时间戳 &ndash;&gt;
+            <property name="suppressDate" value="true"/>
+            &lt;!&ndash; 是否去除自动生成的注释 true：是 ： false:否 &ndash;&gt;
+            <property name="suppressAllComments" value="true"/>
+        </commentGenerator>
+
+        &lt;!&ndash; JDBC连接 &ndash;&gt;
+        <jdbcConnection
+                driverClass="com.mysql.jdbc.Driver"
+                connectionURL="jdbc:mysql://192.168.3.41:3306/naxiaoxin-saladb?useSSL=false&amp;nullNamePatternMatchesAll=true"
+                userId="root"
+                password="abcd-1234">
+        </jdbcConnection>
+
+        &lt;!&ndash; 非必需，类型处理器，在数据库类型和java类型之间的转换控制&ndash;&gt;
+        &lt;!&ndash; 默认false，把JDBC DECIMAL 和 NUMERIC 类型解析为 Integer，为 true时把JDBC DECIMAL 和
+         NUMERIC 类型解析为java.math.BigDecimal &ndash;&gt;
+        <javaTypeResolver>
+            &lt;!&ndash; 是否使用bigDecimal， false可自动转化以下类型（Long, Integer, Short, etc.） &ndash;&gt;
+            <property name="forceBigDecimals" value="false" />
+        </javaTypeResolver>
+
+        &lt;!&ndash; 生成实体类地址 &ndash;&gt;
+        <javaModelGenerator targetPackage="com.demo_mybatis.model" targetProject="src/main/java">
+            &lt;!&ndash; 从数据库返回的值被清理前后的空格 &ndash;&gt;
+            <property name="trimStrings" value="true" />
+            &lt;!&ndash; enableSubPackages:是否让schema作为包的后缀 &ndash;&gt;
+            <property name="enableSubPackages" value="false" />
+        </javaModelGenerator>
+
+        &lt;!&ndash; 生成mapper xml文件 &ndash;&gt;
+        <sqlMapGenerator targetPackage="mapper"  targetProject="src/main/resources">
+            &lt;!&ndash; enableSubPackages:是否让schema作为包的后缀 &ndash;&gt;
+            <property name="enableSubPackages" value="false" />
+        </sqlMapGenerator>
+
+        &lt;!&ndash; 生成mapper xml对应Client&ndash;&gt;
+        <javaClientGenerator targetPackage="com.demo_mybatis.test.dao" targetProject="src/main/java" type="XMLMAPPER">
+            &lt;!&ndash; enableSubPackages:是否让schema作为包的后缀 &ndash;&gt;
+            <property name="enableSubPackages" value="false" />
+        </javaClientGenerator>
+
+        &lt;!&ndash; 配置表信息 &ndash;&gt;
+        &lt;!&ndash; schema即为数据库名 tableName为对应的数据库表 domainObjectName是要生成的实体类 enable*ByExample
+            是否生成 example类 &ndash;&gt;
+
+        <table schema="naxiaoxin-saladb" tableName="product_info"
+               domainObjectName="ProductInfo" enableCountByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false"
+               enableUpdateByExample="false">
+        </table>
+
+
+    </context>
+</generatorConfiguration>
+-->

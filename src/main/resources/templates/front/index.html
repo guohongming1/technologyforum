@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>首页</title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" type="text/css" th:href="@{/layui/css/layui.css}">
+    <script type="text/javascript" th:src="@{/myfile/js/jquery.min.js}"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/myfile/css/main.css}">
+</head>
+<script>
+    function getdefaultImg(event){
+        var img = event.srcElement;
+        img.src = "/myfile/image/error.png";
+        img.onerror = null;// 控制不要一直跳动
+    }
+</script>
+<body class="micronews">
+<div class="micronews-header-wrap">
+    <div class="micronews-header w1000 layui-clear">
+        <h1 class="logo">
+            <a href="/">
+                <img width="100px" height="60px" th:src="@{/layuiadmin/myfile/images/logo3.png}" alt="logo">
+                <span class="layui-hide">logo</span>
+            </a>
+        </h1>
+        <p class="nav">
+            <a href="/front/index" target="" class="active">首页</a>
+            <a href="/front/group"  target="">小组</a>
+            <a href="/front/question"  target="">问答</a>
+            <a href="/strategy/newstrategy"  target="_blank">发表文章</a>
+        </p>
+        <div class="search-bar">
+            <form class="layui-form" action="">
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <input type="text" name="title" placeholder="搜索你要的内容" autocomplete="off" class="layui-input">
+                        <button class="layui-btn search-btn" formnovalidate><i class="layui-icon layui-icon-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="login">
+            <a th:if="${session.userinfo == null}" href="/front/login">
+                登录
+            </a>
+            <!--<img th:src="@{/layuiadmin/myfile/images/header.png}" style="width: 36px; height: 36px;">-->
+            <ul th:if="${session.userinfo != null}" class="layui-nav" style="background-color: #fff;">
+                <span id="user-id" style="display:none" th:text="${session.userinfo.getId()}"></span>
+                <li class="layui-nav-item">
+                    <a href="/front/usermsg" style="font-size: 16px;color: #222;">消息<span th:text="${session.msgnum}" class="layui-badge"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+                </li>
+                <li class="layui-nav-item" lay-unselect="">
+                    <a href="javascript:;" style="font-size: 16px;color: #222;"><img th:src="${session.userinfo.getImgUrl()}" style="height: 30px; width: 30px;" class="layui-nav-img" onerror="getdefaultImg(event)">&nbsp;&nbsp;</a>
+                    <dl class="layui-nav-child">
+                        <dd style="text-align: center"><a href="/front/userset"><i class="layui-icon layui-icon-user"></i>&nbsp;个人资料</a></dd>
+                        <dd style="text-align: center"><a href="/front/userstrategy"><i class="layui-icon layui-icon-note"></i>&nbsp;攻略/问答</a></dd>
+                        <dd style="text-align: center"><a href="/front/usergroup"><i class="layui-icon layui-icon-rate"></i>&nbsp;小组</a></dd>
+                        <dd style="text-align: center"><a href="/question/newquestion"><i class="layui-icon layui-icon-rate"></i>&nbsp;我要提问</a></dd>
+                        <dd style="text-align: center"><a href="/group/newgroup"><i class="layui-icon layui-icon-rate"></i>&nbsp;创建小组</a></dd>
+                        <dd layadmin-event="logout" style="text-align: center"><a href="javascript:;"><i class="layui-icon layui-icon-logout"></i>&nbsp;登出</a></dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<style type="text/css">
+    .gonglve-nav {
+        margin-left: 20px;
+        border: 1px solid #ddd;
+        border-bottom: 0;
+        box-shadow: 0 0.5px 2px rgba(0, 0, 0, 0.1);
+        position: relative;
+        z-index: 10;
+    }
+
+    .gonglve-nav .nav-title {
+        height: 66px;
+        padding: 0 15px;
+        line-height: 35px;
+        font-size: 16px;
+        position: relative;
+        color: #666;
+        background-color: #fff;
+        border-bottom: 1px solid #ddd;
+    }
+    .gonglve-nav .nav-title .nav-top{
+        text-align: center;
+    }
+    .gonglve-nav .nav-title .nav-top span{
+        margin:0px 3px;
+        color: #6294b5;
+        font-size: 14px;
+    }
+    .gonglve-nav .nav-title:hover h3 {
+        color: #6294b5;
+    }
+
+    .gonglve-nav .nav-title:hover .gn-arrow {
+        background-position: -30px -40px;
+        right: 14px;
+    }
+
+    .gonglve-nav .nav-title h3 {
+        font-weight: normal;
+    }
+    .gonglve-nav .nav-title i{
+        position: absolute;
+        right: 15px;
+        top: 15px;
+    }
+
+    .gonglve-nav .nav-panel {
+        position: absolute;
+        left: 247px;
+        top: -1px;
+        width: 350px;
+        height: 338px;
+        border: 1px solid #ddd;
+        background-color: #fff;
+        z-index: -1;
+        display: none;
+        box-shadow: 0 3px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .gonglve-nav .nav-panel ol {
+        position: absolute;
+        z-index: 2;
+        padding: 15px 10px;
+        width: 260px;
+        line-height: 30px;
+    }
+
+    .gonglve-nav .nav-panel ol li {
+        height: 30px;
+        overflow: hidden;
+    }
+
+    .gonglve-nav .nav-panel ol li em {
+        float: left;
+        width: 30px;
+        font-size: 20px;
+        font-family: Letter Gothic Std, Verdana, Geneva, sans-serif;
+        text-align: right;
+        color: #aaa;
+        font-weight: bold;
+        font-style: italic;
+    }
+
+    .gonglve-nav .nav-panel ol li strong {
+        padding: 0 15px;
+        font-size: 14px;
+        font-weight: normal;
+        color: #666;
+        font-size: 14px;
+    }
+
+    .gonglve-nav .nav-panel ol li strong a {
+        color: #666;
+        font-size: 14px;
+    }
+
+    .gonglve-nav .nav-panel ol li a {
+        color: #999;
+        font-size: 12px;
+    }
+
+    .gonglve-nav .nav-panel ol li a:hover {
+        color: #6294b5;
+        text-decoration: underline;
+    }
+
+    .gonglve-nav .nav-panel ol .top em {
+        color: #6294b5;
+    }
+
+    .gonglve-nav .nav-panel ol .top strong a {
+        color: #6294b5;
+    }
+    .nav-car{
+        margin: 0px 10px;
+    }
+    .nav-img{
+        position: relative;
+    }
+    .nav-img .img-tips{
+        position: absolute;
+        padding-top: 5px ;
+        padding-left: 10px;
+        right: 30px;
+        top: 180px;
+        width: 250px;
+
+        background: rgba(12, 12, 12, 0.4);
+        color: #ffffff;
+    }
+    .nav-img .img-tips span a{
+        font-size: 20px;
+        font-weight: bold;
+        color: #ffffff;
+    }
+    .nav-img .img-tips span a:hover{text-decoration:underline;color: #2a8fc2;}
+    .nav-img .img-tips div{
+        margin: 5px auto;
+    }
+    .intro{
+        margin-top: 10px;
+        margin-left: 20px;
+    }
+    .hd{
+        height: 50px;
+        line-height: 48px;
+        border-bottom: 2px solid #eee;
+        font-size: 20px;
+        font-weight: normal;
+        color: #333;
+    }
+    .feed-item {
+        padding: 20px 0;
+        font-size: 14px;
+        line-height: 24px;
+    }
+
+    .feed-item > a {
+        display: block;
+    }
+
+    .feed-item .stat {
+        float: right;
+        padding: 0 10px;
+        line-height: 30px;
+        border-radius: 15px;
+        font-size: 14px;
+        color: #666;
+        background-color: rgba(98, 148, 181, 0.5);
+    }
+    .feed-item .stat i{
+        font-size: 20px; color: #fff;
+    }
+
+    .feed-item .stat .num {
+        color: #fff;
+    }
+    .feed-item .type strong {
+        color: #6294b5;
+        font-weight: normal;
+    }
+    .feed-item .title {
+        margin-bottom: 15px;
+        color: #333;
+        font-size: 20px;
+    }
+
+    .feed-item .txt {
+        margin-bottom: 15px;
+        color: #666;
+    }
+
+    .feed-item .imgs img {
+        width: 220px;
+        float: left;
+        margin-right: 15px;
+        display: inline;
+    }
+
+    .feed-item:hover {
+        background-color: #F8F8F8;
+        padding: 21px 15px 20px;
+        margin: -1px -15px 0;
+    }
+
+    .feed-item:hover .title {
+        color: #6294b5;
+    }
+
+    .feed-item .ext-b {
+        float: right;
+        color: #999;
+        line-height: 22px;
+        font-size: 12px;
+    }
+
+    .feed-item .ext-b .author {
+        display: inline-block;
+        margin-right: 10px;
+        font-size: 12px;
+        color: #6294b5;
+    }
+
+    .feed-item .ext-b .author img {
+        margin-right: 5px;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        overflow: hidden;
+        vertical-align: middle;
+    }
+
+    .feed-item .art dt {
+        float: left;
+        width: 220px;
+        display: inline;
+        margin-right: 20px;
+    }
+
+    .feed-item .art dt img {
+        width: 220px;
+        height: 150px;
+    }
+
+    .feed-item .art dd {
+        overflow: hidden;
+    }
+
+    .feed-item .art dd .info {
+        height: 100px;
+        padding-top: 10px;
+        margin-bottom: 16px;
+        color: #666;
+        display: -webkit-box;  /*  display: -webkit-box; 必须结合的属性 ，将对象作为弹性伸缩盒子模型显示  */
+        -webkit-box-orient: vertical; /*  -webkit-box-orient 必须结合的属性 ，设置或检索伸缩盒对象的子元素的排列方式  */
+        -webkit-line-clamp: 4; /*  -webkit-line-clamp用来限制在一个块元素显示的文本的行数 */
+        overflow: hidden;
+    }
+    .hr {
+        margin-top: 20px;
+        height: 1px;
+        background-color: #e5e5e5;
+        overflow: hidden;
+    }
+    .page_loader {
+        margin-top: 10px;
+        background-color: rgba(98, 148, 181, 0.4);
+        border-radius: 4px;
+        color: #666;
+        display: block;
+        height: 40px;
+        font-size: 16px;
+        line-height: 40px;
+        text-align: center;
+        width: 100%;
+    }
+    .page_loader i {
+        display: inline-block;
+        height: 10px;
+        margin-left: 6px;
+        width: 10px;
+    }
+    .page_loader:hover {
+        background-color: #6294b5;
+        color: #fff;
+        text-decoration: none;
+    }
+    .nav-tab{
+        margin-left: 30px;
+        margin-top: 20px;
+    }
+    .tab{
+        width:100%;
+        margin:30px 0 20px 0;
+        overflow:hidden;
+    }
+    .tab-top{
+        height:32px;
+        border-bottom:solid 1px #EAEAEA;
+        font-size:14px;
+    }
+    #tb li a{
+        float:left;
+        height:32px;
+        cursor:pointer;
+        line-height:32px;
+        list-style-type:none;
+        padding:0 15px;
+    }
+    #tb li.cur a { color: #fff; background: #6294b5; }
+    .bd { display: none }
+    .bd-news ul { padding: 10px 0 0 10px; background: url(/myfile/image/ph2.png) no-repeat 10px 29px; }
+    .bd-news ul li { border-bottom: solid 1px #EAEAEA; line-height: 30px; height: 30px; overflow: hidden; font-size: 14px; padding: 10px 0 0 30px; }
+    .bd-news ul li a { display: block; }
+    .bd-news ul li a:hover { color: #000; }
+    .bd-news ul li:hover { border-bottom: #000 1px solid; }
+
+    /*热门小组*/
+    .tuwen{width:100%;clear:both;overflow:hidden;margin:20px 0;}
+    .tuwen h3{
+        line-height:40px;
+        color:#38485A;
+        font-size:18px;
+        border-bottom:1px solid #E6E6E6;
+        height:40px;
+        margin-bottom:30px;
+    }
+    .tuwen li {
+        overflow:hidden;
+        clear:both;
+        margin-bottom:10px;
+    }
+    .tuwen li img{
+        width:70px;
+        float:left;
+        margin-right:15px;
+    }
+    .tuwen li p{
+        font-weight:normal;
+        color:#333;
+        font-size:14px;
+    }
+    .tuwen li a p:hover { text-decoration: underline; color: #F60 }
+    .tuwen p{
+        margin-top:5px;
+    }
+    .tulanum{
+        background: url(/myfile/image/lanmbq.png) no-repeat center left; padding-left: 17px
+    }
+    .tulanum a{color:#999;}
+    .tulanmu a:hover { color: #066 }
+    .tutime { background: url(/myfile/image/datepng.png) no-repeat left center; padding-left: 15px }
+    .tuwen li:hover { background: #f4f3f3 }
+    .tuwen li span{
+        color:#999;
+        margin-right:10px;
+    }
+    /*热门搜索*/
+    .cloud{
+        width:100%;
+        clear:both;
+        overflow:hidden;
+    }
+    .cloud h3{
+        line-height:40px;
+        color:#38485A;
+        font-size:18px;
+        border-bottom:1px solid #E6E6E6;
+        height:40px;
+    }
+    .cloud ul{
+        margin:20px 0;
+    }
+    .cloud ul li { line-height: 24px; height: 24px; display: block; background: #999; float: left; padding: 3px 11px; margin: 10px 10px 0 0; border-radius: 8px; -moz-transition: all 0.5s; -webkit-transition: all 0.5s; -o-transition: all 0.5s; transition: all 0.5s; }
+    .cloud ul li a { color: #FFF }
+    .cloud ul li:nth-child(8n-7) { background: #8A9B0F }
+    .cloud ul li:nth-child(8n-6) { background: #EB6841 }
+    .cloud ul li:nth-child(8n-5) { background: #3FB8AF }
+    .cloud ul li:nth-child(8n-4) { background: #FE4365 }
+    .cloud ul li:nth-child(8n-3) { background: #FC9D9A }
+    .cloud ul li:nth-child(8n-2) { background: #EDC951 }
+    .cloud ul li:nth-child(8n-1) { background: #C8C8A9 }
+    .cloud ul li:nth-child(8n) { background: #83AF9B }
+    .cloud ul li:first-child { background: #036564 }
+    .cloud ul li:last-child { background: #3299BB }
+    .cloud ul li:hover { border-radius: 0; text-shadow: #000 1px 1px 1px }
+    /* 返回顶部*/
+    .layui-fixbar {
+        position: fixed;
+        right: 15px;
+        bottom: 15px;
+        z-index: 999999;
+        right: 50px;
+        bottom: 50px;
+        height: 50px;
+        list-style: none;
+    }
+
+    .layui-fixbar .layui-fixbar-top {
+        display: none;
+        font-size: 40px;
+    }
+
+    .layui-fixbar li {
+        width: 50px;
+        height: 50px;
+        line-height: 50px;
+        margin-bottom: 1px;
+        text-align: center;
+        cursor: pointer;
+        font-size: 30px;
+        background-color: #9F9F9F;
+        color: #fff;
+        border-radius: 2px;
+        opacity: .95;
+    }
+
+    .layui-icon {
+        font-family: layui-icon!important;
+        font-size: 16px;
+        font-style: normal;
+        -webkit-font-smoothing: antialiased;
+    }
+</style>
+<div class="layui-container" style="margin: 15px auto;max-width: 1100px;">
+    <div class="layui-row">
+        <!-- 攻略导航栏-left-->
+        <div class="layui-col-xs3 layui-col-sm3 layui-col-md3">
+            <div class="gonglve-nav">
+                <div class="nav-item">
+                    <div class="nav-title">
+                        <h3 style="line-height: 65px"><img th:src="@{/myfile/image/round.png}">&nbsp;&nbsp;&nbsp;&nbsp;周边(<span th:text="${city}" style="font-size: 14px;color: #FFB800"></span>)</h3>
+                        <i class="layui-icon layui-icon-right"></i>
+                    </div>
+                        <div class="nav-panel rank-panel">
+                            <ol id="around">
+                                <!--<li class="top">-->
+                                    <!--<em class="rank-num">1</em>-->
+                                    <!--<strong><a href="" title="">北海道</a></strong>-->
+                                    <!--<a href="" title="">在皑皑白雪中泡温泉</a>-->
+                                <!--</li>-->
+                            </ol>
+                            <span></span>
+                        </div>
+                </div>
+                <div class="nav-item">
+                    <div class="nav-title">
+                        <h3 style="line-height: 65px"><img th:src="@{/myfile/image/hot.png}">&nbsp;&nbsp;&nbsp;&nbsp;当季热门</h3>
+                        <i class="layui-icon layui-icon-right"></i>
+                        <!--<div class="nav-top">-->
+                            <!--<span>横滨</span><span>北京故宫</span><span>滕王阁</span>-->
+                        <!--</div>-->
+                    </div>
+                    <div class="nav-panel rank-panel">
+                        <ol id="hottop">
+                        </ol>
+                        <span></span>
+                    </div>
+                </div>
+                <div class="nav-item">
+                    <div class="nav-title">
+                        <h3 style="line-height: 65px"><img th:src="@{/myfile/image/earth.png}">&nbsp;&nbsp;&nbsp;&nbsp;最新攻略</h3>
+                        <i class="layui-icon layui-icon-right"></i>
+                        <!--<div class="nav-top">-->
+                            <!--<span>日本</span><span>三亚</span><span>菲律宾</span>-->
+                        <!--</div>-->
+                    </div>
+                    <div class="nav-panel rank-panel">
+                        <ol id="besnew">
+                            <!--<li class="top">-->
+                                <!--<em class="rank-num">1</em>-->
+                                <!--<strong><a href="" title="">张三</a></strong>-->
+                                <!--<a href="" title="">在皑皑白雪中泡温泉</a>-->
+                            <!--</li>-->
+
+                        </ol>
+                        <span></span>
+                    </div>
+                </div>
+                <div class="nav-item">
+                    <img width="240px" height="67px" th:src="@{/layuiadmin/myfile/images/logo3.png}" alt="logo">
+                </div>
+            </div>
+        </div>
+        <!--  轮播框-->
+        <div class="layui-col-xs9 layui-col-sm9 layui-col-md9">
+            <div class="layui-carousel nav-car" id="test1">
+                <div carousel-item class="nav-img" id="carousel">
+                    <!--<div>-->
+                        <!--<a href="#"><img th:src="@{/myfile/image/1-1.jpeg}" style="width: 100%;height: 100%;"></a>-->
+                        <!--<div class="img-tips">-->
+                            <!--<span><a href="#">呼伦贝尔大草原</a></span>-->
+                            <!--<div><img th:src="@{/layuiadmin/myfile/images/test01.jpg}" style="height: 30px; width: 30px;" class="layui-nav-img">中国之光</div>-->
+                        <!--</div>-->
+                    <!--</div>-->
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="layui-row">
+        <!-- 攻略推荐-->
+        <div class="layui-col-xs9 layui-col-sm9 layui-col-md9">
+            <div class="intro">
+            <h3 class="hd">攻略推荐</h3>
+            <div id="recommend">
+                <div th:each="elem:${recommend}">
+                    <div class="feed-item">
+                        <a th:href="'/front/strategydetail?id='+${elem.id}+'&detailId='+${elem.detailId}"  target="_blank" title="">
+                            <div class="bar clearfix">
+                                    <span class="stat">
+                                        <i class="layui-icon layui-icon-star"></i>
+                                        <span class="num" th:text="${elem.collectnum}"></span>
+                                        <span style="display: none;" th:text="${elem.address}"></span>
+                                    </span>
+                            </div>
+                            <div class="title" th:text="${elem.title}">
+                            </div>
+                            <dl class="art clearfix">
+                                <dt>
+                                    <img th:src="${elem.headImgUrl}">
+                                </dt>
+                                <dd>
+                                    <div class="info" th:text="${elem.sketch}">
+                                    </div>
+                                    <div class="ext-b">
+                                            <span class="author">
+                                                <img th:src="${elem.userHeadImg}"><span th:text="${elem.userName}"></span>
+                                            </span>
+                                        <span class="nums" th:text="${elem.viewNum}+'热度，'+${elem.commentnum}+'评论'"></span>
+                                    </div>
+                                </dd>
+                            </dl>
+                        </a>
+                    </div>
+                    <div class="hr"></div>
+                </div>
+            </div>
+            <a data-page="2" class="page_loader" href="javascript:void(0)"><span>加载更多</span><i class="layui-icon layui-icon-down"></i></a>
+            </div>
+        </div>
+        <!--  攻略推荐侧边栏-->
+        <div class="layui-col-xs3 layui-col-sm3 layui-col-md3">
+           <div class="nav-tab">
+               <div class="tuwen">
+                   <h3>热门问答</h3>
+                   <ul id="hot-question">
+
+                   </ul>
+                   <h3>热门话题</h3>
+                   <ul id="hot-topic">
+
+                   </ul>
+               </div>
+           </div>
+        </div>
+    </div>
+</div>
+<div class="micronews-footer-wrap">
+    <div class="micronews-footer w1000">
+        <div class="Copyright">
+            <span>Copyright&nbsp;</span>&nbsp;&copy;<span>旅游攻略平台&nbsp;&nbsp;</span>
+        </div>
+    </div>
+</div>
+<ul class="layui-fixbar" style="right: 50px; bottom: 50px;">
+    <li class="layui-icon layui-fixbar-top" id="to_top" style="background-color: #6294b5;"
+        title="返回顶部"></li>
+</ul>
+<script id="carousel-mod" type="text/html">
+    {{#  layui.each(d, function(index, item){ }}
+    <div><a href="/front/strategydetail?id={{item.id}}&detailId={{item.detailId}}"  target="_blank" title="">
+        <img src="{{item.headImgUrl}}"style="width: 100%;height: 100%;"></a>
+        <div class="img-tips">
+            <span><a href="/front/strategydetail?id={{item.id}}&detailId={{item.detailId}}"  target="_blank" title="">{{item.title}}</a></span>
+            <div><img src="{{item.userHeadImg}}" style="height: 30px; width: 30px;" class="layui-nav-img">{{item.userName}}</div>
+        </div>
+    </div>
+    {{#  }); }}
+</script>
+<script id="recom-mod" type="text/html">
+    {{#  layui.each(d, function(index, item){ }}
+    <div class="feed-item">
+        <a href="/front/strategydetail?id={{item.id}}&detailId={{item.detailId}}"  target="_blank" title="">
+            <div class="bar clearfix">
+               <span class="stat">
+              <i class="layui-icon layui-icon-star"></i>
+             <span class="num">{{item.collectnum}}</span>
+            </span>
+            </div>
+            <div class="title">
+                {{item.title}}
+            </div>
+            <dl class="art clearfix">
+                <dt>
+                    <img src="{{item.headImgUrl}}">
+                </dt>
+                <dd>
+                    <div class="info">
+                        {{item.sketch}}
+                    </div>
+                    <div class="ext-b">
+                        <span class="author">
+                        <img src="{{item.userHeadImg}}">{{item.userName}}
+                        </span>
+                        <span class="nums">{{item.viewNum}}热度，{{item.commentnum}}评论</span>
+                    </div>
+                </dd>
+            </dl>
+        </a>
+    </div>
+    <div class="hr"></div>
+    {{#  }); }}
+</script>
+<script id="leftnav-mod" type="text/html">
+    {{#  layui.each(d, function(index, item){ }}
+    <li class="top layui-elip">
+        <em class="rank-num">{{index+1}}</em>
+        {{#
+          if(item.address != undefined&&item.address.length > 6){
+             var i = item.address.lastIndexOf("-");
+             var address = item.address.substring(i+1);
+        }}
+        <strong><a href="/front/strategydetail?id={{item.id}}&detailId={{item.detailId}}"  target="_blank" title="">{{address}}</a></strong>
+        {{#  }else{
+        }}
+        <strong><a href="/front/strategydetail?id={{item.id}}&detailId={{item.detailId}}"  target="_blank" title="">{{item.address}}</a></strong>
+        {{#  } }}
+        <a href="" title="">{{item.title}}</a>
+        </li>
+    {{#  }); }}
+</script>
+<script id="hot-question-mod" type="text/html">
+    {{#  layui.each(d, function(index, item){ }}
+    <li><img src="{{item.imgUrl}}"><a href="/front/questionDetail?id={{item.id}}"><p class="layui-elip">{{item.title}}</p></a>
+        <p>
+            <span class="tutime">{{item.date}}</span>
+        </p>
+    </li>
+    {{#  }); }}
+</script>
+<script id="hot-topic-mod" type="text/html">
+    {{#  layui.each(d, function(index, item){ }}
+    <li><img src="{{item.tags}}"><a href="/front/topic_detail?id={{item.id}}"><p class="layui-elip">{{item.title}}</p></a>
+        <p>
+            <span class="tutime">{{item.date}}</span>
+        </p>
+    </li>
+    {{#  }); }}
+</script>
+<script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+<script>
+    $('.search-btn').on('click', function () {
+        var inpVal = $(this).siblings('input').val();
+        // 搜索条件不为空串
+        if (inpVal !== '') {
+            var url = "/front/search-page";
+            // window.open(encodeURI(url + "?pattern=" + inpVal));
+            window.location.href = encodeURI(url + "?pattern=" + inpVal);
+            // window.location.href = "/front/page/search-page?pattern=" + inpVal;
+        }
+        return false;
+    })
+    $("#to_top").click(function () {
+        $("html,body").animate({ scrollTop: 0 }, 200);
+    });
+
+    $(document).scroll(function () {
+        var scroll_top = $(document).scrollTop();
+        //高度多少出现返回顶部，可以随意调整
+        if (scroll_top > 100) {
+            $("#to_top").show();
+        } else {
+            $("#to_top").hide();
+        }
+    });
+
+    layui.config({
+        base: '/layuiadmin/'
+    }).extend({
+        index: 'lib/index' //主入口模块
+    }).use(['index','news','element','carousel','laytpl'], function(){
+        var element = layui.element; //导航的hover效果、二级菜单等功能，需要依赖element模块
+        var carousel = layui.carousel; // 轮播框设置
+        var laytpl = layui.laytpl;
+        var admin = layui.admin,
+            index = layui.news;
+        /*旅游攻略页面*/
+        /*left nav*/
+        $('.nav-item').hover(function() {
+            $('.gonglve-nav').css('border-right-color', '#fff');
+            $('.nav-item .nav-panel').eq($(this).index()).css('display', 'block');
+        }, function() {
+            $('.gonglve-nav').css('border-right-color', '#ddd');
+            $('.nav-panel').css('display', 'none');
+        });
+        //轮播框
+        function bannerData(){
+            $.ajax({
+                type: "post",
+                url: "/comm/strategy-list",
+                data: {'limit':5,"page":1},
+                success: function(res){
+                    if (res.code === 200) {
+                        // 获取节点
+                        var getTpl = document.getElementById('carousel-mod').innerHTML;
+                        // 执行tpl渲染
+                        laytpl(getTpl).render(res.data, function (html) {
+                            $("#carousel").append(html);
+                            // document.getElementById('recommend').append(html);// = html;
+                        });
+                        index.banner();
+                    }
+
+                }
+            });
+        }
+        bannerData();
+        // 导航栏数据加载
+        loadData();
+        $(".page_loader").click(function () {
+            var _this = $(this);
+           var page = $(this).data('page');
+            var loadIndex = layer.load();
+            $.ajax({
+                type: "post",
+                url: "/comm/strategy-list",
+                data: {'limit':2,"page":page},
+                success: function(res){
+                    if (res.code === 200) {
+                        _this.data('page',page+1);
+                        if(res.data.length != 0){
+                            console.log(res.data)
+                            // 获取节点
+                            var getTpl = document.getElementById('recom-mod').innerHTML;
+                            // 执行tpl渲染
+                            laytpl(getTpl).render(res.data, function (html) {
+                                $("#recommend").append(html);
+                                // document.getElementById('recommend').append(html);// = html;
+                            });
+                            layer.close(loadIndex);
+                        }else{
+                            layer.close(loadIndex);
+                            layer.msg("没有更多了",{icon:6});
+                            _this.css('display','none');
+                        }
+                    } else {
+                        layer.close(loadIndex);
+                        layer.msg("参数错误");
+                    }
+                },
+                error: function (res) {
+                    layer.close(loadIndex);
+                    layer.msg(res.msg);
+                }
+            });
+        });
+        function loadData() {
+             admin.req({
+                 url: '/comm/hotstra-list'
+                 , type: 'post'
+                 , async: false
+                 , success: function (res) {
+                     // 获取节点
+                     var getTpl = document.getElementById('leftnav-mod').innerHTML;
+                     // 执行tpl渲染
+                     laytpl(getTpl).render(res.data, function (html) {
+                         document.getElementById('hottop').innerHTML = html;
+                     });
+                 }
+             });
+            admin.req({
+                url: '/comm/around_strategy'
+                , type: 'post'
+                , async: false
+                , success: function (res) {
+                    // 获取节点
+                    var getTpl = document.getElementById('leftnav-mod').innerHTML;
+                    // 执行tpl渲染
+                    laytpl(getTpl).render(res.data, function (html) {
+                        document.getElementById('around').innerHTML = html;
+                    });
+                }
+            });
+            admin.req({
+                url: '/comm/besnew_strategy'
+                , type: 'post'
+                , async: false
+                , success: function (res) {
+                    // 获取节点
+                    var getTpl = document.getElementById('leftnav-mod').innerHTML;
+                    // 执行tpl渲染
+                    laytpl(getTpl).render(res.data, function (html) {
+                        document.getElementById('besnew').innerHTML = html;
+                    });
+                }
+            });
+            admin.req({
+                url: '/comm/hotquestion-list'
+                , type: 'post'
+                , async: false
+                , success: function (res) {
+                    // 获取节点
+                    var getTpl = document.getElementById('hot-question-mod').innerHTML;
+                    // 执行tpl渲染
+                    laytpl(getTpl).render(res.data, function (html) {
+                        document.getElementById('hot-question').innerHTML = html;
+                    });
+                }
+            });
+            admin.req({
+                url: '/comm/hottopic-list'
+                , type: 'post'
+                , async: false
+                , success: function (res) {
+                    // 获取节点
+                    var getTpl = document.getElementById('hot-topic-mod').innerHTML;
+                    // 执行tpl渲染
+                    laytpl(getTpl).render(res.data, function (html) {
+                        document.getElementById('hot-topic').innerHTML = html;
+                    });
+                }
+            });
+        }
+    });
+</script>
+<!--[if lt IE 9]>
+<script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+<script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+</body>
+</html>

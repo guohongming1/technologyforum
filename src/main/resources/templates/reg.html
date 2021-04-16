@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.springframework.org/schema/data/jaxb">
+<head>
+    <meta charset="UTF-8">
+    <title>论坛 - 注册</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" th:href="@{/layuiadmin/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{/layuiadmin/style/admin.css}" media="all">
+    <link rel="stylesheet" th:href="@{/layuiadmin/style/login.css}" media="all">
+</head>
+<body>
+<div class="layadmin-user-login layadmin-user-display-show" id="LAY-user-login" style="display: none;">
+    <div class="layadmin-user-login-main">
+        <div class="layadmin-user-login-box layadmin-user-login-header">
+            <h2>论坛 - 注册</h2>
+            <p>论坛 - 注册</p>
+        </div>
+        <div class="layadmin-user-login-box layadmin-user-login-body layui-form">
+            <div class="layui-form-item">
+                <label class="layadmin-user-login-icon layui-icon layui-icon-form"
+                       for="LAY-user-login-email"></label>
+                <input type="text" name="email" id="LAY-user-login-email" lay-verify="email" placeholder="邮箱"
+                       class="layui-input">
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-row">
+                    <div class="layui-col-xs7">
+                        <label class="layadmin-user-login-icon layui-icon layui-icon-vercode"
+                               for="LAY-user-login-vercode"></label>
+                        <input type="text" name="vercode" id="LAY-user-login-vercode" lay-verify="required"
+                               placeholder="验证码" class="layui-input">
+                    </div>
+                    <div class="layui-col-xs5">
+                        <div style="margin-left: 10px;" id="getvercode">
+                            <button type="button" class="layui-btn layui-btn-primary layui-btn-fluid"
+                                    id="LAY-user-getsmscode">获取验证码
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layadmin-user-login-icon layui-icon layui-icon-password"
+                       for="LAY-user-login-password"></label>
+                <input type="password" name="password" id="LAY-user-login-password" lay-verify="pass" placeholder="密码"
+                       class="layui-input">
+            </div>
+            <div class="layui-form-item">
+                <label class="layadmin-user-login-icon layui-icon layui-icon-password"
+                       for="LAY-user-login-repass"></label>
+                <input type="password" name="repass" id="LAY-user-login-repass" lay-verify="required" placeholder="确认密码"
+                       class="layui-input">
+            </div>
+            <div class="layui-form-item">
+                <label class="layadmin-user-login-icon layui-icon layui-icon-username"
+                       for="LAY-user-login-nickname"></label>
+                <input type="text" name="name" id="LAY-user-login-nickname" lay-verify="nickname" placeholder="昵称"
+                       class="layui-input">
+            </div>
+            <div class="layui-form-item">
+                <input type="checkbox" name="agreement" lay-skin="primary" title="同意用户协议" checked>
+            </div>
+            <div class="layui-form-item">
+                <button class="layui-btn layui-btn-fluid" lay-submit lay-filter="LAY-user-reg-submit">注 册</button>
+            </div>
+            <div class="layui-trans layui-form-item layadmin-user-login-other">
+                <label>已有账号?</label>
+
+                <a href="/user/login" class="layadmin-user-jump-change layadmin-link layui-hide-xs">用已有帐号登入</a>
+                <!--<a href="login.html"-->
+                <!--class="layadmin-user-jump-change layadmin-link layui-hide-sm layui-show-xs-inline-block">登入</a>-->
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<script th:src="@{/layuiadmin/layui/layui.js}"></script>
+<script>
+    layui.config({
+        base: '/layuiadmin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+    }).use(['index', 'user'], function () {
+        var $ = layui.$
+            , setter = layui.setter
+            , admin = layui.admin
+            , form = layui.form
+            , router = layui.router();
+
+        form.render();
+
+
+        //提交
+        form.on('submit(LAY-user-reg-submit)', function (obj) {
+            var field = obj.field;
+
+            //确认密码
+            if (field.password !== field.repass) {
+                return layer.msg('两次密码输入不一致');
+            }
+
+            //是否同意用户协议
+            if (!field.agreement) {
+                return layer.msg('你必须同意用户协议才能注册');
+            }
+            //$.extend(field, {password: hex_md5(field.password)});
+
+            //请求接口
+            admin.req({
+                url: '/user/register' //实际使用请改成服务端真实接口
+                , type: 'post'
+                , data: field
+                , done: function (res) {
+                    if (res.code === 200) {
+                        layer.msg('注册成功', {
+                            offset: '15px'
+                            , icon: 1
+                            , time: 1000
+                        }, function () {
+                            console.log(res)
+                            location.href = '/user/login'; //跳转到登入页
+                        });
+                    } else {
+                        layer.msg(res.message);
+                    }
+                }
+            });
+
+            return false;
+        });
+
+        /**
+         * 验证码发送
+         * @type {{}}
+         */
+        var active = {
+            send: function () {
+
+            }
+        };
+        var time = 60;
+
+        $('#LAY-user-getsmscode').on('click', function () {
+            var _this = $(this);
+            var emailElem = $('#LAY-user-login-email');
+            var email = emailElem.val();
+            // 邮箱格式验证
+            if (!/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/.test(email)) {
+                emailElem.focus();
+                return layer.msg('请输入正确的邮箱');
+            }
+            _this.attr("disabled", "true");
+            //按钮禁用
+            _this.addClass("layui-btn-disabled");
+            $("#LAY-user-getsmscode").html("正在发送....");
+
+            $('#LAY-user-login-vercode').focus();
+            _this.attr("disabled", "true");
+            //按钮禁用
+            _this.addClass("layui-btn-disabled");
+            countDown();
+          //  success && success(res);
+
+            admin.req({
+                url: '/user/email-send'
+                , type: 'post'
+                , data: {'email': email, 'mode': "register"}
+                , success: function (res) {
+                    if (res.code === 200) {
+                        layer.msg('验证码已发送至你的邮箱，请注意在60秒内完成验证', {
+                            icon: 1
+                            , shade: 0
+                        });
+                        $('#LAY-user-login-vercode').focus();
+                        _this.attr("disabled", "true");
+                        //按钮禁用
+                        _this.addClass("layui-btn-disabled");
+                        countDown();
+                        // success && success(res);
+                    } else {
+                        layer.msg(res.message);
+                    }
+                }
+                ,error:function () {
+                    console.log("test")
+                    _this.removeAttr("disabled");
+                    _this.removeClass("layui-btn-disabled");
+                    $("#LAY-user-getsmscode").html("重新发送");
+                }
+
+            });
+
+        })
+
+        function countDown() {
+            if(time==60){
+                var time1=setInterval(function(){
+                    if(time==0){
+                        $("#LAY-user-getsmscode").html("重新发送");
+                        $("#LAY-user-getsmscode").removeAttr("disabled");
+                        $("#LAY-user-getsmscode").removeClass("layui-btn-disabled");
+                        time=60;
+                        clearInterval(time1);
+                    }else{
+                        $("#LAY-user-getsmscode").html("重新发送("+time+")");
+                        time--;
+                    }
+                }, 1000);
+            }
+        }
+
+    });
+</script>
+</body>
+</html>

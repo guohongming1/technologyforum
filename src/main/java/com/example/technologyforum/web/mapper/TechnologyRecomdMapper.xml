@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.technologyforum.web.mapper.TechnologyRecomdMapper" >
+  <resultMap id="BaseResultMap" type="com.example.technologyforum.web.pojo.TechnologyRecomd" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="detail_id" property="detailId" jdbcType="INTEGER" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="sketch" property="sketch" jdbcType="VARCHAR" />
+    <result column="collectnum" property="collectnum" jdbcType="INTEGER" />
+    <result column="commentnum" property="commentnum" jdbcType="INTEGER" />
+    <result column="user_id" property="userId" jdbcType="INTEGER" />
+    <result column="date" property="date" jdbcType="TIMESTAMP" />
+    <result column="reserve1" property="reserve1" jdbcType="VARCHAR" />
+    <result column="reserve2" property="reserve2" jdbcType="VARCHAR" />
+    <result column="reserve3" property="reserve3" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, detail_id, title, sketch, collectnum, commentnum, user_id, date, reserve1, reserve2, 
+    reserve3
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from technology_recomd
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from technology_recomd
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.example.technologyforum.web.pojo.TechnologyRecomd" >
+    insert into technology_recomd (id, detail_id, title, 
+      sketch, collectnum, commentnum, 
+      user_id, date, reserve1, 
+      reserve2, reserve3)
+    values (#{id,jdbcType=INTEGER}, #{detailId,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, 
+      #{sketch,jdbcType=VARCHAR}, #{collectnum,jdbcType=INTEGER}, #{commentnum,jdbcType=INTEGER}, 
+      #{userId,jdbcType=INTEGER}, #{date,jdbcType=TIMESTAMP}, #{reserve1,jdbcType=VARCHAR}, 
+      #{reserve2,jdbcType=VARCHAR}, #{reserve3,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.example.technologyforum.web.pojo.TechnologyRecomd" >
+    insert into technology_recomd
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="detailId != null" >
+        detail_id,
+      </if>
+      <if test="title != null" >
+        title,
+      </if>
+      <if test="sketch != null" >
+        sketch,
+      </if>
+      <if test="collectnum != null" >
+        collectnum,
+      </if>
+      <if test="commentnum != null" >
+        commentnum,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="date != null" >
+        date,
+      </if>
+      <if test="reserve1 != null" >
+        reserve1,
+      </if>
+      <if test="reserve2 != null" >
+        reserve2,
+      </if>
+      <if test="reserve3 != null" >
+        reserve3,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="detailId != null" >
+        #{detailId,jdbcType=INTEGER},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="sketch != null" >
+        #{sketch,jdbcType=VARCHAR},
+      </if>
+      <if test="collectnum != null" >
+        #{collectnum,jdbcType=INTEGER},
+      </if>
+      <if test="commentnum != null" >
+        #{commentnum,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="date != null" >
+        #{date,jdbcType=TIMESTAMP},
+      </if>
+      <if test="reserve1 != null" >
+        #{reserve1,jdbcType=VARCHAR},
+      </if>
+      <if test="reserve2 != null" >
+        #{reserve2,jdbcType=VARCHAR},
+      </if>
+      <if test="reserve3 != null" >
+        #{reserve3,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.example.technologyforum.web.pojo.TechnologyRecomd" >
+    update technology_recomd
+    <set >
+      <if test="detailId != null" >
+        detail_id = #{detailId,jdbcType=INTEGER},
+      </if>
+      <if test="title != null" >
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="sketch != null" >
+        sketch = #{sketch,jdbcType=VARCHAR},
+      </if>
+      <if test="collectnum != null" >
+        collectnum = #{collectnum,jdbcType=INTEGER},
+      </if>
+      <if test="commentnum != null" >
+        commentnum = #{commentnum,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="date != null" >
+        date = #{date,jdbcType=TIMESTAMP},
+      </if>
+      <if test="reserve1 != null" >
+        reserve1 = #{reserve1,jdbcType=VARCHAR},
+      </if>
+      <if test="reserve2 != null" >
+        reserve2 = #{reserve2,jdbcType=VARCHAR},
+      </if>
+      <if test="reserve3 != null" >
+        reserve3 = #{reserve3,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.example.technologyforum.web.pojo.TechnologyRecomd" >
+    update technology_recomd
+    set detail_id = #{detailId,jdbcType=INTEGER},
+      title = #{title,jdbcType=VARCHAR},
+      sketch = #{sketch,jdbcType=VARCHAR},
+      collectnum = #{collectnum,jdbcType=INTEGER},
+      commentnum = #{commentnum,jdbcType=INTEGER},
+      user_id = #{userId,jdbcType=INTEGER},
+      date = #{date,jdbcType=TIMESTAMP},
+      reserve1 = #{reserve1,jdbcType=VARCHAR},
+      reserve2 = #{reserve2,jdbcType=VARCHAR},
+      reserve3 = #{reserve3,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
