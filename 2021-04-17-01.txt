@@ -1,0 +1,33 @@
+######本次修改点：
+###### 页面涉及：
+ 1. 登录后显示消息数量，个人头像 ,其余未实现
+ 2. 问答模块全部共能实现：访问路径：http://localhost:8080/front/question
+               功能包括：主页显示（热门、最新、已解决、分页显示）、发表问题（发表问题需要登录）、搜索问题。
+                        点击问题进入详情：可评论、收藏、删除评论和接受评论（作者本人才可），热度显示
+
+  新增表：启动前执行以下脚本
+  DROP TABLE IF EXISTS `SYS_PARAM`;
+  CREATE TABLE `SYS_PARAM` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `param_value` varchar(10) DEFAULT NULL COMMENT '参数值',
+    `param_name` varchar(255) DEFAULT NULL COMMENT '参数值',
+    `param_text` varchar(255) DEFAULT NULL COMMENT '参数说明',
+    PRIMARY KEY (`id`)
+  ) ENGINE=InnoDB AUTO_INCREMENT=91 DEFAULT CHARSET=utf8 COMMENT='系统参数';
+
+
+
+3.消息页面已实现，可点击上方消息进入消息页面：本次修改只涉及5、6
+   一下情况就触发通知：
+    1. 申请新建的小组申请通过或者驳回，向用户发生："系统消息：您申请的小组["+group.getTitle()+"]被驳回，请检查修改后重新申请";
+    2.有人加入自己创建的小组
+    3.自己创建的话题有人评论回复
+    4.自己的话题被人收藏
+    5.我在问答中的评论被楼主回复，有人评论了我创建的问答
+    6.我的问答被人收藏
+    7.别人向我发送了一天私信
+    8.我在攻略了的评论被人回复
+
+
+
+

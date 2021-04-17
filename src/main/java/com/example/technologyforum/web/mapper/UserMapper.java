@@ -21,6 +21,8 @@ public interface UserMapper extends BaseMapper<User> {
 
     int updateByPrimaryKey(User record);
 
+    User getUserInfoByPrimaryKey(Integer id);
+
     /**
      * 分页查询用户数据
      * @param page

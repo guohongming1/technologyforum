@@ -32,7 +32,7 @@
       #{target,jdbcType=INTEGER}, #{targetType,jdbcType=INTEGER}, #{sender,jdbcType=INTEGER}, 
       #{action,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" parameterType="com.example.technologyforum.web.pojo.Notify" >
+  <insert id="insertSelective" parameterType="com.example.technologyforum.web.pojo.Notify" useGeneratedKeys="true" keyProperty="id">
     insert into notify
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >

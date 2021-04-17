@@ -81,7 +81,7 @@ spring:
 # 控制台输出日志
 logging:
   level:
-    com.guo.traveldemo.web.mapper: debug
+    com.example.technologyforum.web.mapper: debug
 # mybatis 配置
 mybatis-plus:
   mapper-locations: classpath:**/mapper/*.xml

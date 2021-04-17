@@ -3,7 +3,9 @@ package com.example.technologyforum.web.controller;
 import com.example.technologyforum.result.CodeMsg;
 import com.example.technologyforum.result.Response;
 import com.example.technologyforum.web.dto.UserDTO;
+import com.example.technologyforum.web.pojo.Notify;
 import com.example.technologyforum.web.pojo.User;
+import com.example.technologyforum.web.service.MessageService;
 import com.example.technologyforum.web.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -13,6 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * 功能描述：
@@ -24,6 +29,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private MessageService messageService;
 
 
     /*
@@ -67,6 +75,55 @@ public class UserController {
             return Response.fail(CodeMsg.USER_NULL);
         }
         return  userService.register(user, vercode);
+    }
+
+    /**
+     * 拉取用户未读消息
+     */
+    @PostMapping("/userReMsg")
+    @ResponseBody
+    public Response<List<Notify>> queryMsg(HttpSession session){
+        List<Notify> list = new ArrayList<Notify>();
+        User user = (User)session.getAttribute("userinfo");
+        if(null != user && user.getId() !=null){
+            list = messageService.queryUserREJECTMsg(user.getId());
+        }
+        return Response.success(list);
+    }
+
+    /**
+     * 删除全部信息
+     * @param session
+     * @return
+     */
+    @PostMapping("/delAllMsg")
+    @ResponseBody
+    public Response<String> delAllMsg(HttpSession session){
+        User user = (User)session.getAttribute("userinfo");
+        if(user != null){
+            if(messageService.delBatchMsgById(user.getId())>0){
+                return Response.success("成功");
+            }
+        }
+        return Response.fail(CodeMsg.FAIL);
+    }
+
+    /**
+     * 删除单条信息
+     * @param session
+     * @param msgId
+     * @return
+     */
+    @PostMapping("/delOneMsg")
+    @ResponseBody
+    public Response<String> delOneMsgById(HttpSession session,int msgId){
+        User user = (User)session.getAttribute("userinfo");
+        if(user != null && !Objects.isNull(msgId)){
+            if(messageService.delOneMsgById(user.getId(),msgId)>0){
+                return Response.success("成功");
+            }
+        }
+        return Response.fail(CodeMsg.FAIL);
     }
 }
 

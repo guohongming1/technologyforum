@@ -1,10 +1,11 @@
 package com.example.technologyforum.web.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.technologyforum.web.pojo.Group;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface GroupMapper {
+public interface GroupMapper extends BaseMapper<Group> {
     int deleteByPrimaryKey(Integer id);
 
     int insert(Group record);
