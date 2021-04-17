@@ -143,7 +143,7 @@
 
             }
         };
-        var time = 60;
+        var time = 120;
 
         $('#LAY-user-getsmscode').on('click', function () {
             var _this = $(this);
@@ -172,7 +172,7 @@
                 , data: {'email': email, 'mode': "register"}
                 , success: function (res) {
                     if (res.code === 200) {
-                        layer.msg('验证码已发送至你的邮箱，请注意在60秒内完成验证', {
+                        layer.msg('验证码已发送至你的邮箱，请注意在120秒内完成验证', {
                             icon: 1
                             , shade: 0
                         });
@@ -198,13 +198,13 @@
         })
 
         function countDown() {
-            if(time==60){
+            if(time==120){
                 var time1=setInterval(function(){
                     if(time==0){
                         $("#LAY-user-getsmscode").html("重新发送");
                         $("#LAY-user-getsmscode").removeAttr("disabled");
                         $("#LAY-user-getsmscode").removeClass("layui-btn-disabled");
-                        time=60;
+                        time=120;
                         clearInterval(time1);
                     }else{
                         $("#LAY-user-getsmscode").html("重新发送("+time+")");

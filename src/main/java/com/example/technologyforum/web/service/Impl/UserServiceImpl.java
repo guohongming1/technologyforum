@@ -117,10 +117,10 @@ public class UserServiceImpl implements UserService {
 
         }
         // 邮件主题设置
-        String subject = "HOW玩攻略平台注册验证";
+        String subject = "论坛平台注册验证";
         String verCode = CodeUtil.randomCode();
         // 邮件内容设置
-        String content = "随机验证码：" + verCode + "\n" + "请在60秒内完整验证";
+        String content = "随机验证码：" + verCode + "\n" + "请在120秒内完整验证";
       //  mailService.sendHtmlMail(email,subject,content);
         // 缓存vercode至redis 缓存有效时间为60s
         return redisUtil.set(UserKey.MAIL_KEY, mode, verCode)

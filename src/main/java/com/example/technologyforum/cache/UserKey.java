@@ -14,5 +14,5 @@ public class UserKey extends BasePrefix {
     /**
      * 注册邮箱缓存前缀
      */
-    public static UserKey MAIL_KEY = new UserKey("mail", 60);
+    public static UserKey MAIL_KEY = new UserKey("mail", 120);
 }
