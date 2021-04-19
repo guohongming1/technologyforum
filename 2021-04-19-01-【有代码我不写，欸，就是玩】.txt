@@ -1,4 +1,4 @@
-#### 修改日志
+#### 修改日志  01
 
 #涉及脚本： 根据自己需要修改文件上传路径 ,修改这张表的内容需要重启
 ALTER TABLE SYS_PARAM MODIFY COLUMN param_value varchar(50);
