@@ -1,12 +1,17 @@
-package com.example.technologyforum.web.pojo;
+package com.example.technologyforum.web.dto;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
+import com.alibaba.fastjson.annotation.JSONField;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Question {
-    @TableId(value = "id",type = IdType.AUTO)
+/**
+ * @author 小七
+ * @version 1.0
+ * @Date: 2021/4/24
+ */
+public class QuestionDTO implements Serializable {
+    private static final long serialVersionUID = 4656353395488083566L;
     private Integer id;
 
     private String title;
@@ -15,15 +20,31 @@ public class Question {
 
     private Integer userId;
 
+    private String userName;
+
+    private String address;
+
     private String content;
 
     private String imgUrl;
 
     private Integer commentNum;
 
+    private Integer hotNum;
+
     private Byte flag;
 
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date date;
+
+
+    public Integer getHotNum() {
+        return hotNum;
+    }
+
+    public void setHotNum(Integer hotNum) {
+        this.hotNum = hotNum;
+    }
 
     public Integer getId() {
         return id;
@@ -55,6 +76,22 @@ public class Question {
 
     public void setUserId(Integer userId) {
         this.userId = userId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public String getContent() {

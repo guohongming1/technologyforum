@@ -37,6 +37,11 @@
       #{email,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{role,jdbcType=VARCHAR}, 
       #{remark,jdbcType=VARCHAR}, #{date,jdbcType=TIMESTAMP})
   </insert>
+  <select id="getUserInfoByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select id, name,img_url
+    from user
+    where id = #{id,jdbcType=INTEGER}
+  </select>
   <insert id="insertSelective" parameterType="com.example.technologyforum.web.pojo.User">
     insert into user
     <trim prefix="(" suffix=")" suffixOverrides=",">

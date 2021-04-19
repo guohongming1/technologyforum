@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>搜索详情</title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" type="text/css" th:href="@{/layui/css/layui.css}">
+    <script type="text/javascript" th:src="@{/myfile/js/jquery.min.js}"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/myfile/css/main.css}">
+</head>
+<body class="micronews">
+<div class="micronews-header-wrap">
+    <div class="micronews-header w1000 layui-clear">
+        <h1 class="logo">
+            <a href="/">
+                <img width="66px" height="22px" th:src="@{/layuiadmin/myfile/images/logo3.png}" alt="logo">
+                <span class="layui-hide">logo</span>
+            </a>
+        </h1>
+        <p class="nav">
+            <a href="/front/index" target="_blank">首页</a>
+            <a href="/front/group"  target="_blank">小组</a>
+            <a href="/front/question"  target="_blank">问答</a>
+            <a href="/strategy/newstrategy"  target="_blank">发表攻略</a>
+        </p>
+        <div class="search-bar">
+            <form class="layui-form" action="">
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <input type="text" name="title" placeholder="搜索你要的内容" autocomplete="off" class="layui-input">
+                        <button class="layui-btn search-btn" formnovalidate><i class="layui-icon layui-icon-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="login">
+            <a th:if="${session.userinfo == null}" href="/front/login">
+                登录
+            </a>
+            <!--<img th:src="@{/layuiadmin/myfile/images/header.png}" style="width: 36px; height: 36px;">-->
+            <ul th:if="${session.userinfo != null}" class="layui-nav" style="background-color: #fff;">
+                <span id="user-id" style="display:none" th:text="${session.userinfo.getId()}"></span>
+                <li class="layui-nav-item">
+                    <a href="/front/usermsg" style="font-size: 16px;color: #222;">消息<span th:text="${session.msgnum}" class="layui-badge"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+                </li>
+                <li class="layui-nav-item" lay-unselect="">
+                    <a href="javascript:;" style="font-size: 16px;color: #222;"><img th:src="${session.userinfo.getImgUrl()}" style="height: 30px; width: 30px;" class="layui-nav-img" onerror="getdefaultImg(event)">&nbsp;&nbsp;</a>
+                    <dl class="layui-nav-child">
+                        <dd style="text-align: center"><a href="/front/userset"><i class="layui-icon layui-icon-user"></i>&nbsp;个人资料</a></dd>
+                        <dd style="text-align: center"><a href="/front/userstrategy"><i class="layui-icon layui-icon-note"></i>&nbsp;攻略/问答</a></dd>
+                        <dd style="text-align: center"><a href="/front/usergroup"><i class="layui-icon layui-icon-rate"></i>&nbsp;小组</a></dd>
+                        <dd layadmin-event="logout" style="text-align: center"><a href="javascript:;"><i class="layui-icon layui-icon-logout"></i>&nbsp;登出</a></dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="micronews-container micronews-search-container w1000">
+    <div class="layui-fluid" >
+        <div id="view">
+
+        </div>
+        <div id="page" style="text-align: center; padding:30px 0"></div>
+    </div>
+</div>
+
+<!-- content-laytpl -->
+<script id="laytpl" type="text/html">
+    <p class="num">为您找到相关结果为<span> &nbsp;{{d.count}}&nbsp; </span>个</p>
+    <div class="item-list">
+        {{#  layui.each(d.data, function(index, item){ }}
+        <div class="item">
+            <h4>
+                {{# if(item.type == 1){ }}
+                <span style="background-color: #6294b5;color: white;border-style: ridge ;">攻略</span>
+                <a href="/front/strategydetail?id={{item.id}}&detailId=0">{{item.title}} </a>
+                <span class="time"><i class="layui-icon layui-icon-location"></i> {{item.address}}</span>
+                {{# } }}
+                {{# if(item.type == 2){ }}
+                <span style="background-color: #6294b5;color: white;border-style: ridge ;">问答</span>
+                <a href="/front/questionDetail?id={{item.id}}">{{item.title}} </a>
+                <span class="time"><i class="layui-icon layui-icon-location"></i> {{item.address}}</span>
+                <span class="time">标签：{{item.tags}}</span>
+                {{# } }}
+                {{# if(item.type == 3){ }}
+                <span style="background-color: #6294b5;color: white;border-style: ridge ;">话题</span>
+                <a href="/front/topic_detail?id={{item.id}}">{{item.title}} </a>
+                <span class="time">标签：{{item.tags}}</span>
+                {{# } }}
+
+            </h4>
+<!--            <p ><xmp>{{item.content}}</xmp></p>-->
+        </div>
+        {{#  }); }}
+    </div>
+</script>
+<!-- end-content-laytpl-->
+
+
+
+<script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+<script>
+    $('.search-btn').on('click', function () {
+        var inpVal = $(this).siblings('input').val();
+        // 搜索条件不为空串
+        if (inpVal !== '') {
+            var url = "/front/search-page";
+            // window.open(encodeURI(url + "?pattern=" + inpVal));
+            window.location.href = encodeURI(url + "?pattern=" + inpVal);
+            // window.location.href = "/front/page/search-page?pattern=" + inpVal;
+        }
+        return false;
+    });
+    layui.use(['element','laytpl','laypage','layer','form'], function(){
+        var element = layui.element,
+            laytpl = layui.laytpl,
+            layer = layui.layer,
+            form = layui.form;
+        var laypage = layui.laypage;
+
+        var page = 1;
+        var limit = 1;
+        var urlInfo = window.location.href;
+        var info = urlInfo.split("?")[1].split("=")[1].split("&")[0];
+        var type = urlInfo.split("?")[1].split("=")[2];
+        var pattern = decodeURI(info).trim();
+        if(type == undefined || type == ""){
+            type = "de"
+        }
+        // var pattern = GetQueryString('pattern');
+        // 加载数据
+        loadData();
+
+
+        function loadData() {
+            $.ajax({
+                url: '/comm/search-list'
+                , type: 'post'
+                , async: false
+                , data: {
+                    limit: limit,
+                    page: page,
+                    pattern: pattern,
+                    type: type
+                }, success: function (res) {
+                    console.log(res.data)
+                    // 获取节点
+                    var getTpl = document.getElementById('laytpl').innerHTML;
+                    // 执行tpl渲染
+                    laytpl(getTpl).render(res, function (html) {
+                        document.getElementById('view').innerHTML = html;
+                    });
+                    // 执行分页
+                    laypage.render({
+                        elem: 'page'
+                        , count: res.count
+                        , first: '首页'
+                        , last: '尾页'
+                        , prev: '<em>←</em>'
+                        , next: '<em>→</em>'
+                        , limit: limit
+                        , jump: function (obj, first) {
+                            page = obj.curr;
+                            limit = obj.limit;
+                            if (!first) {
+                                // loadData();
+                                $.ajax({
+                                    url: '/comm/search-list'
+                                    , type: 'post'
+                                    , async: false
+                                    , data: {
+                                        limit: limit,
+                                        page: page,
+                                        pattern: pattern,
+                                        type: type
+                                    }, success: function (res) {
+                                        // 获取节点
+                                        var getTpl = document.getElementById('laytpl').innerHTML;
+                                        // 执行tpl渲染
+                                        laytpl(getTpl).render(res, function (html) {
+                                            document.getElementById('view').innerHTML = html;
+                                        });
+                                    }
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+        }
+    });
+</script>
+</body>
+</html>

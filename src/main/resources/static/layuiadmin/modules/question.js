@@ -1,6 +1,6 @@
 /**
  * 问答库
- * @Author: 郭红明
+ * @Author: 小七
  */
 layui.define(['carousel', 'jquery', 'element', 'flow', 'laytpl', 'element', 'laypage', 'form', 'util'], function (exports) {
     var carousel = layui.carousel
@@ -94,7 +94,7 @@ layui.define(['carousel', 'jquery', 'element', 'flow', 'laytpl', 'element', 'lay
             admin.req({
                 type:'post',
                 url:'/comm/getnewSQuestion',
-                data:{'limit':2,'page':newSpage},
+                data:{'limit':1,'page':newSpage},
                 success:function (res) {
                         var layhot = document.getElementById('question-mod').innerHTML;
                         laytpl(layhot).render(res.data,function (html) {

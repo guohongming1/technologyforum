@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>问答</title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" type="text/css" th:href="@{/layui/css/layui.css}">
+    <script type="text/javascript" th:src="@{/myfile/js/jquery.min.js}"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/myfile/css/main.css}">
+    <script type="text/javascript" th:src="@{/myfile/js/jquery.min.js}"></script>
+</head>
+<body class="micronews">
+<div class="micronews-header-wrap">
+    <div class="micronews-header w1000 layui-clear">
+        <h1 class="logo">
+            <a href="/">
+                <img width="66px" height="22px" th:src="@{/layuiadmin/myfile/images/logo3.png}" alt="logo">
+                <span class="layui-hide">logo</span>
+            </a>
+        </h1>
+        <p class="nav">
+            <a href="/front/index" target="_blank">首页</a>
+            <a href="/front/group"  target="_blank">小组</a>
+            <a href="/front/question"  target="_blank" class="active">问答</a>
+            <a href="/strategy/newstrategy"  target="_blank">发表攻略</a>
+        </p>
+        <div class="search-bar">
+            <form class="layui-form" action="">
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <input type="text" name="title" placeholder="搜索你要的内容" autocomplete="off" class="layui-input">
+                        <button class="layui-btn search-btn" formnovalidate><i class="layui-icon layui-icon-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="login">
+            <a th:if="${session.userinfo == null}" href="/front/login">
+                登录
+            </a>
+            <!--<img th:src="@{/layuiadmin/myfile/images/header.png}" style="width: 36px; height: 36px;">-->
+            <ul th:if="${session.userinfo != null}" class="layui-nav" style="background-color: #fff;">
+                <span id="user-id" style="display:none" th:text="${session.userinfo.getId()}"></span>
+                <li class="layui-nav-item">
+                    <a href="/front/usermsg" style="font-size: 16px;color: #222;">消息<span th:text="${session.msgnum}" class="layui-badge"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+                </li>
+                <li class="layui-nav-item" lay-unselect="">
+                    <a href="javascript:;" style="font-size: 16px;color: #222;"><img th:src="${session.userinfo.getImgUrl()}" style="height: 30px; width: 30px;" class="layui-nav-img" onerror="getdefaultImg(event)">&nbsp;&nbsp;</a>
+                    <dl class="layui-nav-child">
+                        <dd style="text-align: center"><a href="/front/userset"><i class="layui-icon layui-icon-user"></i>&nbsp;个人资料</a></dd>
+                        <dd style="text-align: center"><a href="/front/userstrategy"><i class="layui-icon layui-icon-note"></i>&nbsp;攻略/问答</a></dd>
+                        <dd style="text-align: center"><a href="/front/usergroup"><i class="layui-icon layui-icon-rate"></i>&nbsp;小组</a></dd>
+                        <dd layadmin-event="logout" style="text-align: center"><a href="javascript:;"><i class="layui-icon layui-icon-logout"></i>&nbsp;登出</a></dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<style type="text/css">
+    * {
+        font-family: 微软雅黑;
+        margin: 0px;
+        padding: 0px;
+        list-style: none;
+    }
+    /*a:hover{text-decoration: underline;color: #6294b5 }*/
+    body{
+        background-color: #F2F2F2;
+    }
+    .wrap{
+        margin: 10px auto;
+    }
+    .fix{
+        border-bottom: 1px solid lightgray;
+        position: fixed;
+        top: 0px;
+        z-index: 99;
+    }
+    .questions {
+        width: 100%;
+        background: white;
+        margin-bottom: 20px;
+    }
+    .q_center{
+        width: 900px;
+        height: 100px;
+        margin: 0px auto;
+        line-height: 100px;
+        background: white;
+    }
+    .q_center input{
+        float: left;
+        margin-top: 30px;
+        margin-left: 40px;
+        padding-left: 10px;
+        width: 580px;
+        height: 40px;
+        background: #fafafa;
+        border: 1px solid lightgray;
+        border-right: none;
+        font-size: 16px;
+
+    }
+    .q_center input:focus{
+        border: 1px solid #6294b5;
+    }
+    .q_center button:hover{
+        cursor: pointer;
+    }
+    .q_center button:nth-of-type(1){
+        float: left;
+        margin-top: 30px;
+        width: 42px;
+        height: 42px;
+        border: 1px solid lightgray;
+        border-left: none;
+        background: #fafafa;
+    }
+    .q_center button:nth-of-type(2){
+        height: 42px;
+        width: 150px;
+        float: left;
+        margin-top: 30px;
+        margin-left: 40px;
+        background: #6294b5;
+        border: none;
+        color: white;
+        font-size: 14px;
+        font-weight: 600;
+    }
+    /* 面板 */
+    .fly-panel{margin-bottom: 15px; border-radius: 2px; background-color: #fff; box-shadow: 0 1px 2px 0 rgba(0,0,0,.05);}
+    .fly-panel[pad20]{padding: 20px;}
+    .fly-panel-title{position: relative; height: 50px; line-height: 50px; padding: 0 15px; border-bottom: 1px dotted #E9E9E9; color: #333; border-radius: 2px 2px 0 0; font-size: 14px;}
+    .fly-panel-main{padding: 10px 15px;}
+
+    /* 列表 */
+    .fly-list li{position: relative; height: 45px; line-height: 22px; padding: 15px 15px 15px 75px; border-bottom: 1px dotted #e2e2e2;}
+    .fly-list li:last-child{border-bottom: none;}
+    .fly-list li h2,
+    .fly-list li h2 a,
+    .fly-list-info{white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+    .fly-list li h2{height: 26px; font-size: 0;}
+    .fly-list li h2 a{display: inline-block; max-width: 80%; padding-right: 10px; font-size: 16px;}
+    .fly-list li h2 .layui-badge{top: -2px; height: 16px; line-height: 16px; padding: 0 5px; margin-right: 10px; font-size: 12px; border: 1px solid #5FB878; background: none; color: #5FB878;}
+
+    .fly-list-info{position: relative; font-size: 13px; color: #999;}
+    .fly-list-info>*{padding-right: 15px;}
+    .fly-list-info a[link]{color: #999;}
+    .fly-list-info a[link]:hover{color: #5FB878;}
+    .fly-list-nums{position: absolute; right: 0; top: 0; padding-right: 0!important;}
+    .fly-list-nums i{position: relative; padding: 0 3px 0 15px;}
+
+    .fly-list-badge{position: absolute; right: 15px; top: 15px; font-size: 0;}
+    .fly-list-badge .layui-badge{margin-left: 5px; border-radius: 2px; font-size: 12px;}
+
+    /* 头像 */
+    .fly-avatar{position: absolute; left: 15px; top: 15px;}
+    .fly-avatar img{display: block; width: 45px; height: 45px; margin: 0; border-radius: 2px;}
+    /*徽章*/
+    .fly-badge-accept{height: 18px; line-height: 18px; padding: 0 5px !important; background-color: #5FB878; border-radius: 2px;}
+    .fly-badge-lable{height: 18px; line-height: 18px; padding: 0 5px !important; background-color: #e2e2e2; border-radius: 5px;}
+    .fly-tag-lable{height: 18px; line-height: 18px; padding: 0 5px !important; background-color: #FF5722; border-radius: 5px;}
+    /* 筛选 */
+    .fly-filter a{padding: 0 8px; color: #666;}
+    .fly-filter a.layui-this{color: #5FB878;}
+    .fly-filter .fly-mid{margin: 0 8px;}
+
+    /* 分页 */
+    .laypage-main,
+    .laypage-main *{display:inline-block; *display:inline; *zoom:1; vertical-align:top;}
+    .laypage-main{margin: 20px 0; border: 1px solid #009E94; border-right: none; border-bottom: none; font-size: 0;}
+    .laypage-main *{padding: 0 20px; line-height: 36px; border-right: 1px solid #009E94; border-bottom: 1px solid #009E94; font-size: 14px;}
+    .laypage-main .laypage-curr{background-color:#009E94; color:#fff;}
+
+    /* 静态列表 */
+    .fly-list-static li{line-height: 26px; list-style-position: inside; list-style-type: disc; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;}
+    .fly-list-static li a{color: #01AAED;}
+    .fly-list-static li a:hover{opacity: 0.8;}
+
+    /* 榜单 */
+    .fly-rank{padding-bottom: 10px;}
+    .fly-rank dl{position: relative; overflow: hidden; margin-left: 20px; text-align: center; font-size: 0;}
+    .fly-rank dd{position: relative; width: 65px; height: 85px; margin: 10px 25px 5px 0; display:inline-block; *display:inline; *zoom:1; vertical-align:top; font-size:12px;}
+    .fly-rank dd a img{width: 65px; height: 65px; border-radius: 2px;}
+    .fly-rank dd a cite{ position:absolute; bottom: 20px; left: 0; width: 100%; height:20px; line-height:20px; text-align:center; background-color:rgba(0,0,0,.2); color:#fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
+    .fly-rank dd a:hover cite{display: block;}
+    .fly-rank dd a i{position:absolute; bottom: 0; left: 0; width: 100%; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-style: normal;}
+
+    /* 底部 */
+    .fly-footer {margin: 50px 0 0; padding: 20px 0 30px; line-height: 30px; text-align: center; color: #737573; border-top: 1px solid #e2e2e2;}
+    .fly-footer a{padding:0 6px; font-weight: 300; color: #333;}
+    .fly-footer a:hover{color: #777;}
+    .fly-union{margin-top: 10px; color: #999;}
+    .fly-union>*{display: inline-block; vertical-align: middle;}
+    .fly-union a[upyun] img{width: 80px;}
+    .fly-union span{position: relative; top: 3px;}
+    .fly-union span a{padding: 0; display: inline; color: #999;}
+    .fly-union span a:hover{text-decoration: underline;}
+</style>
+<div class="questions">
+    <div class="q_center">
+        <input type="text" placeholder="搜问题" style=" border-image: initial;">
+        <button id="submitbutton" style="background: rgb(250, 250, 250); border-top: 1px solid lightgray; border-right: 1px solid lightgray; border-bottom: 1px solid lightgray; border-left: none; border-image: initial;"><img th:src="@{/myfile/image/sousuo.png}" alt="" width="20px" height="20px"></button>
+        <button><a href="/question/newquestion" target="_blank">+ 我要提问</a> </button>
+    </div>
+</div>
+<div class="layui-container wrap">
+    <div class="layui-row">
+        <div class="layui-col-md8">
+
+            <div class="fly-panel" style="margin-bottom: 0;">
+                <div class="fly-panel-title fly-filter" id="questiontype">
+                    <a id="hottype" href="javascript:" class="layui-this">热门</a>
+                    <span class="fly-mid">|</span>
+                    <a id="newtype" href="javascript:">最新</a>
+                    <span class="fly-mid">|</span>
+                    <a id="newStype" href="javascript:">已解决</a>
+                </div>
+                <ul class="fly-list" id="mod">
+                </ul>
+                <div style="text-align: center">
+                    <!--<div class="laypage-main">-->
+                        <!--<a href="jie/index.html" class="laypage-next">更多求解</a>-->
+                    <!--</div>-->
+                    <div id="newpage" style="text-align: center;display: none"></div>
+                    <div id="newSpage" style="text-align: center;display:none;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md4" style="max-width: 360px;margin-left: 20px">
+            <div class="fly-panel">
+                <!--<h3 class="fly-panel-title">搜索排行</h3>-->
+                <!--<ul class="fly-panel-main fly-list-static">-->
+                    <!--<li>-->
+                        <!--<a href="http://fly.layui.com/jie/4281/" target="_blank">翠微峰的最新玩法</a>-->
+                    <!--</li>-->
+                <!--</ul>-->
+            </div>
+            <div class="fly-panel fly-rank fly-rank-reply" id="LAY_replyRank">
+                <h3 class="fly-panel-title">答题周榜</h3>
+                <dl id="questionrank">
+
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+<script id="comrank-mod" type="text/html">
+    {{#layui.each(d,function(index,item){ }}
+    <dd>
+        <a href="/front/userInfo?id={{item.id}}">
+            <img src="{{item.imgUrl}}"><cite>{{item.name}}</cite><i>{{item.password}}次回答</i>
+        </a>
+    </dd>
+    {{# });}}
+</script>
+<script id="question-mod" type="text/html">
+    {{#layui.each(d,function(index,item){ }}
+    <li>
+        <a href="/front/questionDetail?id={{item.id}}" target="_blank" class="fly-avatar">
+            <img src="{{item.imgUrl}}" alt="">
+        </a>
+        <h2>
+            <a class="layui-badge">热度{{item.hotNum}}</a>
+            <a href="/front/questionDetail?id={{item.id}}" target="_blank">{{item.title}}</a>
+        </h2>
+        <div class="fly-list-info" style="overflow: hidden">
+            <a href="/front/userInfo?id={{item.userId}}" target="_blank" link>
+                <cite>{{item.userName}}</cite>
+            </a>
+            <span>{{item.date}}</span>
+            {{# if(item.tags != null){}}
+            {{# var tag = item.tags.split('#'); tag.splice(0,1);layui.each(tag,function(ind,t){  }}
+             <span class="layui-badge fly-tag-lable layui-hide-xs">{{t}}</span>
+            {{#});}}
+            {{#}}}
+            <span class="fly-list-nums">
+                            <i class="layui-icon layui-icon-reply-fill" title="回答"></i> {{item.commentNum}}
+                            </span>
+        </div>
+        <div class="fly-list-badge">
+            {{#if(item.flag==2){}}
+            <span class="layui-badge fly-badge-lable layui-hide-xs">未结</span>
+            {{#}else{}}
+            <span class="layui-badge fly-badge-accept layui-hide-xs">已结</span>
+            {{#}}}
+        </div>
+    </li>
+    {{# });}}
+</script>
+<script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+<script>
+    $('.search-btn').on('click', function () {
+        var inpVal = $(this).siblings('input').val();
+        // 搜索条件不为空串
+        if (inpVal !== '') {
+            var url = "/front/search-page";
+            // window.open(encodeURI(url + "?pattern=" + inpVal));
+            window.location.href = encodeURI(url + "?pattern=" + inpVal);
+            // window.location.href = "/front/page/search-page?pattern=" + inpVal;
+        }
+        return false;
+    });
+    $('#submitbutton').on('click', function () {
+        var inpVal = $(this).siblings('input').val();
+        // 搜索条件不为空串
+        if (inpVal !== '') {
+            var url = "/front/search-page";
+            // window.open(encodeURI(url + "?pattern=" + inpVal));
+            window.location.href = encodeURI(url + "?pattern=" + inpVal+"&type="+"ques");
+            // window.location.href = "/front/page/search-page?pattern=" + inpVal;
+        }
+        return false;
+    });
+    $(document).scroll(function () {
+        var scroll_top = $(document).scrollTop();
+        //高度多少出现返回顶部，可以随意调整
+        if (scroll_top > 300) {
+            $(".questions").addClass("fix")
+        } else {
+            $(".questions").removeClass("fix")
+        }
+    });
+    layui.config({
+        base: '/layuiadmin/'
+    }).extend({
+        index: 'lib/index' //主入口模块
+    }).use(['index','question','element','carousel'], function(){
+        var element = layui.element; //导航的hover效果、二级菜单等功能，需要依赖element模块
+        var carousel = layui.carousel; // 轮播框设置
+        var question = layui.question;
+        /*旅游攻略页面*/
+        /*left nav*/
+        $('.nav-item').hover(function() {
+            $('.gonglve-nav').css('border-right-color', '#fff');
+            $('.nav-item .nav-panel').eq($(this).index()).css('display', 'block');
+        }, function() {
+            $('.gonglve-nav').css('border-right-color', '#ddd');
+            $('.nav-panel').css('display', 'none');
+        });
+        question.hotquestion();
+        question.userComQuestionRank();
+        $('#hottype').click(function () {
+            $("#newpage").hide();
+            $("#newSpage").hide();
+            $("#questiontype a").removeClass("layui-this");
+            $(this).addClass("layui-this");
+            question.hotquestion();
+        });
+        $('#newtype').click(function () {
+            $("#newpage").show();
+            $("#newSpage").hide();
+            $("#questiontype a").removeClass("layui-this");
+            $(this).addClass("layui-this");
+            question.getnewQuestion();
+        });
+        $('#newStype').click(function () {
+            $("#newpage").hide();
+            $("#newSpage").show();
+            $("#questiontype a").removeClass("layui-this");
+            $(this).addClass("layui-this");
+            question.getnewSQuestion();
+        });
+    });
+</script>
+</body>
+</html>

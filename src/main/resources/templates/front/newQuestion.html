@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>提问</title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" type="text/css" th:href="@{/layui/css/layui.css}">
+    <script type="text/javascript" th:src="@{/myfile/js/jquery.min.js}"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/myfile/css/main.css}">
+    <script type="text/javascript" th:src="@{/myfile/js/jquery.min.js}"></script>
+</head>
+<body class="micronews">
+<div class="micronews-header-wrap">
+    <div class="micronews-header w1000 layui-clear">
+        <h1 class="logo">
+            <a href="/">
+                <img width="66px" height="22px" th:src="@{/layuiadmin/myfile/images/logo3.png}" alt="logo">
+                <span class="layui-hide">logo</span>
+            </a>
+        </h1>
+        <p class="nav">
+            <a href="/front/index" target="_blank">首页</a>
+            <a href="/front/group"  target="_blank">小组</a>
+            <a href="/front/question"  target="_blank" class="active">问答</a>
+            <a href="/strategy/newstrategy"  target="_blank">发表攻略</a>
+        </p>
+        <div class="search-bar">
+            <form class="layui-form" action="">
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <input type="text" name="title" placeholder="搜索你要的内容" autocomplete="off" class="layui-input">
+                        <button class="layui-btn search-btn" formnovalidate><i class="layui-icon layui-icon-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="login">
+            <a th:if="${session.userinfo == null}" href="/front/login">
+                登录
+            </a>
+            <!--<img th:src="@{/layuiadmin/myfile/images/header.png}" style="width: 36px; height: 36px;">-->
+            <ul th:if="${session.userinfo != null}" class="layui-nav" style="background-color: #fff;">
+                <span id="user-id" style="display:none" th:text="${session.userinfo.getId()}"></span>
+                <li class="layui-nav-item">
+                    <a href="/front/usermsg" style="font-size: 16px;color: #222;">消息<span th:text="${session.msgnum}" class="layui-badge"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+                </li>
+                <li class="layui-nav-item" lay-unselect="">
+                    <a href="javascript:;" style="font-size: 16px;color: #222;"><img th:src="${session.userinfo.getImgUrl()}" style="height: 30px; width: 30px;" class="layui-nav-img" onerror="getdefaultImg(event)">&nbsp;&nbsp;</a>
+                    <dl class="layui-nav-child">
+                        <dd style="text-align: center"><a href="/front/userset"><i class="layui-icon layui-icon-user"></i>&nbsp;个人资料</a></dd>
+                        <dd style="text-align: center"><a href="/front/userstrategy"><i class="layui-icon layui-icon-note"></i>&nbsp;攻略/问答</a></dd>
+                        <dd style="text-align: center"><a href="/front/usergroup"><i class="layui-icon layui-icon-rate"></i>&nbsp;小组</a></dd>
+                        <dd layadmin-event="logout" style="text-align: center"><a href="javascript:;"><i class="layui-icon layui-icon-logout"></i>&nbsp;登出</a></dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<style type="text/css">
+    .wrap{
+        max-width: 1000px;
+        margin: 30px auto;
+    }
+    .question-description {
+        font-family: "Microsoft YaHei","\5b8b\4f53",sans-serif,tahoma;
+    }
+    .question-description .qb-layout-tit {
+        word-break: break-all;
+        position: relative;
+        color: #8296a0;
+    }
+    .question-description .qb-layout-tit .ask-title {
+        display: inline;
+        font-size: 24px;
+        line-height: 34px;
+        font-weight: 400;
+        overflow: hidden;
+    }
+    .question-description .qb-layout-tit .how-to-ask-btn {
+        font-size: 12px;
+        color: #26bf68;
+        line-height: 12px;
+        display: inline-block;
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        cursor: pointer;
+    }
+    .question-description .qd-layout {
+        position: relative;
+    }
+    .question-description .qd-layout .qd-content {
+        margin-top: 20px;
+        border: 1px solid #c6d1d9;
+        -webkit-border-radius: 3px;
+        -moz-border-radius: 3px;
+        border-radius: 3px;
+    }
+
+    .question-description .qd-ct {
+        margin: 15px;
+    }
+    .question-description .qd-title {
+        position: relative;
+    }
+    .question-description .qd-title textarea {
+        width: 100%;
+        height: 30px;
+        max-height: 78px;
+        min-height: 30px;
+        color: #333;
+        word-break: break-all;
+    }
+
+    .question-description textarea {
+        display: block;
+        border: 0;
+        padding: 0;
+        background: #fff;
+        resize: none;
+        overflow: hidden;
+        font-size: 20px;
+        line-height: 30px;
+        outline: 0;
+        font-family: "Microsoft YaHei";
+    }
+    .question-description .count {
+        position: absolute;
+        color: #9eacb6;
+        right: 0;
+        bottom: -10px;
+        font-size: 12px;
+        text-align: right;
+        height: 14px;
+        line-height: 14px;
+    }
+    .question-description .count b {
+        font-weight: 400;
+    }
+    .question_des{margin-top:20px; }
+    .interest-tags {
+        margin-top: 20px;
+        position: relative;
+    }
+    .interest-tags span {
+        margin-bottom: 12px;
+        margin-right: 12px;
+        display: inline-block;
+        padding: 0 14px 0 14px;
+        height: 22px;
+        line-height: 22px;
+        font-size: 14px;
+        border: 1px solid #bdbfc2;
+        border-radius: 12px;
+        position: relative;
+        font-family: "Microsoft YaHei";
+    }
+    .interest-tags .g:hover{
+        cursor: pointer;
+        background-color: #26bf68;
+        color: #fff;
+    }
+    .check{
+        background-color: #26bf68;
+        color: #fff;
+    }
+    .addtag{
+        margin-left: 5px;
+        color: #26bf68;
+        font-size: 14px;
+    }
+    .addtag:hover{
+        cursor: pointer;
+    }
+    .tag{
+        background-color: #26bf68;
+        color: #fff;
+    }
+    .tag:hover{
+        cursor: pointer;
+    }
+    .tag i{
+        margin-left: 10px;
+    }
+    .closetag{
+        font-size: 14px;color: #fff;
+    }
+    textarea::placeholder{
+        color:#c6d1d9;
+    }
+    input::placeholder{
+        color:#c6d1d9;
+    }
+    .qd-content.qd-content-desc {
+        margin-top: 14px;
+    }
+    .question-description .qd-desc textarea {
+        width: 100%;
+        height: 78px;
+        color: #333;
+        max-height: 520px;
+        min-height: 106px;
+        font-size: 14px;
+        line-height: 24px;
+    }
+    .question-description .qd-plus {
+        position: relative;
+        line-height: 26px;
+        margin: 0 15px;
+        padding: 15px 0;
+        font-size: 0;
+        border-top: 1px solid #e8ecee;
+    }
+    .question-description .qd-plus-stuff.img {
+        margin-left: 5px;
+    }
+    .question-description .qd-plus-stuff.img i:hover{
+        cursor: pointer;
+    }
+    .question-description .qd-plus-stuff {
+        display: inline-block;
+        vertical-align: top;
+        line-height: 16px;
+        color: #999;
+        font-size: 13px;
+    }
+
+    ul, ol, li {
+        list-style: none;
+    }
+    .submitquestion{
+        width:120px;
+        margin: 20px 0px 20px 870px;
+    }
+    .qt-sider{
+        font-size: 14px;
+        line-height: 24px;
+        color: #666;
+    }
+    .qts-tit{
+        line-height: 30px;
+        font-weight: bold;
+        color: #26bf68;
+    }
+</style>
+<div class="layui-container wrap">
+    <div class="question-description">
+        <div class="qb-layout-tit">
+            <img th:src="@{/myfile/image/question.png}" style="margin-top:-10px; "/>
+            <span class="ask-title f-pening">提问</span>
+            <span class="how-to-ask-btn"><i class="layui-icon layui-icon-tips"></i>如何提问</span>
+        </div>
+        <div class="qd-layout">
+            <div class="qd-content">
+                <div class="qd-ct qd-title">
+                    <textarea id="title-area" maxlength="40" placeholder="一句话完整的描述你的问题" style="height: 30px;"></textarea>
+                    <span id="title-count" class="count"></span>
+                </div>
+            </div>
+        </div>
+<!--        <div class="question_des qb-layout-tit">-->
+<!--            <i class="layui-icon layui-icon-location"></i>-->
+<!--            <span class="ask-title f-pening">地点</span>（非必填）-->
+<!--        </div>-->
+<!--        <div class="question_des layui-form-item">-->
+<!--            <div class="layui-input-block" style="margin-left: 0px">-->
+<!--                <input type="text" id="address" name="address" lay-verify="" autocomplete="off" placeholder="问题相关地点" class="layui-input">-->
+<!--                <span id="realaddress" style="font-size: 13px;color: red;"></span>-->
+<!--            </div>-->
+<!--        </div>-->
+        <div class="question_des qb-layout-tit">
+            <i class="layui-icon layui-icon-note"></i>
+            <span class="ask-title f-pening">选择标签</span>
+            <span class="addtag">+添加标签</span>
+        </div>
+        <div class="interest-tags">
+            <span class="g">计算机故障</span>
+            <span class="g">维修</span>
+            <span class="g">网络</span>
+            <span class="g">IT</span>
+            <span class="g">DIY</span>
+        </div>
+        <div class="question_des qb-layout-tit">
+            <i class="layui-icon layui-icon-tabs"></i>
+            <span class="ask-title f-pening">详细内容补充</span>
+        </div>
+        <div class="qd-layout">
+            <div class="qd-content qd-content-desc">
+                <div class="qd-ct qd-desc">
+                    <textarea id="content-area" placeholder="详细说明问题，以便更好的获得回答（选填）" style="height: 126px;"></textarea>
+                </div>
+                <div class="qd-plus" id="qd-plus-btn">
+                    <ul id="qd-img-list" class="qd-img-list clearfix" style="display: none"></ul>
+                    <!--<ul class="qd-plus-stuff img">-->
+                        <!--<i class="layui-icon layui-icon-picture" style="font-size: 40px"></i>-->
+                        <!--<span>添加必要配图将会得到更多人回答</span>-->
+                    <!--</ul>-->
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="submitquestion">
+        <button type="button" id="submit" class="layui-btn" style="margin: 0px auto">提交问题</button>
+    </div>
+</div>
+<div class="micronews-footer-wrap">
+    <div class="micronews-footer w1000">
+        <div class="Copyright">
+            <span>Copyright&nbsp;</span>&nbsp;&copy;<span>电脑技术论坛平台&nbsp;&nbsp;</span>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+<script>
+    $('.search-btn').on('click', function () {
+        var inpVal = $(this).siblings('input').val();
+        // 搜索条件不为空串
+        if (inpVal !== '') {
+            var url = "/front/search-page";
+            // window.open(encodeURI(url + "?pattern=" + inpVal));
+            window.location.href = encodeURI(url + "?pattern=" + inpVal);
+            // window.location.href = "/front/page/search-page?pattern=" + inpVal;
+        }
+        return false;
+    });
+    $(document).scroll(function () {
+        var scroll_top = $(document).scrollTop();
+        //高度多少出现返回顶部，可以随意调整
+        if (scroll_top > 300) {
+            $(".questions").addClass("fix")
+        } else {
+            $(".questions").removeClass("fix")
+        }
+    });
+
+    // 地址自动请求
+    $( '#address' ).blur(function () {
+        if ($("#address").val() != null && $("#address").val() != "") {
+            var scenic = {"scenic": $("#address").val()}
+            //请求接口
+            $.ajax({
+                type: "post",
+                url: "/comm/local",
+                data: scenic,
+                success: function (res) {
+                    console.log(res);
+                    $('#realaddress').html(res.data);
+                },
+                error: function (res) {
+                    layer.msg("请求错误");
+                }
+            });
+        }
+    });
+    layui.use(['element','layer'], function(){
+        var element = layui.element; //导航的hover效果、二级菜单等功能，需要依赖element模块
+        var layer = layui.layer; // 轮播框设置
+        /*旅游攻略页面*/
+        /*left nav*/
+        $('.nav-item').hover(function() {
+            $('.gonglve-nav').css('border-right-color', '#fff');
+            $('.nav-item .nav-panel').eq($(this).index()).css('display', 'block');
+        }, function() {
+            $('.gonglve-nav').css('border-right-color', '#ddd');
+            $('.nav-panel').css('display', 'none');
+        });
+        // 如何提问 beg
+        $(".how-to-ask-btn").click(function () {
+            var str = "<div class=\"qt-sider\">\n" +
+                "            <div class=\"qts-tit\">提问的正确姿势</div>\n" +
+                "            <div class=\"qts-con\">\n" +
+                "                <p>1.问题要【具体】【真实】【诚恳】，问题较多，需全面阐述时，可以添加问题补充。涉及交易/与电脑技术无关的提问将被删除。</p>\n" +
+                "                <p>2.给问题添加正确的标签将有助于更快地获得回答。</p>\n" +
+                "            </div>\n" +
+                "        </div>"
+            //屏蔽浏览器滚动条
+            layer.open({
+                title:"如何提问",
+                content: str,
+                scrollbar: false
+            });
+        });
+        // 如何提问 end
+        // 标签添加   beg
+        var tags = 0;
+        var flagtags = 0; // 使用id可以防止使用class注册点击事件时出现重复注册
+       $(".interest-tags .g").click(function () {
+            if($(this).hasClass('check')){
+                $(this).removeClass('check');
+                tags --;
+            }else{
+                if(tags>=3){
+                    layer.msg('标签至多选择3个！',{icon:5,time: 1000});
+                }else{
+                    tags++;
+                    console.log(tags)
+                    $(this).addClass('check');
+                }
+            }
+        });
+        $('.addtag').click(function () {
+            if(tags>=3){
+                layer.msg('标签至多选择3个！',{icon:5,time: 1000});
+            }else{
+                layer.prompt({
+                    maxlength: 5,
+                    title: '添加标签-（1至5个字符）',
+                }, function(value, index, elem){
+                    flagtags++;
+                    if(value != null && value != ""){
+                        var str = "<span class=\"tag\" data-tag=\""+value+"\""+">"+value+"<i id='"+flagtags+"' class=\"closetag layui-icon layui-icon-close\" title=\"删除\"></i> </span>";
+                        $('.interest-tags').append(str);
+                        // 注册关闭事件
+                        $("#"+flagtags).click(function () {
+                            $(this).parent().remove();
+                            tags--;
+                        });
+                        tags++;
+                        console.log(tags)
+                    }
+                    layer.close(index);
+                });
+            }
+        });
+        // 标签添加   end
+
+        //封装一个限制字数方法
+        var checkStrLengths = function (str, maxLength) {
+            var maxLength = maxLength;
+            var result = 0;
+            if (str && str.length > maxLength) {
+                result = maxLength;
+            } else {
+                result = str.length;
+            }
+            return result;
+        }
+
+        //监听输入
+        $("#title-area").on('input propertychange', function () {
+
+            //获取输入内容
+            var userDesc = $(this).val();
+
+            //判断字数
+            var len;
+            if (userDesc) {
+                len = checkStrLengths(userDesc, 40);
+            } else {
+                len = 0
+            }
+
+            //显示字数
+            $("#title-count").html('<b>'+len+'</b>' + '/40');
+        });
+        // 提交
+        $("#submit").click(function () {
+            var title = $("#title-area").val();
+            var address = $("#address").val();
+            var content = $("#content-area").val();
+            var tags="";
+            $("body .interest-tags").find("span").each(function () {
+                if($(this).hasClass("check")){
+                    tags += "#"+$(this).html();
+                }
+                // 根据data-tag属性获取
+                if($(this).data("tag") != null && $(this).data("tag")!= ""){
+                    tags += "#"+$(this).data("tag");
+                }
+
+            });
+            var flag=true;
+            // 空值校验
+            if(title==null || title==""){flag=false;}
+            if(content == null || content==""){flag = false;}
+            if(tags == null || tags == ""){flag = false;}
+            if(flag){
+
+                var data={'title':title,'content':content,'tags':tags}
+                //请求接口
+                $.ajax({
+                    type: "post",
+                    url: "/question/submitquestion",
+                    data: data,
+                    success: function(res){
+                        if (res.code === 200) {
+                            layer.msg('发表成功', {
+                                offset: '15px'
+                                , icon: 1
+                                , time: 1000
+                            }, function () {
+                                location.href = '/front/userquestion';
+                            });
+                        } else {
+                            layer.msg(res.data);
+                        }
+                    },
+                    error: function (res) {
+                        layer.msg(res.message);
+                    }
+                });
+            }else{
+                layer.msg('必填项不能为空', {
+                    offset: '15px'
+                    , icon: 5
+                    , time: 1000
+                });
+            }
+        });
+
+    });
+</script>
+</body>
+</html>

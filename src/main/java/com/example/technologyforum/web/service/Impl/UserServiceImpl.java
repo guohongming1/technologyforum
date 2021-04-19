@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.technologyforum.cache.UserKey;
+import com.example.technologyforum.config.SysParamCache;
 import com.example.technologyforum.result.CodeMsg;
 import com.example.technologyforum.result.Response;
 import com.example.technologyforum.util.CodeUtil;
@@ -12,6 +13,7 @@ import com.example.technologyforum.web.dto.UserDTO;
 import com.example.technologyforum.web.mapper.UserMapper;
 import com.example.technologyforum.web.pojo.User;
 import com.example.technologyforum.web.service.IMailService;
+import com.example.technologyforum.web.service.MessageService;
 import com.example.technologyforum.web.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +39,8 @@ public class UserServiceImpl implements UserService {
     private IMailService mailService;
     @Autowired
     private RedisUtil redisUtil;
+    @Autowired
+    private MessageService messageService;
 
 
     @Override
@@ -90,6 +94,9 @@ public class UserServiceImpl implements UserService {
         if(Objects.isNull(userdata)){
            return Response.fail(CodeMsg.USER_PASS_ERROR);
         }
+        // 查询用户消息
+        int msgnum = messageService.getMsgCountByUserId(userdata.getId());
+        session.setAttribute("msgnum",msgnum);
         session.setAttribute("userinfo",userdata);
         // 设置session存在最长时间
         session.setMaxInactiveInterval(60 * 60 * 2);
@@ -110,9 +117,8 @@ public class UserServiceImpl implements UserService {
             QueryWrapper<User> query = new QueryWrapper<>();
             query.eq("email", email);
             User dbEmailUser = userMapper.selectOne(query);
-            dbEmailUser.setPassword("123");
-            if(userMapper.updateByPrimaryKeySelective(dbEmailUser)>0){
-                return Response.success(true);
+            if (!Objects.isNull(dbEmailUser)) {
+                return Response.fail(CodeMsg.USER_EXIST_EMAIL);
             }
 
         }
@@ -121,7 +127,10 @@ public class UserServiceImpl implements UserService {
         String verCode = CodeUtil.randomCode();
         // 邮件内容设置
         String content = "随机验证码：" + verCode + "\n" + "请在120秒内完整验证";
-      //  mailService.sendHtmlMail(email,subject,content);
+        String emailFlag = SysParamCache.getParam("emailflag");
+        if(!"0".equals(emailFlag)){
+            mailService.sendHtmlMail(email,subject,content);
+        }
         // 缓存vercode至redis 缓存有效时间为60s
         return redisUtil.set(UserKey.MAIL_KEY, mode, verCode)
                 ? Response.success(true)

@@ -1,6 +1,10 @@
 package com.example.technologyforum.web.pojo;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+
 public class GroupMember {
+    @TableId(value = "id",type = IdType.AUTO)
     private Integer id;
 
     private Integer groupId;
