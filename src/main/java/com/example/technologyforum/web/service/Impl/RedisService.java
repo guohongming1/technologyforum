@@ -99,6 +99,9 @@ public class RedisService {
    */
   public List<Integer> getTopNum(String type){
     Set<String> keys = redisUtil.sortSetRange(type,0,9);
+    if(keys== null){
+      return null;
+    }
     List<Integer> list = new ArrayList<>();
     if(keys.size() == 0){
       return null;

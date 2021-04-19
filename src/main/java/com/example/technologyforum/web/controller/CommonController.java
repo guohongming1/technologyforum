@@ -51,7 +51,12 @@ public class CommonController {
         List<Integer> listId = redisService.getTopNum(Constants.QUESTION_HOT_NAME);
         List<Question> list = new ArrayList<>();
         if(listId != null && listId.size() >0){
-            listId.forEach(item->list.add(questionService.selectById(item)));
+            listId.forEach(item->{
+                Question question = questionService.selectById(item);
+                if(question != null){
+                    list.add(question);
+                }
+            });
         }
          return Response.success(this.setQuestionDTOList(list));
     }

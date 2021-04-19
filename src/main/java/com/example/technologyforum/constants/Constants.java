@@ -104,4 +104,8 @@ public class Constants {
     public static final String QUESTION_HOT_NAME = "queshot";
     public static final String TOPIC_HOT_NAME = "topichot";
     public static final String USER_QUESTION_COM_NUM = "userquecomnum";
+    /**
+     * 文件路径传输常量
+     */
+    public static final String UPLOAD_PATH="UPLOAD_PATH";
 }

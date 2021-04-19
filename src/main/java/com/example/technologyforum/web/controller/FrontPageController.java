@@ -142,5 +142,10 @@ public class FrontPageController {
     public String usermsg(){
         return "user/message";
     }
+
+    @RequestMapping("/userset")
+    public String userset(HttpSession session,Model model){
+        return "user/set";
+    }
 }
 

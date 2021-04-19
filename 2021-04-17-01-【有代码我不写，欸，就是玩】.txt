@@ -1,0 +1,11 @@
+#### 修改日志
+
+#涉及脚本： 根据自己需要修改文件上传路径 ,修改这张表的内容需要重启
+ALTER TABLE SYS_PARAM MODIFY COLUMN param_value varchar(50);
+INSERT INTO sys_param (id, param_value, param_name, param_text) VALUES (91, 'D:\\Picturesuploads', 'UPLOAD_PATH', '文件上传路径');
+
+#修改点：用户信息维护 访问路径 http://localhost:8080/front/userset
+
+1. 用户头像上传实现
+2. 用户信息维护
+3. 用户密码修改
