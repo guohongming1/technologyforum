@@ -51,7 +51,7 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public List<Question> queryList(QueryWrapper<Question> query) {
-        return null;
+        return questionMapper.selectList(query);
     }
 
     @Override

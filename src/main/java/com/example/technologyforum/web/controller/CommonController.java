@@ -4,15 +4,21 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.example.technologyforum.cache.CollectionKey;
 import com.example.technologyforum.constants.Constants;
 import com.example.technologyforum.result.Response;
+import com.example.technologyforum.util.PageInfo;
+import com.example.technologyforum.util.PageQuery;
 import com.example.technologyforum.web.dto.QuestionCommentDTO;
 import com.example.technologyforum.web.dto.QuestionDTO;
+import com.example.technologyforum.web.dto.SearchResultDTO;
 import com.example.technologyforum.web.dto.TableResultDTO;
 import com.example.technologyforum.web.mapper.UserMapper;
 import com.example.technologyforum.web.pojo.Question;
 import com.example.technologyforum.web.pojo.QuestionComment;
 import com.example.technologyforum.web.pojo.User;
+import com.example.technologyforum.web.service.ILuceneService;
 import com.example.technologyforum.web.service.Impl.RedisService;
 import com.example.technologyforum.web.service.QuestionService;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.search.highlight.InvalidTokenOffsetsException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,9 +26,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * 功能描述：
@@ -39,6 +44,8 @@ public class CommonController {
     @Autowired
     private UserMapper userMapper;
 
+    @Autowired
+    private ILuceneService service;
 
 
     /**
@@ -136,7 +143,71 @@ public class CommonController {
         int count = questionService.getCount(query);
         return new TableResultDTO<>(200, "", count, this.setQuestionDTOList(list));
     }
+    /**
+     * 全局搜索相关 搜索优化 Lucene算法
+     * @param limit
+     * @param page
+     * @param pattern
+     * @return
+     */
+    @PostMapping("/search-list")
+    @ResponseBody
+    public TableResultDTO<List<SearchResultDTO>> LuceneSearchResult(int limit, int page, String pattern, String type) throws IOException, ParseException, InvalidTokenOffsetsException {
+        if("ques".equals(type)){
+            return searchQuestion(limit,page,pattern);
+        }
+        PageQuery<SearchResultDTO> pageQuery = new PageQuery<>();
+        Map<String, String> queryParam = new HashMap<>();
+        queryParam.put("searchKeyStr",pattern);
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setPageNum(page);
+        pageInfo.setPageSize(limit);
+        pageQuery.setPageInfo(pageInfo);
+        pageQuery.setQueryParam(queryParam);
+        pageQuery.setParams(new SearchResultDTO());
+        PageQuery<SearchResultDTO> pageResult= service.searchProduct(pageQuery);
+        List<SearchResultDTO> list = pageResult.getResults();
+        return new TableResultDTO<>(200, "",Integer.parseInt(String.valueOf(pageResult.getPageInfo().getTotal())) , list);
+    }
 
+    /**
+     * 问答搜索
+     * @param limit
+     * @param page
+     * @param pattern
+     * @return
+     */
+
+    public TableResultDTO<List<SearchResultDTO>> searchQuestion(int limit,int page,String pattern){
+        List<SearchResultDTO> list = new ArrayList<>();
+        QueryWrapper<Question> questionQuery = new QueryWrapper<>();
+        questionQuery.like("address",pattern);
+        questionQuery.or().like("title",pattern);
+        questionQuery.or().like("tags",pattern);
+        List<Question> questionList = questionService.queryList(questionQuery);
+        if(questionList != null &&  questionList.size()>0){
+            questionList.forEach(item->{
+                SearchResultDTO dto = new SearchResultDTO();
+                dto.setId(item.getId());
+                dto.setType(2);
+                dto.setTitle(item.getTitle());
+                dto.setTags(item.getTags());
+                dto.setDate(item.getDate());
+                list.add(dto);
+            });
+            list.sort((s1, s2) -> s2.getDate().compareTo(s1.getDate()));
+        }
+        int start = (page - 1) * limit;
+        int end = page * limit - 1;
+        List<SearchResultDTO> result = new ArrayList<>();
+        for (int i = start; i <= end; i++) {
+            if (i > list.size() - 1) {
+                break;
+            }
+            result.add(list.get(i));
+        }
+        return new TableResultDTO<>(200, "", list.size(), result);
+    }
     /**
      * 组装前端数据
      * @param list

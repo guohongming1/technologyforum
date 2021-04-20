@@ -10,3 +10,7 @@ INSERT INTO sys_param (id, param_value, param_name, param_text) VALUES (91, 'D:\
 2. 用户信息维护
 3. 用户密码修改
 
+问答搜索实现：简单实现、未引入Lucene搜索算法，只能根据标题、标签简单模糊搜索
+
+搜索页面美化： 负责人：xq
+
