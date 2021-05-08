@@ -125,5 +125,84 @@ public class UserController {
         }
         return Response.fail(CodeMsg.FAIL);
     }
+    /**
+     * 修改头像
+     * @param session
+     * @param userHeadImgSrc
+     * @return
+     */
+    @PostMapping("/reheadimg")
+    @ResponseBody
+    public Response<String> reheadimg(HttpSession session, String userHeadImgSrc){
+        User user = (User)session.getAttribute("userinfo");
+        user.setImgUrl(userHeadImgSrc);
+        if(userService.reuserinfo(user)>0){
+            // 更改session状态
+            session.setAttribute("userinfo",user);
+        }
+        return Response.success("成功");
+    }
+
+    /**
+     * 修改信息
+     * @param userdto
+     * @return
+     */
+    @PostMapping("/reuserinfo")
+    @ResponseBody
+    public Response<String> reuserinfo(HttpSession session,User userdto){
+        User user = (User)session.getAttribute("userinfo");
+        if(user == null){
+            return Response.success("用户未登录");
+        }
+        if(user != null){
+            if(userdto.getRemark()!= null){
+                user.setRemark(userdto.getRemark());
+            }
+            if(userdto.getName() != null){
+                user.setName(userdto.getName());
+            }
+            if(userdto.getTitle() !=null){
+                user.setTitle(userdto.getTitle());
+            }
+            if(userdto.getSex() != null){
+                user.setSex(userdto.getSex());
+            }
+            if(userService.reuserinfo(user)>0){
+                // 更改session状态
+                session.setAttribute("userinfo",user);
+                return Response.success("成功");
+            }
+        }
+        return Response.fail(CodeMsg.FAIL);
+    }
+
+    /**
+     * 修改密码
+     * @param session
+     * @param nowpass
+     * @param pass
+     * @return
+     */
+    @PostMapping("/repass")
+    @ResponseBody
+    public Response<String> repass(HttpSession session, String nowpass,String pass){
+        User user = (User)session.getAttribute("userinfo");
+        if(user == null){
+            return Response.success("用户未登录");
+        }
+        if(user.getPassword().equals(nowpass)){
+            user.setPassword(pass);
+            if(userService.reuserinfo(user)>0){
+                // 清除session 重新登录
+                session.removeAttribute("userinfo");
+                session.removeAttribute("msgnum");
+                session.invalidate();
+            }
+            return Response.success("成功");
+        }else{
+            return Response.success("密码错误");
+        }
+    }
 }
 

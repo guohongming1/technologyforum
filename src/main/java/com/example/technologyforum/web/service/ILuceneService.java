@@ -1,5 +1,7 @@
 package com.example.technologyforum.web.service;
 
+import com.example.technologyforum.util.PageQuery;
+import com.example.technologyforum.web.dto.SearchResultDTO;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.highlight.InvalidTokenOffsetsException;
 
@@ -13,5 +15,5 @@ public interface ILuceneService {
      */
     public void synProductCreatIndex() throws IOException;
 
-    //public PageQuery<SearchResultDTO> searchProduct(PageQuery<SearchResultDTO> pageQuery) throws IOException, ParseException, InvalidTokenOffsetsException;
+    public PageQuery<SearchResultDTO> searchProduct(PageQuery<SearchResultDTO> pageQuery) throws IOException, ParseException, InvalidTokenOffsetsException;
 }

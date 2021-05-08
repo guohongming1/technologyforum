@@ -1,5 +1,7 @@
 package com.example.technologyforum.util;
 
+import com.example.technologyforum.config.SysParamCache;
+import com.example.technologyforum.constants.Constants;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -44,10 +46,13 @@ public class UploadImg {
           Calendar date = Calendar.getInstance();
           File dateDirs = new File(date.get(Calendar.YEAR)
                   + File.separator + (date.get(Calendar.MONTH) + 1));
-          //上传文件路径
-          String path = "D:\\Picturesuploads";
+          // 文件上传路径
+          String path = SysParamCache.getParam(Constants.UPLOAD_PATH);
+          if(path == null){
+              path = "D:\\Picturesupload";
+          }
           //目标文件
-          File descFile = new File(path + "uploads"+ File.separator + dateDirs + File.separator + filename);
+          File descFile = new File(path + File.separator + dateDirs + File.separator + filename);
           int i = 1;
           //若文件存在重命名
           String newFilename = filename;
