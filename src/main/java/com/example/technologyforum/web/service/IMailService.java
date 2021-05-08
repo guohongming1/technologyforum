@@ -1,11 +1,6 @@
 package com.example.technologyforum.web.service;
 
-/**
- * 邮箱服务
- * @author 郭红明
- * @version 1.0
- * @Date: 2020/5/12
- */
+
 public interface IMailService {
     /**
      * 发送文本邮件
