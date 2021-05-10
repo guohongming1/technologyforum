@@ -6,15 +6,13 @@ import com.example.technologyforum.constants.Constants;
 import com.example.technologyforum.result.Response;
 import com.example.technologyforum.util.PageInfo;
 import com.example.technologyforum.util.PageQuery;
-import com.example.technologyforum.web.dto.QuestionCommentDTO;
-import com.example.technologyforum.web.dto.QuestionDTO;
-import com.example.technologyforum.web.dto.SearchResultDTO;
-import com.example.technologyforum.web.dto.TableResultDTO;
+import com.example.technologyforum.web.dto.*;
 import com.example.technologyforum.web.mapper.UserMapper;
 import com.example.technologyforum.web.pojo.Question;
 import com.example.technologyforum.web.pojo.QuestionComment;
 import com.example.technologyforum.web.pojo.User;
 import com.example.technologyforum.web.service.ILuceneService;
+import com.example.technologyforum.web.service.Impl.CommonServiceImpl;
 import com.example.technologyforum.web.service.Impl.RedisService;
 import com.example.technologyforum.web.service.QuestionService;
 import org.apache.lucene.queryparser.classic.ParseException;
@@ -46,6 +44,9 @@ public class CommonController {
 
     @Autowired
     private ILuceneService service;
+
+    @Autowired
+    private CommonServiceImpl commonService;
 
 
     /**
@@ -241,5 +242,17 @@ public class CommonController {
             result.add(dto);
         });
         return result;
+    }
+
+    /**
+     * 攻略评论
+     * @param detailId
+     * @param page
+     * @return
+     */
+    @PostMapping("/strcomment")
+    @ResponseBody
+    public Response<List<CommentDTO>> straComment(int detailId, int page){
+        return commonService.straComment(detailId,page);
     }
 }

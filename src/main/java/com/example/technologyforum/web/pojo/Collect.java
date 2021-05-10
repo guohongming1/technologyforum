@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 
 import java.util.Date;
 
+
 public class Collect {
     @TableId(value = "id",type = IdType.AUTO)
     private Integer id;

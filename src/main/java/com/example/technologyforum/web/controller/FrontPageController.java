@@ -6,9 +6,9 @@ import com.example.technologyforum.constants.Constants;
 import com.example.technologyforum.web.dto.QuestionDTO;
 import com.example.technologyforum.web.mapper.CollectMapper;
 import com.example.technologyforum.web.mapper.UserMapper;
-import com.example.technologyforum.web.pojo.Collect;
-import com.example.technologyforum.web.pojo.Question;
-import com.example.technologyforum.web.pojo.User;
+import com.example.technologyforum.web.pojo.*;
+import com.example.technologyforum.web.service.ITechnologyService;
+import com.example.technologyforum.web.service.Impl.CommonServiceImpl;
 import com.example.technologyforum.web.service.Impl.RedisService;
 import com.example.technologyforum.web.service.QuestionService;
 import org.springframework.beans.BeanUtils;
@@ -42,6 +42,12 @@ public class FrontPageController {
     private QuestionService questionService;
     @Autowired
     private CollectMapper collectMapper;
+
+    @Autowired
+    private CommonServiceImpl commonService;
+
+    @Autowired
+    private ITechnologyService technologyService;
 
     @RequestMapping("login")
     public String login(){
@@ -146,6 +152,51 @@ public class FrontPageController {
     @RequestMapping("/userset")
     public String userset(HttpSession session,Model model){
         return "user/set";
+    }
+
+    @GetMapping("/strategydetail")
+    public String detail(Model model,HttpSession session,int id,int detailId){
+        User user = (User)session.getAttribute("userinfo");
+        if(user != null){
+            boolean colstate = commonService.queryCollect(user.getId(),(byte)1,id);
+            model.addAttribute("colstate",colstate);
+        }
+        // 热度增加
+        redisService.addHot(id, "1",Constants.ESSAY_HOT_NAME);
+        // 页面数据封装
+        Technology strategy = technologyService.selectStrategyById(id);
+        // 攻略明细ID，用于获取评论
+        model.addAttribute("id",strategy.getId());
+        model.addAttribute("detailId",strategy.getDetailId());
+        model.addAttribute("title",strategy.getTitle());
+        User author = userMapper.getUserInfoByPrimaryKey(strategy.getUserId());
+        model.addAttribute("authorId",author.getId());
+        model.addAttribute("authorName",author.getName());
+        model.addAttribute("authorImg",author.getImgUrl());
+        // 获取文章热度/评论数/收藏数目
+        Number hotNum = redisService.getScore(Constants.ESSAY_HOT_NAME, id);
+        if(!Objects.isNull(hotNum)){
+            model.addAttribute("hotnum",hotNum.intValue());
+        }else{
+            model.addAttribute("hotnum",0);
+        }
+        Number colNum = redisService.getViewNum(id, CollectionKey.ESSAY_KEY_COL_NUM);
+        if(!Objects.isNull(colNum)){
+            model.addAttribute("colnum",colNum.intValue());
+        }else{
+            model.addAttribute("colnum",0);
+        }
+        Number comNum = redisService.getViewNum(id, CollectionKey.ESSAY_KEY_COM_NUM);
+        if(!Objects.isNull(comNum)){
+            model.addAttribute("comnum",comNum.intValue());
+        }else{
+            model.addAttribute("comnum",0);
+        }
+        TechnologyDetail detail = technologyService.getDetailById(strategy.getDetailId());
+        if(detail != null){
+            model.addAttribute("content",detail.getContent());
+        }
+        return "front/strategy-detail";
     }
 }
 

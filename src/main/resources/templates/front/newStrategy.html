@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>发表帖子</title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" type="text/css" th:href="@{/layui/css/layui.css}">
+    <script type="text/javascript" th:src="@{/myfile/js/jquery.min.js}"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/myfile/css/main.css}">
+    <script type="text/javascript" th:src="@{/myfile/js/jquery.min.js}"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/myfile/css/global.css}">
+</head>
+<body class="micronews">
+<div class="micronews-header-wrap">
+    <div class="micronews-header w1000 layui-clear">
+        <h1 class="logo">
+            <a href="/">
+                <img width="66px" height="22px" th:src="@{/layuiadmin/myfile/images/logo3.png}" alt="logo">
+                <span class="layui-hide">logo</span>
+            </a>
+        </h1>
+        <p class="nav">
+            <a href="/front/index" target="_blank">首页</a>
+            <a href="/front/group"  target="_blank">小组</a>
+            <a href="/front/question"  target="_blank">问答</a>
+            <a href="/front/newstrategy"  target="_blank" class="active">发表攻略</a>
+        </p>
+        <div class="search-bar">
+            <form class="layui-form" action="">
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <input type="text" name="title" placeholder="搜索你要的内容" autocomplete="off" class="layui-input">
+                        <button class="layui-btn search-btn" formnovalidate><i class="layui-icon layui-icon-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="login">
+            <a th:if="${session.userinfo == null}" href="/front/login">
+                登录
+            </a>
+            <!--<img th:src="@{/layuiadmin/myfile/images/header.png}" style="width: 36px; height: 36px;">-->
+            <ul th:if="${session.userinfo != null}" class="layui-nav" style="background-color: #fff;">
+                <span id="user-id" style="display:none" th:text="${session.userinfo.getId()}"></span>
+                <li class="layui-nav-item">
+                    <a href="/front/usermsg" style="font-size: 16px;color: #222;">消息<span th:text="${session.msgnum}" class="layui-badge"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+                </li>
+                <li class="layui-nav-item" lay-unselect="">
+                    <a href="javascript:;" style="font-size: 16px;color: #222;"><img th:src="${session.userinfo.getImgUrl()}" style="height: 30px; width: 30px;" class="layui-nav-img" onerror="getdefaultImg(event)">&nbsp;&nbsp;</a>
+                    <dl class="layui-nav-child">
+                        <dd style="text-align: center"><a href="/front/userset"><i class="layui-icon layui-icon-user"></i>&nbsp;个人资料</a></dd>
+                        <dd style="text-align: center"><a href="/front/userstrategy"><i class="layui-icon layui-icon-note"></i>&nbsp;攻略/问答</a></dd>
+                        <dd style="text-align: center"><a href="/front/usergroup"><i class="layui-icon layui-icon-rate"></i>&nbsp;小组</a></dd>
+                        <dd layadmin-event="logout" style="text-align: center"><a href="javascript:;"><i class="layui-icon layui-icon-logout"></i>&nbsp;登出</a></dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<style type="text/css">
+    * {
+        font-family: 微软雅黑;
+        margin: 0px;
+        padding: 0px;
+        list-style: none;
+    }
+    body{
+        background-color: #F2F2F2;
+    }
+    .wrap{margin:10px auto;max-width: 1000px}
+    /* 面板 */
+    .fly-panel{margin-bottom: 15px; border-radius: 2px; background-color: #fff; box-shadow: 0 1px 2px 0 rgba(0,0,0,.05);}
+    .fly-panel[pad20]{padding: 20px;}
+    .fly-panel-title{position: relative; height: 50px; line-height: 50px; padding: 0 15px; border-bottom: 1px dotted #E9E9E9; color: #333; border-radius: 2px 2px 0 0; font-size: 14px;}
+    .fly-panel-main{padding: 10px 15px;}
+
+    .create-route{
+        min-height: 120px;
+        margin: 20px 0px;
+        border: 1px solid #bdbfc2;
+    }
+    .ask-title {
+        display: inline;
+        font-size: 24px;
+        line-height: 34px;
+        font-weight: 400;
+        overflow: hidden;
+        color: #8296a0;
+    }
+    .route-detail{
+        margin: 20px 0 0 20px;
+    }
+    .time-route{
+        font-size: 20px;
+        color: #8296a0;
+        margin-left: 20px;
+    }
+    .time-route:hover{
+        cursor: pointer;
+        color: #26bf68;
+    }
+    .dayoper{
+        font-size: 20px;
+        margin-left: 10px;
+    }
+    .dayoper:hover{
+        color: #26bf68;
+        cursor: pointer;
+    }
+    .dayoper-i{
+        font-size: 20px;
+        margin-left: 10px;
+    }
+    .dayoper-i:hover{
+        color: #26bf68;
+        cursor: pointer;
+    }
+    .route-jie{
+        height: 30px;
+        padding: 0px 5px;
+    }
+    .route-jie:focus{
+        border: 1px solid #26bf68;
+    }
+    .fxAnswer{
+        min-height: 250px;
+        border: 1px solid #bdbfc2;
+        padding: 10px;
+    }
+    .fxAnswer img{
+        margin: 3px 3px;
+        max-width: 800px;
+        max-height: 400px;
+    }
+    .fxAnswer a{
+        text-decoration: underline;
+        color: #1E9FFF;
+    }
+    .fxAnswer a:hover{
+        cursor: pointer;
+    }
+    .myskin{
+        background-color: transparent;/*背景透明*/
+        box-shadow: 0 0 0 rgba(0,0,0,0);/*前景无阴影*/
+    }
+    .head_img{
+        max-height: 200px;
+        max-width: 200px;
+    }
+
+</style>
+<div class="layui-container wrap">
+    <div class="fly-panel" pad20 style="padding-top: 5px;">
+        <div class="layui-form layui-form-pane">
+            <div class="layui-tab layui-tab-brief">
+                <ul class="layui-tab-title">
+                    <li class="layui-this">发表攻略</li>
+                </ul>
+                <div class="layui-form layui-tab-content" lay-filter="streategyform" style="padding: 20px 0;">
+                    <div class="layui-tab-item layui-show">
+                        <form action="" method="post">
+                            <div class="layui-row layui-col-space15 layui-form-item">
+                                <div class="layui-col-md12">
+                                    <label for="L_title" class="layui-form-label">标题</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" id="L_title" placeholder="字数小于20" name="title" lay-verify="required" autocomplete="off" class="layui-input" maxlength="20"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-inline">
+                                    <button type="button" class="layui-btn" id="uploadHeadImgbtn"><i class="layui-icon">&#xe67c;</i>上传配图</button>
+                                    <input name="headImgUrl" id="LAY_headImgSrc" style="display: none"
+                                           autocomplete="off" class="layui-input">
+                                </div>
+                                <div class="head_img" style="display: none"></div>
+                            </div>
+<!--                            <div class="layui-form-item">-->
+<!--                                <div class="layui-inline">-->
+<!--                                    <label class="layui-form-label">地点</label>-->
+<!--                                    <div class="layui-input-inline">-->
+<!--                                        <input type="text" id="address" name="address" lay-verify="required" autocomplete="off" class="layui-input" placeholder="至少精确到市级">-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                                <span id="realaddress" style="font-size: 13px;color: red;margin-left: -15px;"></span>-->
+<!--                            </div>-->
+<!--                            <div class="layui-form-item">-->
+<!--                                <div class="layui-inline">-->
+<!--                                    <label class="layui-form-label">出行天数</label>-->
+<!--                                    <div class="layui-input-inline">-->
+<!--                                        <input type="text" name="days" lay-verify="required" autocomplete="off" class="layui-input">-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                                <div class="layui-inline">-->
+<!--                                    <label class="layui-form-label">人均费用</label>-->
+<!--                                    <div class="layui-input-inline">-->
+<!--                                        <input type="text" name="money" lay-verify="required" autocomplete="off" class="layui-input">-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                            <div class="layui-form-item">-->
+<!--                                <div class="layui-inline">-->
+<!--                                    <label class="layui-form-label">人物</label>-->
+<!--                                    <div class="layui-input-inline">-->
+<!--                                        <input type="text" name="people" lay-verify="required" autocomplete="off" class="layui-input">-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                                <div class="layui-inline">-->
+<!--                                    <label class="layui-form-label">出发时间</label>-->
+<!--                                    <div class="layui-input-inline">-->
+<!--                                        <input type="text" name="date" id="date" lay-verify="required|date" placeholder="yyyy-MM-dd" autocomplete="off" class="layui-input">-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                            <div class="layui-form-item layui-form-text">-->
+<!--                                <label class="layui-form-label">建议(选填)</label>-->
+<!--                                <div class="layui-input-block">-->
+<!--                                    <textarea name="advice" placeholder="为出行的驴友给点建议吧" class="layui-textarea"></textarea>-->
+<!--                                </div>-->
+<!--                            </div>-->
+                            <div class="layui-form-item layui-form-text">
+                                <label class="layui-form-label">简述(必填)</label>
+                                <div class="layui-input-block">
+                                    <textarea name="sketch" lay-verify="required" placeholder="为你的攻略简要叙述下吧" class="layui-textarea"></textarea>
+                                </div>
+                            </div>
+<!--                            <div class="layui-form-item">-->
+<!--                                <span class="ask-title">创建路线</span><hr>-->
+<!--                                <div class="create-route">-->
+<!--                                    <div class="route-detail">-->
+<!--                                        <div class="layui-btn-group" style="margin-left: 20px;margin-bottom: 15px">-->
+<!--                                            <button type="button" onclick="addDay()" class="layui-btn layui-btn-sm layui-btn-primary">-->
+<!--                                                <i class="layui-icon">&#xe654;</i>新增一天-->
+<!--                                            </button>-->
+<!--                                            <button type="button" onclick="delDay()" class="layui-btn layui-btn-sm layui-btn-primary">-->
+<!--                                                <i class="layui-icon">&#xe640;</i>删除一天-->
+<!--                                            </button>-->
+<!--                                        </div>-->
+<!--                                        <ul id="time-route" class="layui-timeline">-->
+<!--                                            <li class="layui-timeline-item time-route-item">-->
+<!--                                                <i class="layui-icon layui-timeline-axis">&#xe63f;</i>-->
+<!--                                                <div class="layui-timeline-content layui-text">-->
+<!--                                                    <h3 class="layui-timeline-title layui-inline">DAY1</h3>-->
+<!--                                                    <i class="dayoper layui-icon layui-icon-add-1" title="添加节点"></i>-->
+<!--                                                    <ul class="time-route-li">-->
+<!--                                                        <li>-->
+<!--                                                            <input type="text" class="route-jie" maxlength="100"/>-->
+<!--                                                            <span></span>-->
+<!--                                                            <div class="layui-inline">-->
+<!--                                                                <i class="dayoper-i layui-icon layui-icon-edit edit" style="display: none;"></i>-->
+<!--                                                                <i class="dayoper-i layui-icon del">&#xe640;</i>-->
+<!--                                                            </div>-->
+<!--                                                        </li>-->
+<!--                                                    </ul>-->
+<!--                                                </div>-->
+<!--                                            </li>-->
+<!--                                            <li class="layui-timeline-item">-->
+<!--                                            </li>-->
+<!--                                        </ul>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+                            <div class="layui-form-item layui-form-text">
+                                <span class="ask-title">详细</span><hr>
+                                <div class="layui-input-block">
+                                    <div class="layui-collapse">
+                                        <div class="layui-colla-item">
+                                            <h2 class="layui-colla-title editor-focus">点击开始</h2>
+                                            <!--弹出进度条-->
+                                            <div id="uploadLoadingDiv" style="display: none;">
+                                                <div class="layui-progress layui-progress-big" lay-showpercent="true" lay-filter="js_upload_progress" style="margin-top: 20px;">
+                                                    <div class="layui-progress-bar layui-bg-red" lay-percent="0%"></div>
+                                                </div>
+                                            </div>
+                                            <div class="layui-colla-content" style="margin: 0px;padding: 0px">
+                                                <div class="layui-colla-item">
+                                                    <div contenteditable="true" class="fxAnswer fly-editor"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <button type="submit" class="layui-btn" lay-submit lay-filter="demo1">立即发布</button>
+                                <button type="button" class="layui-btn layui-btn-primary" id="save">保存进度</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script id="route-mod" type="text/html">
+    {{#  layui.each(d, function(index, day){ }}
+    <li class="layui-timeline-item time-route-item">
+        <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+        <div class="layui-timeline-content layui-text">
+            <h3 class="layui-timeline-title layui-inline">DAY{{index+1}}</h3>
+            <i class="dayoper layui-icon layui-icon-add-1" title="添加节点"></i>
+            <ul class="time-route-li">
+                {{# var item = day.split('}');item.splice(0,1); }}
+                {{#  layui.each(item, function(inde, i){ }}
+                <li>
+                    <input type="text" class="route-jie" maxlength="100" value='{{i}}' style="display: none;"/>
+                    <span>{{i}}</span>
+                    <div class="layui-inline">
+                        <i class="dayoper-i layui-icon layui-icon-edit edit"></i>
+                        <i class="dayoper-i layui-icon del">&#xe640;</i>
+                    </div>
+                </li>
+                {{#  }); }}
+            </ul>
+        </div>
+    </li>
+    {{#  }); }}
+    <li class="layui-timeline-item">
+    </li>
+</script>
+<script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+<script>
+    $('.search-btn').on('click', function () {
+        var inpVal = $(this).siblings('input').val();
+        // 搜索条件不为空串
+        if (inpVal !== '') {
+            var url = "/front/search-page";
+            // window.open(encodeURI(url + "?pattern=" + inpVal));
+            window.location.href = encodeURI(url + "?pattern=" + inpVal);
+            // window.location.href = "/front/page/search-page?pattern=" + inpVal;
+        }
+        return false;
+    });
+    $(document).scroll(function () {
+        var scroll_top = $(document).scrollTop();
+        //高度多少出现返回顶部，可以随意调整
+        if (scroll_top > 300) {
+            $(".questions").addClass("fix")
+        } else {
+            $(".questions").removeClass("fix")
+        }
+    });
+    var timerouteFlag = 1;// 初始增加的天数
+
+    // 地址自动请求
+    $( '#address' ).blur(function () {
+        if($("#address").val()!=null&&$("#address").val()!=""){
+            var scenic = {"scenic":$("#address").val()}
+            //请求接口
+            $.ajax({
+                type: "post",
+                url: "/comm/local",
+                data:scenic,
+                success: function(res){
+                    console.log(res);
+                    if(res.data != null && res.data != ""){
+                        $( '#realaddress' ).html(res.data);
+                    }
+                },
+                error: function (res) {
+                    layer.msg("请求错误");
+                }
+            });
+        }
+    });
+    layui.config({
+        version: "3.0.0"
+        ,base: '/mymods/'
+    }).extend({
+        travel: 'index',
+    }).use(['travel','element','form','laydate','layer','laytpl'], function(){
+        var element = layui.element; //导航的hover效果、二级菜单等功能，需要依赖element模块
+        var laydate = layui.laydate;
+        var layer = layui.layer;
+        var form = layui.form;
+        var laytpl = layui.laytpl;
+
+        //创建监听函数
+        var xhrOnProgress=function(fun) {
+            xhrOnProgress.onprogress = fun; //绑定监听
+            //使用闭包实现监听绑
+            return function() {
+                //通过$.ajaxSettings.xhr();获得XMLHttpRequest对象
+                var xhr = $.ajaxSettings.xhr();
+                //判断监听函数是否为函数
+                if (typeof xhrOnProgress.onprogress !== 'function')
+                    return xhr;
+                //如果有监听函数并且xhr对象支持绑定时就把监听函数绑定上去
+                if (xhrOnProgress.onprogress && xhr.upload) {
+                    xhr.upload.onprogress = xhrOnProgress.onprogress;
+                }
+                return xhr;
+            }
+        }
+        $("body").on('click','.js_upload_progress_bar_sure',function(){
+            layer.close(layer.index);
+        });
+        // 用户关闭页面或刷新页面
+        //日期
+        laydate.render({
+            elem: '#date'
+        });
+        /*旅游攻略页面*/
+        /*left nav*/
+        $('.nav-item').hover(function() {
+            $('.gonglve-nav').css('border-right-color', '#fff');
+            $('.nav-item .nav-panel').eq($(this).index()).css('display', 'block');
+        }, function() {
+            $('.gonglve-nav').css('border-right-color', '#ddd');
+            $('.nav-panel').css('display', 'none');
+        });
+        function loadData(){
+            var data;
+            //请求接口
+            $.ajax({
+                type: "post",
+                url: "/strategy/pull",
+                success: function(res){
+                    if (res.code === 200) {
+                        data=res.data;
+                        console.log(res.data)
+                        layer.msg('检测到上次有未完成攻略', {
+                            offset: '15px'
+                            , icon: 1
+                            , time: 2000
+                        },function () {
+                            if(null != data && data != ""){
+                                // 表单初始化
+                                form.val("streategyform", { //streategyform 即 class="layui-form" 所在元素属性 lay-filter="" 对应的值
+                                    title: data.title
+                                    ,headImgUrl: data.headImgUrl
+                                    ,address: data.address
+                                    ,date: data.date
+                                    ,days: data.days
+                                    ,money: data.money
+                                    ,people: data.people
+                                    ,advice: data.advice
+                                    ,sketch: data.sketch
+                                });
+                                form.render(null, 'streategyform');
+                                $(".fly-editor").html(data.content);
+                                if(data.headImgUrl != null && data.headImgUrl != ""){
+                                    $(".head_img").html('<img src="'+data.headImgUrl + '" width="200px" height="200px"> ');
+                                    $(".head_img").show();
+                                }
+                                loadRouteData(data.route)
+                            }
+                        });
+                    } else {
+                        data = "";
+                    }
+                },
+                error: function (res) {
+                    layer.msg(res.message);
+                    data = "";
+                }
+            });
+        }
+        function loadRouteData(route) {
+            if(route.length>1) {
+                var days = route.split('{');
+                days.splice(0, 1);
+                timerouteFlag = days.length;
+                // 获取节点
+                var getTpl = document.getElementById('route-mod').innerHTML;
+                // 执行tpl渲染
+                laytpl(getTpl).render(days, function (html) {
+                    document.getElementById('time-route').innerHTML = html;
+                });
+            }
+        }
+        loadData(); // 加载上次未完成攻略
+        // 表单验证
+        form.verify({
+
+        });
+        /*
+         * 监听表格提交
+         */
+        form.on('submit(demo1)', function (data) {
+            // 获取Div中的所有内容\
+            var str="";
+            var text = $(".fly-editor").html();
+            // // 获取时间节点
+            // $("#time-route").find(".time-route-item").each(function (index) {
+            //     str +='{';
+            //     $(this).find("input").each(function (inde) {
+            //         if($(this).val() != null && $(this).val() != ""){
+            //             str =str+ '}'+$(this).val();
+            //         }
+            //     })
+            // });
+            if(text == null || text == ""){
+                $(".layui-colla-content").attr("class","layui-show");
+                $(".fly-editor").focus();
+                layer.msg("请完成详情描述", {icon: 5});
+                return false;
+            }
+            var field = data.field;
+            if(null == field["headImgUrl"] || ""==field["headImgUrl"]){
+                layer.msg("请上传配图", {icon: 5});
+                return false;
+            }
+            field["content"]= text;
+            //field["route"]= str;
+            field["pushFlag"] = true;
+
+            console.log(field)
+            var flag = false;
+            // TODO 使用ajax
+            //请求接口
+            $.ajax({
+                type: "post",
+                url: "/strategy/post",
+                data: field,
+                success: function(res){
+                    if (res.code === 200) {
+                        layer.msg('发表成功', {
+                            offset: '15px'
+                            , icon: 1
+                            , time: 1000
+                        }, function () {
+                            layer.msg(res.data);
+                            flag = true;
+                            location.href = '/front/userstrategy';
+                        });
+                    } else {
+                        layer.msg("参数错误:检查是否含有特殊字符，或参数不合理");
+                    }
+                },
+                error: function (res) {
+                    layer.msg(res.message);
+                }
+            });
+            if(!flag){
+                return false;
+            }
+        });
+
+        $("#save").click(function () {
+            // 获取Div中的所有内容\
+            var str="";
+            var text = $(".fly-editor").html();
+
+            var data = form.val("streategyform");
+            data["content"]= text;
+            data["pushFlag"]= false;
+            //请求接口
+            $.ajax({
+                type: "post",
+                url: "/strategy/updateorsave",
+                data: data,
+                success: function(res){
+                    if (res.code === 200) {
+                        layer.msg('保存成功', {
+                            offset: '15px'
+                            , icon: 1
+                            , time: 1000
+                        }, function () {
+                           // layer.msg(res.data);
+                        });
+                    } else {
+                        layer.msg(res.data);
+                    }
+                },
+                error: function (res) {
+                    layer.msg(res.message);
+                }
+            });
+        });
+    });
+
+
+    /*
+    * 时间线编辑 start
+    * */
+    function addDay(){
+        var str = "<li class=\"layui-timeline-item time-route-item\">\n" +
+            "                                                <i class=\"layui-icon layui-timeline-axis\">&#xe63f;</i>\n" +
+            "                                                <div class=\"layui-timeline-content layui-text\">\n" +
+            "                                                    <h3 class=\"layui-timeline-title layui-inline\">DAY"+(timerouteFlag+1)+"</h3>\n" +
+            "                                                    <i class=\"dayoper layui-icon layui-icon-add-1\" title=\"添加节点\"></i>\n" +
+            "                                                    <ul>\n" +
+            "                                                        <li>\n" +
+            "                                                            <input type=\"text\" class=\"route-jie\" maxlength=\"100\"/>\n" +
+            "                                                            <span></span>\n" +
+            "                                                            <div class=\"layui-inline\">\n" +
+            "                                                                <i class=\"dayoper-i layui-icon layui-icon-edit edit\"></i>\n" +
+            "                                                                <i class=\"dayoper-i layui-icon del\">&#xe640;</i>\n" +
+            "                                                            </div>\n" +
+            "                                                        </li>\n" +
+            "                                                    </ul>\n" +
+            "                                                </div>\n" +
+            "                                            </li>"+"<li class=\"layui-timeline-item\">\n" +
+            "                                            </li>";
+
+        if(null != $("body .time-route-item:last").find("input:last").val() && $("body .time-route-item:last").find("input:last").val().trim() != ""){
+            $("#time-route").append(str);
+            $("body .time-route-item:last").find("input:last").focus(); // 输入框得到光标
+            timerouteFlag++;
+        }else{
+            layer.msg('您还有一个节点没有填写！',{icon:5,anim:5,time:2000});
+            $("body .time-route-item:last").find("input:last").focus();
+        }
+    }
+     // 删除一天
+    function delDay(){
+        if(timerouteFlag<=1){
+            layer.msg('不能再删了！',{icon:5,anim:6,time:1000});
+        }else{
+            //询问框
+            layer.confirm('该节点下所有内容将被删除！', {
+                icon:3,
+                btn: ['确定','取消'] //按钮
+            }, function(index){
+                layer.close(index);
+                $("#time-route .time-route-item:last").remove();
+                timerouteFlag--;
+            });
+        }
+    }
+     //添加节点 start
+     $("body").on("click", ".dayoper", function() {
+         var str = "<li>\n" +
+             "                                                            <input type=\"text\" class=\"route-jie\" maxlength=\"100\"/>\n" +
+             "                                                            <span></span>\n" +
+             "                                                            <div class=\"layui-inline\">\n" +
+             "                                                                <i class=\"dayoper-i layui-icon layui-icon-edit edit\"  style=\"display: none;\"></i>\n" +
+             "                                                                <i class=\"dayoper-i layui-icon del\">&#xe640;</i>\n" +
+             "                                                            </div>\n" +
+             "                                                        </li>";
+         if(null != $(this).next().children("li:last").children("input").val() && $(this).next().children("li:last").children("input").val().trim()!=""){
+             $(this).next().append(str);
+             $("body .time-route-item:last").find("input:last").focus();
+         }else{
+             layer.msg('上一个还没填呢！',{icon:5,anim:6,time:1000});
+         }
+     });
+     // 添加节点 end
+     // 输入框控制 start
+    $("body").on("blur",".route-jie",function () {
+        if(null!=$(this).val() && $(this).val().trim()!=""){
+            $(this).hide(); // 编辑框隐藏
+            $(this).next().text($(this).val().trim()); // 给span元素赋值
+            $(this).next().show(); //显示span元素
+            $(this).next().next().find(".layui-icon-edit").show(); // 显示操作按钮
+        }
+    });
+     //输入框控制 end
+    // 重写节点事件 start
+    $("body").on("click",".edit",function () {
+        $(this).parent().prev().prev().show();
+        $(this).parent().prev().prev().focus();
+        $(this).parent().prev().hide();
+    });
+    $("body").on("click",".del",function () {
+        console.log($(this).parent().parent().parent().children("li").length);
+        if($(this).parent().parent().parent().children("li").length>1){
+            $(this).parent().prev().prev().parent().remove();
+        }else{
+            layer.msg('不能再删了！',{icon:5,anim:6,time:1000});
+        }
+    });
+    // 重写节点事件 end
+    /*
+    * 时间线编辑 end
+    * */
+</script>
+</body>
+</html>
