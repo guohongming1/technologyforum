@@ -1,10 +1,12 @@
 package com.example.technologyforum.web.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.technologyforum.web.pojo.TopicComment;
+import com.example.technologyforum.web.pojo.User;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface TopicCommentMapper {
+public interface TopicCommentMapper extends BaseMapper<TopicComment> {
     int deleteByPrimaryKey(Integer id);
 
     int insert(TopicComment record);

@@ -14,3 +14,4 @@ INSERT INTO sys_param (id, param_value, param_name, param_text) VALUES (91, 'D:\
 
 搜索页面美化： 负责人：xq
 
+注意！！！除了在topicmapper中需要写selectPageVo方法，还需要在对应的xml中写该方法的映射
