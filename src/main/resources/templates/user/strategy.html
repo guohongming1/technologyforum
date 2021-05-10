@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>个人中心</title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" type="text/css" th:href="@{/layui/css/layui.css}">
+    <script type="text/javascript" th:src="@{/myfile/js/jquery.min.js}"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/myfile/css/main.css}">
+    <script type="text/javascript" th:src="@{/myfile/js/jquery.min.js}"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/myfile/css/global.css}">
+</head>
+<body class="micronews">
+<div class="micronews-header-wrap">
+    <div class="micronews-header w1000 layui-clear">
+        <h1 class="logo">
+            <a href="/">
+                <img width="66px" height="22px" th:src="@{/layuiadmin/myfile/images/logo3.png}" alt="logo">
+                <span class="layui-hide">logo</span>
+            </a>
+        </h1>
+        <p class="nav">
+            <a href="/front/index" target="_blank">首页</a>
+            <a href="/front/group"  target="_blank" class="active">小组</a>
+            <a href="/front/question"  target="_blank">问答</a>
+            <a href="/strategy/newstrategy"  target="_blank">发表</a>
+        </p>
+        <div class="search-bar">
+            <form class="layui-form" action="">
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <input type="text" name="title" placeholder="搜索你要的内容" autocomplete="off" class="layui-input">
+                        <button class="layui-btn search-btn" formnovalidate><i class="layui-icon layui-icon-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="login">
+            <a th:if="${session.userinfo == null}" href="/front/login">
+                登录
+            </a>
+            <!--<img th:src="@{/layuiadmin/myfile/images/header.png}" style="width: 36px; height: 36px;">-->
+            <ul th:if="${session.userinfo != null}" class="layui-nav" style="background-color: #fff;">
+                <span id="user-id" style="display:none" th:text="${session.userinfo.getId()}"></span>
+                <li class="layui-nav-item">
+                    <a href="/front/usermsg" style="font-size: 16px;color: #222;">消息<span th:text="${session.msgnum}" class="layui-badge"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+                </li>
+                <li class="layui-nav-item" lay-unselect="">
+                    <a href="javascript:;" style="font-size: 16px;color: #222;"><img th:src="${session.userinfo.getImgUrl()}" style="height: 30px; width: 30px;" class="layui-nav-img" onerror="getdefaultImg(event)">&nbsp;&nbsp;</a>
+                    <dl class="layui-nav-child">
+                        <dd style="text-align: center"><a href="/front/userset"><i class="layui-icon layui-icon-user"></i>&nbsp;个人资料</a></dd>
+                        <dd style="text-align: center"><a href="/front/userstrategy"><i class="layui-icon layui-icon-note"></i>&nbsp;发表/问答</a></dd>
+                        <dd style="text-align: center"><a href="/front/usergroup"><i class="layui-icon layui-icon-rate"></i>&nbsp;小组</a></dd>
+                        <dd layadmin-event="logout" style="text-align: center"><a href="javascript:;"><i class="layui-icon layui-icon-logout"></i>&nbsp;登出</a></dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<style type="text/css">
+    .wrap{
+        margin: 10px auto;
+        max-width: 1000px;
+    }
+    * {
+        font-family: 微软雅黑;
+        margin: 0px;
+        padding: 0px;
+        list-style: none;
+    }
+    body{
+        background-color: #F2F2F2;
+    }
+
+</style>
+    <div class="layui-container fly-marginTop fly-user-main">
+        <ul class="layui-nav layui-nav-tree layui-inline" lay-filter="user">
+            <li class="layui-nav-item">
+                <a th:href="'/front/front/userInfo?id='+${session.userinfo.getId()}">
+                    <i class="layui-icon">&#xe609;</i>
+                    我的主页
+                </a>
+            </li>
+            <li class="layui-nav-item layui-this">
+                <a href="/front/userstrategy">
+                    <i class="layui-icon layui-icon-note"></i>
+                    发表
+                </a>
+            </li>
+            <li class="layui-nav-item">
+                <a href="/front/usergroup">
+                    <i class="layui-icon layui-icon-group"></i>
+                    小组
+                </a>
+            </li>
+            <li class="layui-nav-item">
+                <a href="/front/userquestion">
+                    <i class="layui-icon layui-icon-survey"></i>
+                    问答
+                </a>
+            </li>
+            <li class="layui-nav-item">
+                <a href="/front/userset">
+                    <i class="layui-icon">&#xe620;</i>
+                    基本设置
+                </a>
+            </li>
+            <li class="layui-nav-item">
+                <a href="/front/usermsg">
+                    <i class="layui-icon">&#xe611;</i>
+                    我的消息
+                </a>
+            </li>
+        </ul>
+
+        <div class="site-tree-mobile layui-hide">
+            <i class="layui-icon">&#xe602;</i>
+        </div>
+        <div class="site-mobile-shade"></div>
+
+        <div class="site-tree-mobile layui-hide">
+            <i class="layui-icon">&#xe602;</i>
+        </div>
+        <div class="site-mobile-shade"></div>
+
+
+        <div class="fly-panel fly-panel-user" pad20>
+            <!--
+            <div class="fly-msg" style="margin-top: 15px;">
+              您的邮箱尚未验证，这比较影响您的帐号安全，<a href="activate.html">立即去激活？</a>
+            </div>
+            -->
+            <div class="layui-tab layui-tab-brief" lay-filter="user">
+                <ul class="layui-tab-title" id="LAY_mine">
+                    <li data-type="mine-jie" lay-id="index" class="layui-this">我的攻略（<span id="stra-num"></span>）</li>
+                    <li data-type="collection" lay-id="collection">收藏（<span id="col-num"></span>）</li>
+                </ul>
+                <div class="layui-tab-content" style="padding: 20px 0;">
+                    <div class="layui-tab-item layui-show" id="mine-jie">
+                        <ul class="mine-view jie-row" id="TRA_mine">
+                            <!--<li>-->
+                                <!--<a class="jie-title" href="../jie/detail.html" target="_blank">基于 layui 的极简社区页面模版</a>-->
+                                <!--<i>2017/3/14 上午8:30:00</i>-->
+                                <!--<a class="mine-del" href="/jie/edit/8116">删除</a>-->
+                                <!--<a class="mine-edit" href="/jie/edit/8116">编辑</a>-->
+                                <!--<em>热度22</em>-->
+                            <!--</li>-->
+                        </ul>
+                        <div id="LAY_page"></div>
+                    </div>
+                    <div class="layui-tab-item" id="collection">
+                        <ul class="mine-view jie-row" id="COL_mine">
+                            <!--<li>-->
+                                <!--<a class="jie-title" href="../jie/detail.html" target="_blank">基于 layui 的极简社区页面模版</a>-->
+                                <!--<i>收藏于23小时前</i>-->
+                                <!--<a class="mine-look" href="/jie/edit/8116">查看</a>-->
+                                <!--<a class="mine-del" href="/jie/edit/8116">删除</a>-->
+                                <!--<em><img th:src="@{/myfile/image/new.png}"></em>-->
+                            <!--</li>-->
+                        </ul>
+                        <div id="LAY_page1"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<script id="TRA-mod" type="text/html">
+    {{# layui.each(d,function(index,item){}}
+        <li>
+            {{#if(item.pushFlag==1){}}
+            <a href="/front/strategydetail?id={{item.id}}&detailId={{item.detailId}}" title="" target="_blank">{{item.title}}</a>
+            {{#}else{ }}
+            <a href="/newstrategy" title="" target="_blank" style="color: #FFB800;">{{item.title}}->去发表</a>
+            {{#}}}
+            <i>{{item.date}}</i>
+            <a class="mine-del" href="javascript:" data-id="{{item.id}}">删除</a>
+            {{#if(item.pushFlag==2){}}
+            <em>未发表</em>
+            {{#}else{}}
+            <em>{{item.viewNum}}热度/{{item.commentnum}}评论</em>
+            {{#}}}
+        </li>
+    {{# }); }}
+</script>
+    <script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+    <script>
+        $('.search-btn').on('click', function () {
+            var inpVal = $(this).siblings('input').val();
+            // 搜索条件不为空串
+            if (inpVal !== '') {
+                var url = "/front/search-page";
+                // window.open(encodeURI(url + "?pattern=" + inpVal));
+                window.location.href = encodeURI(url + "?pattern=" + inpVal);
+                // window.location.href = "/front/page/search-page?pattern=" + inpVal;
+            }
+            return false;
+        });
+        layui.use(['element','laytpl','layer'],function () {
+            var element = layui.element; //导航的hover效果、二级菜单等功能，需要依赖element模块
+            var laytpl = layui.laytpl,
+                layer = layui.layer;
+            element.on('tab(user)', function(data){
+                var id = '#' + $(this).attr('data-type');
+            });
+            loadData();
+            function loadData() {
+               $.ajax({
+                   type:'post',
+                   url:'/user/getPerstrategy',
+                   success:function (res) {
+                       if(res.code == 200){
+                           if(res.data.strategy.length != 0){
+                              var straTpl = document.getElementById('TRA-mod').innerHTML;
+                              laytpl(straTpl).render(res.data.strategy,function (html) {
+                                  $("#TRA_mine").append(html);
+                              });
+                              $("#stra-num").text(res.data.strategy.length);
+                           }else{
+                               $("#TRA_mine").append('<div class="fly-none" style="min-height: 50px; padding:30px 0; height:auto;"><i style="font-size:14px;">空空如也</i></div>');
+                           }
+                           if(res.data.colstrategy.length != 0){
+                               var straTpl = document.getElementById('TRA-mod').innerHTML;
+                               laytpl(straTpl).render(res.data.colstrategy,function (html) {
+                                   $("#COL_mine").append(html);
+                               });
+                               $("#col-num").text(res.data.colstrategy.length);
+                           }else{
+                               $("#COL_mine").append('<div class="fly-none" style="min-height: 50px; padding:30px 0; height:auto;"><i style="font-size:14px;">空空如也</i></div>');
+                           }
+                       }
+                   },
+                   error:function (res) {
+
+                   }
+               });
+            }
+            $("body").on('click','#TRA_mine li .mine-del',function () {
+                var id = $(this).data('id');
+                var othis = $(this).parents('li');
+                if(id != null){
+                    $.ajax({
+                        type:'post',
+                        url:'/user/delOneStrategy',
+                        data:{'id':id},
+                        success:function(res){
+                            if(res.code == 200){
+                               othis.remove();
+                               layer.msg("删除成功",{icon:6});
+                               delEnd('TRA_mine');
+                            }
+                        },
+                        error:function (res) {
+                            layer.msg("失败");
+                        }
+                    });
+                }
+            });
+            $("body").on('click','#COL_mine li .mine-del',function () {
+                var id = $(this).data('id');
+                var othis = $(this).parents('li');
+                if(id != null){
+                    $.ajax({
+                        type:'post',
+                        url:'/user/delstraCol',
+                        data:{'id':id},
+                        success:function(res){
+                            if(res.code == 200){
+                                othis.remove();
+                                layer.msg("删除成功",{icon:6});
+                                delEnd('COL_mine');
+                            }
+                        },
+                        error:function (res) {
+                            layer.msg("失败");
+                        }
+                    });
+                }
+            });
+            var delEnd = function(elemId){
+                if($("#"+elemId).find('li').length === 0){
+                    $("#"+elemId).html('<div class="fly-none">您暂时没有最新消息</div>');
+                }
+            }
+        });
+    </script>
+</body>
+</html>

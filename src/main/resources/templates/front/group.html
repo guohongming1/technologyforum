@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>小组</title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" type="text/css" th:href="@{/layui/css/layui.css}">
+    <script type="text/javascript" th:src="@{/myfile/js/jquery.min.js}"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/myfile/css/main.css}">
+</head>
+<body class="micronews">
+<div class="micronews-header-wrap">
+    <div class="micronews-header w1000 layui-clear">
+        <h1 class="logo">
+            <a href="/">
+                <img width="66px" height="22px" th:src="@{/layuiadmin/myfile/images/logo3.png}" alt="logo">
+                <span class="layui-hide">logo</span>
+            </a>
+        </h1>
+        <p class="nav">
+            <a href="/front/index" target="_blank">首页</a>
+            <a href="/front/group"  target="_blank" class="active">小组</a>
+            <a href="/front/question"  target="_blank">问答</a>
+            <a href="/strategy/newstrategy"  target="_blank">发表</a>
+        </p>
+        <div class="search-bar">
+            <form class="layui-form" action="">
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <input type="text" name="title" placeholder="搜索你要的内容" autocomplete="off" class="layui-input">
+                        <button class="layui-btn search-btn" formnovalidate><i class="layui-icon layui-icon-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="login">
+            <a th:if="${session.userinfo == null}" href="/front/login">
+                登录
+            </a>
+            <!--<img th:src="@{/layuiadmin/myfile/images/header.png}" style="width: 36px; height: 36px;">-->
+            <ul th:if="${session.userinfo != null}" class="layui-nav" style="background-color: #fff;">
+                <span id="user-id" style="display:none" th:text="${session.userinfo.getId()}"></span>
+                <li class="layui-nav-item">
+                    <a href="/front/usermsg" style="font-size: 16px;color: #222;">消息<span th:text="${session.msgnum}" class="layui-badge"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+                </li>
+                <li class="layui-nav-item" lay-unselect="">
+                    <a href="javascript:;" style="font-size: 16px;color: #222;"><img th:src="${session.userinfo.getImgUrl()}" style="height: 30px; width: 30px;" class="layui-nav-img" onerror="getdefaultImg(event)">&nbsp;&nbsp;</a>
+                    <dl class="layui-nav-child">
+                        <dd style="text-align: center"><a href="/front/userset"><i class="layui-icon layui-icon-user"></i>&nbsp;个人资料</a></dd>
+                        <dd style="text-align: center"><a href="/front/userstrategy"><i class="layui-icon layui-icon-note"></i>&nbsp;发表/问答</a></dd>
+                        <dd style="text-align: center"><a href="/front/usergroup"><i class="layui-icon layui-icon-rate"></i>&nbsp;小组</a></dd>
+                        <dd layadmin-event="logout" style="text-align: center"><a href="javascript:;"><i class="layui-icon layui-icon-logout"></i>&nbsp;登出</a></dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<style type="text/css">
+
+    /* 返回顶部*/
+    .layui-fixbar {
+        position: fixed;
+        right: 15px;
+        bottom: 15px;
+        z-index: 999999;
+        right: 50px;
+        bottom: 50px;
+        height: 50px;
+        list-style: none;
+    }
+
+    .layui-fixbar .layui-fixbar-top {
+        display: none;
+        font-size: 40px;
+    }
+
+    .layui-fixbar li {
+        width: 50px;
+        height: 50px;
+        line-height: 50px;
+        margin-bottom: 1px;
+        text-align: center;
+        cursor: pointer;
+        font-size: 30px;
+        background-color: #9F9F9F;
+        color: #fff;
+        border-radius: 2px;
+        opacity: .95;
+    }
+
+    .layui-icon {
+        font-family: layui-icon!important;
+        font-size: 16px;
+        font-style: normal;
+        -webkit-font-smoothing: antialiased;
+    }
+    /*  主体*/
+    .wrap-main{
+        margin: 30px auto;
+        max-width: 1000px;
+        background-color: #fff;
+    }
+    /*菜单*/
+    .clear{clear:both;display:block;height:0;font-size:0;line-height:0;overflow:hidden;}
+    .clearfix:after,.wrapper:after{content:'\20';clear:both;display:block;}
+    .clearfix,.wrapper{*zoom:1;}
+
+    .menu_wrap{margin:5px 0 20px;border-bottom:1px solid #6294b5}
+    .menu_wrap .menu_item{float:left;position:relative;bottom:-1px;}
+    .menu_wrap .menu_item a{display:block;float:left;padding:6px 18px 0; height:24px; background-color: #6294b5; border:1px solid #6294b5; border-radius:5px 5px 0 0; font-size:14px; float:left; margin-right:3px;color:#fff;}
+    .menu_wrap .menu_item a:hover{background-color: #c0c0c0; border:1px solid #c0c0c0; text-decoration:none; font-size:14px; color:#fff;}
+
+    /*热门*/
+    .gt{}
+    .gt table{border-collapse:collapse;width:100%;white-space:nowrap;line-height:20px;}
+    .gt table th,.gt table td{padding:10px 0;color:#666;font-size:12px;white-space:nowrap;font-weight:normal;}
+    .gt table th{padding:15px 0 0;}
+    .gt table th.topic_tit{padding-left:10px;width:auto;text-align:left;}
+    .gt table th.group_tit{text-align:left;padding-left:15px;width:auto;}
+    .gt table th.author{text-align:left;padding-left:20px;width:auto;}
+    .gt table th.date_time{font-size:12px!important;font-family:inherit!important;}
+    .gt .topic_tit{width:240px;padding-right:5px;}
+    .gt .topic_tit img{float:left;margin-right:3px;}
+    .gt h3{height:20px;overflow:hidden;font-weight:normal;}
+    .gt .topic_tit a{font-size:12px;color:#3f200f;-webkit-font-smoothing:antialiased;}
+    .gt .group_tit{width:100px;}
+    .gt .group_tit strong{}
+    .gt .author{width:95px;white-space:nowrap;}
+    .gt .author img{margin-right:5px;vertical-align:-3px;}
+    .gt .view_num{width:63px;text-align:center;}
+    .gt .date_time{width:60px;}
+    .gt .reply{width:20px;text-align:right;}
+    .gt .reply img{margin-left:4px;vertical-align:-3px;}
+    #topic1{
+       margin-left: 320px;
+    }
+    /*活跃小组*/
+    .gm1{width:640px;overflow:hidden;}
+    .gm1 ul{margin-left:-20px;}
+    .gm1 .item{display:inline;float:left;width:310px;margin-left:20px;padding-bottom:30px;line-height:22px;}
+    .gm1 .item h3 a{
+        color: #6294b5;
+        font-size: 16px;
+    }
+    .gm1 .item h3 a:hover{text-decoration: underline}
+    .gm1 .item p{
+        color: #9F9F9F;
+    }
+    .gm1 .pic{margin-right:15px;float:left;width:100px;height:100px;}
+    .gm1 .pic img{width:100px;height:100px;border-radius:5px;}
+    .gm1 h3{height:22px;margin-bottom:10px;font-weight:normal;font-size:14px;overflow:hidden;}
+    .gm1 h3 a{font-size:14px;}
+    .gm1 p a{color:#666;}
+    /*小组分类*/
+    .title{height:45px;font-size:16px;color:#666;line-height:30px;}
+    .title ul{float:right;}
+    .title ul li{float:left;margin-left:8px;display:inline;font-size:12px;color:#960;}
+    .title ul a{color:#960;font-size:12px;}
+    .title ul a:hover{color:#FF8A00;font-size:12px;}
+    .title .on a,.title li .on{color:#ffa800;}
+    .gm2{}
+    .gm2 li{display:inline;margin-right:43px;float:left;width:70px;text-align:center;line-height:20px;}
+    .gm2 .pic{margin:0 auto;width:68px;height:68px;margin-bottom:5px;position:relative;}
+    .gm2 .pic img{width:68px;height:68px;vertical-align:top;border-radius:5px;}
+    .gm2 .pic .m{position:absolute;bottom:0;right:0;background-color:#000;padding:2px 4px;color:#fff;opacity:0.9;filter:alpha(opacity=90);}
+    .gm2 .pic .m a{color:#fff;}
+    .gm2 .pic .m a:hover{text-decoration:none;}
+    .gm2 h3{height:20px;overflow:hidden;font-weight:normal;font-size: 12px;}
+    .gray {
+        font-size: 12px;
+        color: gray;
+    }
+    .gm2 p{height:20px;overflow:hidden;}
+    .gm2 h3 a{color:#666;}
+    .gm2 .join_btn{display:inline-block;margin-top:3px;border:1px solid #ed9c00;padding:0 12px;background-color:#ffa800;color:#fff;border-radius:3px;line-height:18px;}
+    .gm2 .join_btn:hover{background-color:#ed9c00;text-decoration:none;}
+    .choice{overflow:hidden;}
+    .choice ul, ol, li {
+        list-style: none;
+    }
+    .choice .gm2{padding-bottom:10px;overflow:hidden;}
+    .choice .gm2 ul{margin-left:-44px;*zoom:1;}
+    .choice .gm2 ul li{margin-left:44px;padding-bottom:20px;margin-right:0;}
+    .choice .group_type{padding-bottom:10px;font-weight:normal;color:#ff8a00;font-size:14px;line-height:28px;}
+    .choice .group_type strong{font-weight:normal;}
+    .choice .group_type strong a {
+        text-decoration: none;
+        color: #6294b5;
+        cursor: pointer;
+    }
+    .choice .group_type strong a:hover{
+        text-decoration: underline;
+    }
+    .choice .group_type span{font-size:14px;}
+    .choice .group_type a strong,.choice .group_type strong a{font-size:14px;}
+    .choice .group_type a span,.choice .group_type span a{font-size:14px;}
+
+    .relate{
+        margin-left: 5px;
+    }
+    .tuwen{width:100%;clear:both;overflow:hidden;margin:20px 0;}
+    .tuwen h3{
+        line-height:40px;
+        color:#38485A;
+        font-size:18px;
+        border-bottom:1px solid #E6E6E6;
+        height:40px;
+        margin-bottom:30px;
+    }
+    .tuwen li {
+        overflow:hidden;
+        clear:both;
+        margin-bottom:10px;
+    }
+    .tuwen li img{
+        width:70px;
+        float:left;
+        margin-right:15px;
+    }
+    .tuwen li b{
+        overflow:hidden;
+        width:100%;
+        font-weight:normal;
+        color:#333;
+        font-size:14px;
+        line-height:30px;
+    }
+    .tuwen li a b:hover { text-decoration: underline; color: #F60 }
+    .tuwen p{
+        margin-top:5px;
+    }
+    .tulanum{
+        background: url(/myfile/image/lanmbq.png)no-repeat center left; padding-left: 17px
+    }
+    .tulanum a{color:#999;}
+    .tulanmu a:hover { color: #066 }
+    .tutime { background: url(/myfile/image/datepng.png) no-repeat left center; padding-left: 15px }
+    .tuwen li:hover { background: #f4f3f3 }
+    .tuwen li span{
+        color:#999;
+        margin-right:10px;
+    }
+    .cloud h3{
+        line-height:40px;
+        color:#38485A;
+        font-size:18px;
+        border-bottom:1px solid #E6E6E6;
+        height:40px;
+    }
+    .cloud ul{
+        margin:20px 0;
+    }
+    .cloud ul li { line-height: 24px; height: 24px; display: block; background: #999; float: left; padding: 3px 11px; margin: 10px 10px 0 0; border-radius: 8px; -moz-transition: all 0.5s; -webkit-transition: all 0.5s; -o-transition: all 0.5s; transition: all 0.5s; }
+    .cloud ul li a { color: #FFF }
+    .cloud ul li:nth-child(8n-7) { background: #8A9B0F }
+    .cloud ul li:nth-child(8n-6) { background: #EB6841 }
+    .cloud ul li:nth-child(8n-5) { background: #3FB8AF }
+    .cloud ul li:nth-child(8n-4) { background: #FE4365 }
+    .cloud ul li:nth-child(8n-3) { background: #FC9D9A }
+    .cloud ul li:nth-child(8n-2) { background: #EDC951 }
+    .cloud ul li:nth-child(8n-1) { background: #C8C8A9 }
+    .cloud ul li:nth-child(8n) { background: #83AF9B }
+    .cloud ul li:first-child { background: #036564 }
+    .cloud ul li:last-child { background: #3299BB }
+    .cloud ul li:hover { border-radius: 0; text-shadow: #000 1px 1px 1px }
+</style>
+<div class="layui-container wrap-main">
+     <div class="layui-row">
+         <div class="layui-col-md9">
+             <div class="group-menu">
+                 <ul class="menu_wrap clearfix">
+                     <li class="menu_item"><a href="#hot_topic">最新话题</a></li>
+                     <!--<li class="menu_item"><a href="#hot-group">热门小组</a></li>-->
+                     <li class="menu_item"><a href="#grouptype">小组分类</a></li>
+                 </ul>
+                 <div id="hot_topic">
+                     <div class="bd">
+                         <blockquote class="layui-elem-quote" style="border-left: 3px solid #6294b5;font-size: 16px;color: #6294b5;line-height: 10px">话题</blockquote>
+                         <div class="gt">
+                             <table>
+                                 <tr>
+                                     <th class="topic_tit">话题</th>
+                                     <th class="group_tit">小组</th>
+                                     <th class="">回复/热度</th>
+                                     <th class="">创建日期</th>
+                                     <!--<th>&nbsp;</th>-->
+                                 </tr>
+                                 <tbody class="topic_new" id="topic">
+                                 <!-- 最新发布 -->
+                                     <!--<td class="reply">-->
+																                  <!--<span class="avatar16">-->
+					<!--<a target="_blank"  href="/u/55262643.html" title="未知饭局组委会">-->
+						<!--<img src="http://n1-q.mafengwo.net/s12/M00/53/7D/wKgED1wkR2mAcwfnAAAsf9PG3Bk482.png?imageMogr2%2Fthumbnail%2F%2116x16r%2Fgravity%2FCenter%2Fcrop%2F%2116x16%2Fquality%2F90">-->
+					<!--</a>-->
+				  <!--</span>-->
+                        <!--</td>-->
+                        </tr>
+                     </tbody>
+
+                     <tbody id="hot_article_by_reply" class="topic_hot hide">
+
+                                 <!-- 热门话题 -->
+                                 </tbody>
+                             </table>
+                         </div>
+                         <div id="topic1"></div>
+                     </div>
+                     <!--<div class="hot-group" id="hot-group">-->
+                         <!--<blockquote class="layui-elem-quote" style="border-left: 3px solid #6294b5;font-size: 16px;color: #6294b5;line-height: 10px">小组</blockquote>-->
+                         <!--<div class="gm1">-->
+                             <!--<ul class="clearfix">-->
+                                 <!--<li class="item">-->
+                                     <!--<span class="pic"><a target="_blank"  href="/g/11786.html" title="旅行摄影"><img src="http://p1-q.mafengwo.net/s4/M00/13/D4/wKgByU_1RJuSFhHrAAAlOzbut5E67.jpeg?imageView2%2F2%2Fw%2F100%2Fh%2F100%2Fq%2F90"></a></span>-->
+                                     <!--<h3><a target="_blank"  href="/g/11786.html">旅行摄影</a></h3>-->
+                                     <!--<p class="group_tag">类别：摄影，旅游，出行...</p>-->
+                                     <!--<p>成员：15623</p>-->
+                                     <!--<p>帖子数：6568</p>-->
+                                 <!--</li>-->
+                                 <!--<li class="item">-->
+                                     <!--<span class="pic"><a target="_blank"  href="/g/10720.html" title="很爱住旅馆"><img src="http://p1-q.mafengwo.net/s1/M00/9C/8B/wKgBsU_1R9CNGLkTAAAy2_B9yNk57.jpeg?imageView2%2F2%2Fw%2F100%2Fh%2F100%2Fq%2F90"></a></span>-->
+                                     <!--<h3><a target="_blank"  href="/g/10720.html">很爱住旅馆</a></h3>-->
+                                     <!--<p class="group_tag">类别：青年旅舍、客栈、...</p>-->
+                                     <!--<p>成员：308039</p>-->
+                                     <!--<p>帖子数：2362</p>-->
+                                 <!--</li>-->
+                                 <!--<li class="item">-->
+                                     <!--<span class="pic"><a target="_blank"  href="/g/10720.html" title="很爱住旅馆"><img src="http://p1-q.mafengwo.net/s1/M00/9C/8B/wKgBsU_1R9CNGLkTAAAy2_B9yNk57.jpeg?imageView2%2F2%2Fw%2F100%2Fh%2F100%2Fq%2F90"></a></span>-->
+                                     <!--<h3><a target="_blank"  href="/g/10720.html">很爱住旅馆</a></h3>-->
+                                     <!--<p class="group_tag">类别：青年旅舍、客栈、...</p>-->
+                                     <!--<p>成员：308039</p>-->
+                                     <!--<p>帖子数：2362</p>-->
+                                 <!--</li>-->
+                                 <!--<li class="item">-->
+                                     <!--<span class="pic"><a target="_blank"  href="/g/10720.html" title="很爱住旅馆"><img src="http://p1-q.mafengwo.net/s1/M00/9C/8B/wKgBsU_1R9CNGLkTAAAy2_B9yNk57.jpeg?imageView2%2F2%2Fw%2F100%2Fh%2F100%2Fq%2F90"></a></span>-->
+                                     <!--<h3><a target="_blank"  href="/g/10720.html">很爱住旅馆</a></h3>-->
+                                     <!--<p class="group_tag">类别：青年旅舍、客栈、...</p>-->
+                                     <!--<p>成员：308039</p>-->
+                                     <!--<p>帖子数：2362</p>-->
+                                 <!--</li>-->
+                             <!--</ul>-->
+                         <!--</div>-->
+                     <!--</div>-->
+                     <div id="grouptype">
+                         <blockquote class="layui-elem-quote" style="border-left: 3px solid #6294b5;font-size: 16px;color: #6294b5;line-height: 10px">小组分类</blockquote>
+                         <!--<div class="title">-->
+                             <!--<ul>-->
+                                 <!--<li class="title_item"><a href="#archor_1">旅行主义</a></li>-->
+                             <!--</ul>-->
+                         <!--</div>-->
+                         <!--<div class="choice">-->
+                             <!--<div class="gm2 clearfix">-->
+                                 <!--<h2 class="group_type">-->
+                                     <!--<strong><a href="/group/glist.php?pid=1" target="_blank" name="archor_1" id="archor_1">旅行主义-->
+                                         <!--<span>(1795).</span></a></strong>-->
+                                 <!--</h2>-->
+                                 <!--<ul class="clearfix">-->
+                                     <!--<li>-->
+                                         <!--<div class="pic"><a target="_blank"  href="/g/11428.html" title="【京舵】四海之内皆兄弟"><img src="http://b1-q.mafengwo.net/s5/M00/10/02/wKgB3FGCcmeASsEKAAEVEBS87DA77.jpeg?imageView2%2F2%2Fw%2F68%2Fh%2F68%2Fq%2F90"></a></div>-->
+                                         <!--<h3><a target="_blank"  href="/g/11428.html">【京舵】四海之内皆兄弟</a></h3>-->
+                                         <!--<p class="gray">9046个帖子</p>-->
+                                     <!--</li>-->
+                                 <!--</ul>-->
+                             <!--</div>-->
+                         <!--</div>-->
+                     </div>
+                 </div>
+             </div>
+         </div>
+         <div class="layui-col-md3 relate" >
+             <div class="tuwen">
+                 <h3>小组排行</h3>
+                 <ul id="ordergroup">
+
+                 </ul>
+             </div>
+         </div>
+     </div>
+</div>
+<ul class="layui-fixbar" style="right: 50px; bottom: 50px;">
+    <li class="layui-icon layui-fixbar-top" id="to_top" style="background-color: #6294b5;"
+        title="返回顶部"></li>
+</ul>
+<script id="topic-mod" type="text/html">
+    {{#layui.each(d,function(index,item){ }}
+    <tr>
+        <td class="topic_tit">
+            <!--<img src="http://images.mafengwo.net/images/Z33.gif">-->
+            <h3><a target="_blank"  href="/front/topic_detail?id={{item.id}}" title="">{{item.title}} </a></h3>
+        </td>
+        <td class="group_tit">
+            <strong><a target="_blank"  href="/front/group_detail?id={{item.groupId}}" title="">{{item.groupName}}</a></strong>
+        </td>
+        <td class="view_num">
+            <span>{{item.replyNum}}/{{item.readNum}}</span>
+        </td>
+        <td class="date_time"><span>{{item.date}}</span></td>
+        {{# });}}
+</script>
+<script id="group-mod" type="text/html">
+    {{# var i= 1;var arr = Object.keys(d);var j = arr.length+1;}}
+    <div class="title">
+        <ul>
+            {{#layui.each(d,function(index,item){ }}
+            <li class="title_item"><a href="#group-data{{i}}">{{index}}</a></li>
+            {{#i++;j--;}}
+            {{# });}}
+        </ul>
+    </div>
+    <div class="choice">
+        {{#layui.each(d,function(index,item){ }}
+        <div class="gm2 clearfix">
+            <h2 class="group_type">
+                <strong><a href="javascript" target="_blank" name="archor_1" id="group-data{{j}}">{{index}}
+                    {{#j++;}}
+                    <span>({{item.length}})</span></a></strong>
+            </h2>
+            <ul class="clearfix">
+                {{#layui.each(item,function(ing,g){ }}
+                <li>
+                    <div class="pic"><a target="_blank"  href="/front/group_detail?id={{g.id}}" title=""><img src="{{g.headImg}}"></a></div>
+                    <h3><a target="_blank"  href="/front/group_detail?id={{g.id}}">{{g.title}}</a></h3>
+                    <p class="gray">{{g.topicNum}}个话题</p>
+                </li>
+                {{# });}}
+            </ul>
+        </div>
+        {{# });}}
+    </div>
+</script>
+<script id="ordergroup-mod" type="text/html">
+    {{#  layui.each(d, function(index, item){ }}
+    <li><a href="/front/group_detail?id={{item.id}}"><b class="layui-elip">{{item.title}}</b></a>
+        <p>
+            <span class="tulanum">{{item.topicNum}}个话题</span>
+            <span class="tutime">标签:{{item.tags}}</span>
+        </p>
+    </li>
+    {{# }); }}
+</script>
+<script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+<script>
+    $('.search-btn').on('click', function () {
+        var inpVal = $(this).siblings('input').val();
+        // 搜索条件不为空串
+        if (inpVal !== '') {
+            var url = "/front/search-page";
+            // window.open(encodeURI(url + "?pattern=" + inpVal));
+            window.location.href = encodeURI(url + "?pattern=" + inpVal);
+            // window.location.href = "/front/page/search-page?pattern=" + inpVal;
+        }
+        return false;
+    });
+    $("#to_top").click(function () {
+        $("html,body").animate({ scrollTop: 0 }, 200);
+    });
+
+    $(document).scroll(function () {
+        var scroll_top = $(document).scrollTop();
+        //高度多少出现返回顶部，可以随意调整
+        if (scroll_top > 100) {
+            $("#to_top").show();
+        } else {
+            $("#to_top").hide();
+        }
+    });
+    layui.config({
+        base: '/layuiadmin/'
+    }).extend({
+        index: 'lib/index' //主入口模块
+    }).use(['index','element','form','carousel','group', 'layer'], function(){
+        var element = layui.element; //导航的hover效果、二级菜单等功能，需要依赖element模块
+        var carousel = layui.carousel; // 轮播框设置
+        var group = layui.group
+            ,laytpl = layui.laytpl
+            ,layer = layui.layer;
+        /*旅游攻略页面*/
+        /*left nav*/
+        $('.nav-item').hover(function() {
+            $('.gonglve-nav').css('border-right-color', '#fff');
+            $('.nav-item .nav-panel').eq($(this).index()).css('display', 'block');
+        }, function() {
+            $('.gonglve-nav').css('border-right-color', '#ddd');
+            $('.nav-panel').css('display', 'none');
+        });
+        group.groupdata();
+        group.getnewTopic();
+        loadTopGroup();
+        function loadTopGroup() {
+            $.ajax({
+                type:'post',
+                url:'/comm/topGroup',
+                success:function (res) {
+                    var layhot = document.getElementById('ordergroup-mod').innerHTML;
+                    laytpl(layhot).render(res.data,function (html) {
+                        $("body #ordergroup").append(html);
+                    });
+                }
+            });
+        }
+        // //总页数大于页码总数
+        // laypage.render({
+        //     elem: 'topic1'
+        //     ,count: 70 //数据总数
+        //     ,theme: '#6294b5'
+        //     ,jump: function(obj){
+        //         console.log(obj)
+        //     }
+        // });
+    });
+</script>
+<!--[if lt IE 9]>
+<script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+<script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+</body>
+</html>
