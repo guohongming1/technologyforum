@@ -92,7 +92,7 @@ public class GroupServiceImpl implements GroupService {
     }
 
     /**
-     *  根据userid和groupId判断成员是否在小组内
+     * 根据userid和groupId判断成员是否在小组内
      * @param groupId
      * @param userId
      * @return
