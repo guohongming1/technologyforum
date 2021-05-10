@@ -12,9 +12,10 @@
     <result column="date" property="date" jdbcType="TIMESTAMP" />
     <result column="push_flag" property="pushFlag" jdbcType="TINYINT" />
     <result column="del_flag" property="delFlag" jdbcType="TINYINT" />
+    <result column="headImgUrl" property="headImgUrl" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, detail_id, title, sketch, collectnum, commentnum, user_id, date, push_flag, del_flag
+    id, detail_id, title, sketch, collectnum, commentnum, user_id, date, push_flag, del_flag,headImgUrl
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
@@ -69,6 +70,9 @@
       <if test="delFlag != null" >
         del_flag,
       </if>
+      <if test="headImgUrl != null" >
+        headImgUrl,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -100,6 +104,9 @@
       </if>
       <if test="delFlag != null" >
         #{delFlag,jdbcType=TINYINT},
+      </if>
+      <if test="headImgUrl != null" >
+        #{headImgUrl,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>

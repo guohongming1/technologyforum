@@ -103,4 +103,14 @@
       date = #{date,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <select id="selectPageVo" resultMap="BaseResultMap">
+    select * from technology_comment
+    <where>
+      <if test="detailId != null">
+        tech_de_id = #{detailId}
+      </if>
+    </where>
+    order by date desc
+  </select>
 </mapper>

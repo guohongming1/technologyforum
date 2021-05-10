@@ -27,6 +27,16 @@ public class Technology {
 
     private Byte delFlag;
 
+    private String headImgUrl;
+
+    public String getHeadImgUrl() {
+        return headImgUrl;
+    }
+
+    public void setHeadImgUrl(String headImgUrl) {
+        this.headImgUrl = headImgUrl;
+    }
+
     public Integer getId() {
         return id;
     }

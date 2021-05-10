@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>攻略详情</title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" type="text/css" th:href="@{/layui/css/layui.css}">
+    <script type="text/javascript" th:src="@{/myfile/js/jquery.min.js}"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/myfile/css/main.css}">
+</head>
+<body class="micronews">
+<div class="micronews-header-wrap">
+    <div class="micronews-header w1000 layui-clear">
+        <h1 class="logo">
+            <a href="/">
+                <img width="66px" height="22px" th:src="@{/layuiadmin/myfile/images/logo3.png}" alt="logo">
+                <span class="layui-hide">logo</span>
+            </a>
+        </h1>
+        <p class="nav">
+            <a href="/front/index" target="_blank" class="active">首页</a>
+            <a href="/front/group"  target="_blank">小组</a>
+            <a href="/front/question"  target="_blank">问答</a>
+            <a href="/strategy/newstrategy"  target="_blank">发表攻略</a>
+        </p>
+        <div class="search-bar">
+            <form class="layui-form" action="">
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <input type="text" name="title" placeholder="搜索你要的内容" autocomplete="off" class="layui-input">
+                        <button class="layui-btn search-btn" formnovalidate><i class="layui-icon layui-icon-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="login">
+            <a th:if="${session.userinfo == null}" href="/front/login">
+                登录
+            </a>
+            <!--<img th:src="@{/layuiadmin/myfile/images/header.png}" style="width: 36px; height: 36px;">-->
+            <ul th:if="${session.userinfo != null}" class="layui-nav" style="background-color: #fff;">
+                <span id="user-id" style="display:none" th:text="${session.userinfo.getId()}"></span>
+                <li class="layui-nav-item">
+                    <a href="/front/usermsg" style="font-size: 16px;color: #222;">消息<span th:text="${session.msgnum}" class="layui-badge"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+                </li>
+                <li class="layui-nav-item" lay-unselect="">
+                    <a href="javascript:;" style="font-size: 16px;color: #222;"><img th:src="${session.userinfo.getImgUrl()}" style="height: 30px; width: 30px;" class="layui-nav-img" onerror="getdefaultImg(event)">&nbsp;&nbsp;</a>
+                    <dl class="layui-nav-child">
+                        <dd style="text-align: center"><a href="/front/userset"><i class="layui-icon layui-icon-user"></i>&nbsp;个人资料</a></dd>
+                        <dd style="text-align: center"><a href="/front/userstrategy"><i class="layui-icon layui-icon-note"></i>&nbsp;攻略/问答</a></dd>
+                        <dd style="text-align: center"><a href="/front/usergroup"><i class="layui-icon layui-icon-rate"></i>&nbsp;小组</a></dd>
+                        <dd layadmin-event="logout" style="text-align: center"><a href="javascript:;"><i class="layui-icon layui-icon-logout"></i>&nbsp;登出</a></dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<style type="text/css">
+    body{
+        background-color: #f5f5f5;
+    }
+    .detail-header{
+        margin-top: 30px;
+        background-color: #fff;
+        border: solid 1px #E4E4E4;
+        box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+        z-index: 2;
+    }
+    .e-top {
+        position: relative;
+        height: 120px;
+        width: 1000px;
+        margin: 0 auto;
+    }
+    .eh-head {
+        float: left;
+        width: 76px;
+        height: 76px;
+        border-radius: 50%;
+        overflow: hidden;
+        padding: 4px;
+        border: solid 1px #DDDDDD;
+        margin: 14px 7px 15px 25px;
+    }
+    .ehh-img {
+        width: 76px;
+        height: 76px;
+        border-radius: 50%;
+        overflow: hidden;
+    }
+    .eh-title {
+        float: left;
+        width: 800px;
+        margin-top: 10px;
+        position: relative;
+    }
+    .eht-top {
+        width: 800px;
+    }
+    .eh-text {
+        color: #333333;
+        font-size: 24px;
+        font-weight: normal;
+        line-height: 30px;
+        margin: 0 9px 0 12px;
+        max-width: 640px;
+        max-height: 60px;
+        overflow: hidden;
+    }
+    .eh-sundry {
+        width: 365px;
+        height: 25px;
+        overflow: hidden;
+        margin-left: 12px;
+        color: #ACACAC;
+        margin-bottom: 14px;
+    }
+    .eh-sundry a:hover{
+        color: #01AAED;
+        text-decoration: underline;
+    }
+    .eh-sundry span{
+        padding-top: 4px;
+    }
+    .eh-sundry i{
+        margin-left: 10px;
+    }
+    .eh-right{
+        position: absolute;
+        right: 10px;
+        bottom: 1px;
+        color: #6294b5;
+        font-size: 12px;
+    }
+    .eh-right i{
+        display: block;
+        color: #6294b5;
+        font-size: 30px;
+    }
+    .eh-right p{
+        margin-left: 3px;
+    }
+    .eh-right-fill{
+        position: absolute;
+        right: 10px;
+        bottom: 1px;
+        color: #6294b5;
+        font-size: 12px;
+    }
+    .eh-right-fill i{
+        display: block;
+        color: #6294b5;
+        font-size: 30px;
+    }
+    .eh-right-fill p{
+        margin-left: 3px;
+    }
+    .eh-right i:hover{
+        cursor: pointer;
+    }
+    .wrap-main{
+        margin: 0px auto;
+        max-width: 1000px;
+        background-color: #fff;
+    }
+    .table{
+        margin:20px;
+    }
+    .hd{
+        height: 50px;
+        line-height: 48px;
+        border-bottom: 2px solid #6294b5;
+        font-size: 20px;
+        font-weight: normal;
+        color: #6294b5;
+    }
+    #tablesy th{
+        text-align: center;
+        background-color: #f5f5f5;
+        font-size: 16px;
+        font-weight: bold;
+    }
+    .route{
+        margin:20px;
+    }
+    .route-detail{
+        margin: 20px 0 0 20px;
+    }
+    .route-detail h3{
+        color: #6294b5;
+    }
+    .detail{
+        margin: 20px;
+    }
+    .detail div{
+        margin: 20px 0 0 20px;
+    }
+    .detail div img{
+        max-width: 668px;
+    }
+    /*  评论*/
+    .detail-wrapper{
+        margin: 20px;
+    }
+    .detail-wrapper .rev-list .rev-item {
+        margin-left: 42px;
+        padding: 12px 0;
+        border-bottom: 1px solid #efefef;
+    }
+
+    .detail-wrapper .rev-list .rev-item .user {
+        margin-bottom: 5px;
+    }
+
+    .detail-wrapper .rev-list .rev-item .user span:nth-last-of-type(1) {
+        font-size: 12px;
+    }
+
+    .detail-wrapper .rev-list .rev-item .rev-star {
+        display: inline-block;
+        position: relative;
+        margin: 2px 0 10px;
+        width: 84px;
+        height: 15px;
+        overflow: hidden;
+        vertical-align: top;
+        margin-bottom: 5px;
+    }
+
+    .detail-wrapper .rev-list .rev-item .star {
+        display: inline-block;
+        width: 84px;
+        height: 20px;
+        background: url("../images/icon/detail-v4-sprites11.png") no-repeat 0 -140px;
+    }
+
+    .detail-wrapper .rev-list .rev-item .star5 {
+        background-position: 0  -140px;
+    }
+
+    .detail-wrapper .rev-list .rev-item .avatar {
+        float: left;
+        margin-left: -42px;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        overflow: hidden;
+    }
+
+    .detail-wrapper .rev-list .rev-item .txt {
+        margin-bottom: 8px;
+        line-height: 18px;
+        font-size: 14px;
+    }
+
+    .detail-wrapper .rev-list .rev-item .time {
+        color: #999;
+        font-size: 12px;
+    }
+
+    .detail-wrapper .rev-list .rev-item .reply {
+        margin-top: 12px;
+        background-color: #f5f5f5;
+        padding: 8px 20px;
+        border-radius: 2px;
+        position: relative;
+        font-size: 14px;
+    }
+
+    .detail-wrapper .rev-list .rev-item .reply strong {
+        color: #6294b5;
+        font-weight: bold;
+    }
+    /*相关*/
+    /*热门小组*/
+    .relate {
+        margin-top: -23px;
+        padding-left: 10px;
+    }
+    .tuwen{width:100%;clear:both;overflow:hidden;margin:20px 0;}
+    .tuwen h3{
+        line-height:40px;
+        color:#38485A;
+        font-size:18px;
+        border-bottom:1px solid #E6E6E6;
+        height:40px;
+        margin-bottom:30px;
+    }
+    .tuwen li {
+        overflow:hidden;
+        clear:both;
+        margin-bottom:10px;
+    }
+    .tuwen li img{
+        width:70px;
+        float:left;
+        margin-right:15px;
+    }
+    .tuwen li b{
+        overflow:hidden;
+        width:100%;
+        font-weight:normal;
+        color:#333;
+        font-size:14px;
+        line-height:30px;
+    }
+    .tuwen li a b:hover { text-decoration: underline; color: #F60 }
+    .tuwen p{
+        margin-top:5px;
+    }
+    .tulanum{
+        background: url(/myfile/image/lanmbq.png) no-repeat center left; padding-left: 17px
+    }
+    .tulanum a{color:#999;}
+    .tulanmu a:hover { color: #066 }
+    .tutime { background: url(/myfile/image/datepng.png) no-repeat left center; padding-left: 15px }
+    .tuwen li:hover { background: #f4f3f3 }
+    .tuwen li span{
+        color:#999;
+        margin-right:10px;
+    }
+    .author-reply:hover{
+        cursor: pointer;
+        color: #1E9FFF;
+    }
+</style>
+<div class="wrap_all">
+    <div class="detail-header">
+        <div class="e-top">
+            <span id="detailId" style="display: none" th:text="${detailId}"></span>
+            <span id="Id" style="display: none" th:text="${id}"></span>
+            <div class="eh-head">
+                <img class="ehh-img" th:src="${authorImg}">
+            </div>
+            <div class="eh-title">
+                <div class="eht-top">
+                    <h1 class="eh-text" th:text="${title}"></h1>
+                </div>
+                <hr style="margin-bottom:20px;border:none;border-top:2px solid #E4E4E4;" />
+                <div class="eh-sundry">
+                    <span id="authorId" style="display: none" th:text="${authorId}"></span>
+                    <a th:href="'/front/userInfo?id='+${authorId}" th:text="${authorName}"></a>
+                    <!--&lt;!&ndash;<a href="#"><img th:src="@{/myfile/image/sixin.png}" title="私信"></a>&ndash;&gt;-->
+                    <i class="layui-icon layui-icon-date" title="日期"></i>
+                    <span th:text="${#dates.format(table.date,'yyyy-MM-dd HH:mm:ss')}"></span>
+                    <i class="layui-icon layui-icon-fire" title="热度"></i>
+                    <span th:text="${hotnum}"></span>
+                    <i class="layui-icon layui-icon-dialogue" title="评论"></i>
+                    <span th:text="${comnum}"></span>
+                    <i class="layui-icon layui-icon-star" title="被收藏"></i>
+                    <span th:text="${colnum}"></span>
+                </div>
+                <div class="eh-right collect" th:if="${colstate == false }">
+                <i class="layui-icon layui-icon-star"></i>
+                <p>收藏</p>
+                </div>
+                <div class="eh-right-fill collect" th:if="${colstate == true }">
+                    <i class="layui-icon layui-icon-star-fill"></i>
+                    <p>已收藏</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="layui-container wrap-main">
+        <div class="layui-row">
+            <div class="layui-col-md9">
+<!--                <div class="table">-->
+<!--                    <h3 class="hd">攻略报表</h3>-->
+<!--                    <table id="tablesy" class="layui-table">-->
+<!--                        <colgroup>-->
+<!--                            <col width="150">-->
+<!--                            <col width="150">-->
+<!--                            <col width="200">-->
+<!--                            <col>-->
+<!--                        </colgroup>-->
+<!--                        <tr>-->
+<!--                            <th>地点:</th>-->
+<!--                            <td><span id="address" th:text="${table.address}"></span></td>-->
+<!--                            <th>出发时间:</th>-->
+<!--                            <td><span th:text="${#dates.format(table.date,'yyyy-MM-dd')}"></span></td>-->
+<!--                        </tr>-->
+<!--                        <tr>-->
+<!--                            <th>出行天数:</th>-->
+<!--                            <td><span th:text="${table.days}"></span></td>-->
+<!--                            <th>人均费用:</th>-->
+<!--                            <td><span th:text="${table.fee}"></span></td>-->
+<!--                        </tr>-->
+<!--                        <tr>-->
+<!--                            <th>人物:</th>-->
+<!--                            <td colspan="3"><span th:text="${table.people}"></span></td>-->
+<!--                            &lt;!&ndash;<th>交通工具:</th>&ndash;&gt;-->
+<!--                            &lt;!&ndash;<td></td>&ndash;&gt;-->
+<!--                        </tr>-->
+<!--                        <tr>-->
+<!--                            <th colspan="1" rowspan="4">建议<br/>(必需品、美食、文化差异等)</th>-->
+<!--                            <td colspan="3" rowspan="4"><span th:text="${table.advice}"></span></td>-->
+<!--                        </tr>-->
+<!--                    </table>-->
+<!--                </div>-->
+<!--                <div class="route">-->
+<!--                    <h3 class="hd">路线</h3>-->
+<!--                    <div class="route-detail">-->
+<!--                        <ul class="layui-timeline" th:each="day,userStat:${route}">-->
+<!--                            &lt;!&ndash;<li class="layui-timeline-item">&ndash;&gt;-->
+<!--                                &lt;!&ndash;<i class="layui-icon layui-timeline-axis">&#xe63f;</i>&ndash;&gt;-->
+<!--                                &lt;!&ndash;<div class="layui-timeline-content layui-text">&ndash;&gt;-->
+<!--                                    &lt;!&ndash;<h3 class="layui-timeline-title">DAY1</h3>&ndash;&gt;-->
+<!--                                    &lt;!&ndash;<ul>&ndash;&gt;-->
+<!--                                        &lt;!&ndash;<li>《登高》</li>&ndash;&gt;-->
+<!--                                        &lt;!&ndash;<li>《茅屋为秋风所破歌》</li>&ndash;&gt;-->
+<!--                                    &lt;!&ndash;</ul>&ndash;&gt;-->
+<!--                                &lt;!&ndash;</div>&ndash;&gt;-->
+<!--                            &lt;!&ndash;</li>&ndash;&gt;-->
+<!--                            <li class="layui-timeline-item">-->
+<!--                                <i class="layui-icon layui-timeline-axis">&#xe63f;</i>-->
+<!--                                <div class="layui-timeline-content layui-text">-->
+<!--                                    <h3 class="layui-timeline-title" th:text="'DAY'+${userStat.count}"></h3>-->
+<!--                                    <ul th:each="elem:${day}">-->
+<!--                                        <li th:text="${elem}"></li>-->
+<!--                                    </ul>-->
+<!--                                </div>-->
+<!--                            </li>-->
+<!--                            &lt;!&ndash;<li class="layui-timeline-item" th:if="${day.size}==${day.count}">&ndash;&gt;-->
+<!--                            &lt;!&ndash;</li>&ndash;&gt;-->
+<!--                        </ul>-->
+<!--                    </div>-->
+<!--                </div>-->
+                <div class="detail">
+                    <h3 class="hd">详细攻略</h3>
+                    <div th:utext="${content}">
+                    </div>
+                </div>
+                <div class="detail-wrapper">
+                    <blockquote class="layui-elem-quote" style="border-left: 5px solid #6294b5;font-size: 20px;color: #6294b5">用户评论</blockquote>
+                    <!--// TODO-->
+                    <div>
+                        <div class="layui-collapse">
+                            <div class="layui-colla-item">
+                                <h3 class="layui-colla-title" style="text-align: center;font-size: 15px">回复</h3>
+                                <div class="layui-colla-content">
+                                    <textarea id="comment" name="content" required lay-verify="required" placeholder="请输入内容"  class="layui-textarea fly-editor" style="height: 150px;border: none"></textarea>
+                                    <button id="submit" type="button" class="layui-btn" style="margin: 3px 0px 0px 600px;">确认</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="reply"></div>
+                    <!--<div class="rev-list">-->
+                        <!--<ul>-->
+                            <!--<li class="rev-item">-->
+                                <!--<div class="user">-->
+                                            <!--<span class="avatar">-->
+                                                <!--<img th:src="@{/layuiadmin/myfile/images/test01.jpg}" width="32" height="32">-->
+                                            <!--</span>-->
+                                    <!--<span>雅芭***珏蜜</span>-->
+                                <!--</div>-->
+                                <!--<p class="txt">比自己订票便宜，航班也很准时。一路顺畅。</p>-->
+                                <!--<div class="img clearfix"></div>-->
+                                <!--<span class="time">2月前</span>-->
+                                <!--<div class="reply">-->
+                                    <!--<strong>回复: </strong>谢谢亲的好评哦，巴厘岛是我们公司主推的产品之一哦，我们资源都比较强势，所以价格都比较优惠，鹰航和港航都是不错的航班，能让亲愉快出行是必须的哦，希望下次再次选择我们时光岛，期待为您再次服务！-->
+                                <!--</div>-->
+                            <!--</li>-->
+                        <!--</ul>-->
+                    <!--</div>-->
+                    <!--<div class="rev-list">-->
+                        <!--<ul>-->
+                            <!--<li class="rev-item">-->
+                                <!--<div class="user">-->
+                                            <!--<span class="avatar">-->
+                                                <!--<img th:src="@{/layuiadmin/myfile/images/test01.jpg}" width="32" height="32">-->
+                                            <!--</span>-->
+                                    <!--<span>雅芭***珏蜜</span>-->
+                                <!--</div>-->
+                                <!--<p class="txt">比自己订票便宜，航班也很准时。一路顺畅。</p>-->
+                                <!--<div class="img clearfix"></div>-->
+                                <!--<span class="time">2月前</span>-->
+                            <!--</li>-->
+                        <!--</ul>-->
+                    <!--</div>-->
+                    <!--<div class="rev-list">-->
+                        <!--<ul>-->
+                            <!--<li class="rev-item">-->
+                                <!--<div class="user">-->
+                                            <!--<span class="avatar">-->
+                                                <!--<img th:src="@{/layuiadmin/myfile/images/test01.jpg}" width="32" height="32">-->
+                                            <!--</span>-->
+                                    <!--<span>雅芭***珏蜜</span>-->
+                                <!--</div>-->
+                                <!--<p class="txt">比自己订票便宜，航班也很准时。一路顺畅。</p>-->
+                                <!--<div class="img clearfix"></div>-->
+                                <!--<span class="time">2月前</span>-->
+                                <!--<div class="reply">-->
+                                    <!--<strong>回复: </strong>谢谢亲的好评哦，巴厘岛是我们公司主推的产品之一哦，我们资源都比较强势，所以价格都比较优惠，鹰航和港航都是不错的航班，能让亲愉快出行是必须的哦，希望下次再次选择我们时光岛，期待为您再次服务！-->
+                                <!--</div>-->
+                            <!--</li>-->
+                        <!--</ul>-->
+                    <!--</div>-->
+                </div>
+            </div>
+            <div class="layui-col-md3 relate">
+                <div class="tuwen">
+                    <h3>相关</h3>
+                    <ul id="related">
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script id="com-mod" type="text/html">
+    {{#  layui.each(d, function(index, item){ }}
+        <div class="rev-list">
+            <ul>
+                <li class="rev-item" id="rev{{index}}">
+                    <div class="user">
+                 <span class="avatar">
+                 <img src="{{item.userImg}}" width="32" height="32">
+                  </span>
+                        <span>{{item.userName}}</span>
+                    </div>
+                    <p class="txt">{{item.content}}</p>
+                    <div class="img clearfix"></div>
+                    <span class="time">{{item.date}}</span>
+                    {{# if(item.reply != null){ }}
+                    <div class="reply">
+                        <strong>回复: </strong>{{item.reply}}
+                    </div>
+                    {{#}else{}}
+                    <span class="author-reply" data-index="{{index}}" data-id="{{item.id}}" style="display: none;font-size: 12px;float: right">回复</span>
+                    {{#}}}
+                </li>
+            </ul>
+        </div>
+        {{# }); }}
+</script>
+    <script id="relate-mod" type="text/html">
+        {{#  layui.each(d, function(index, item){ }}
+          {{#var id = $('#Id').text(); if(item.id != id ){}}
+         {{# if(item.type==1){}}
+            <li><a href="/front/strategydetail?id={{item.id}}&detailId=0"><b class="layui-elip">{{item.title}}</b></a>
+                <p>
+                    <span class="tulanum"><a href="/">攻略</a></span>
+                    <span class="tutime">{{item.date}}</span>
+                </p>
+            </li>
+        {{#}}}
+        {{# if(item.type==2){}}
+        <li><a href="/front/questionDetail?id={{item.id}}"><b class="layui-elip">{{item.title}}</b></a>
+            <p>
+                <span class="tulanum"><a href="/">问答</a></span>
+                <span class="tutime">{{item.date}}</span>
+            </p>
+        </li>
+        {{#}}}
+        {{# if(item.type==3){}}
+        <li><a href="/front/topic_detail?id={{item.id}}"><b class="layui-elip">{{item.title}}</b></a>
+            <p>
+                <span class="tulanum"><a href="/">话题</a></span>
+                <span class="tutime">{{item.date}}</span>
+            </p>
+        </li>
+        {{#}}}
+        {{#}}}
+        {{# }); }}
+</script>
+    <script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+    <script>
+        $('.search-btn').on('click', function () {
+            var inpVal = $(this).siblings('input').val();
+            // 搜索条件不为空串
+            if (inpVal !== '') {
+                var url = "/front/search-page";
+                // window.open(encodeURI(url + "?pattern=" + inpVal));
+                window.location.href = encodeURI(url + "?pattern=" + inpVal);
+                // window.location.href = "/front/page/search-page?pattern=" + inpVal;
+            }
+            return false;
+        });
+        var compage = 1;
+        layui.config({
+            base: '/layuiadmin/'
+        }).extend({
+            index: 'lib/index' //主入口模块
+        }).use(['index','element','carousel','layer','laytpl'], function() {
+            var element = layui.element; //导航的hover效果、二级菜单等功能，需要依赖element模块
+            var laytpl = layui.laytpl,
+                layer = layui.layer,
+                index = layui.index;
+            $(function () {
+                var user_id = $("#user-id").text();// 攻略id
+                var author = $("#authorId").text();
+                if(user_id == author){
+                    $(".collect").css('display','none');
+                }
+            });
+            // 收藏按钮
+            $(".eh-right i").hover(function () {
+                $(this).removeClass("layui-icon-star");
+                $(this).addClass("layui-icon-star-fill");
+            },function () {
+                $(this).removeClass("layui-icon-star-fill");
+                $(this).addClass("layui-icon-star");
+            });
+            //点击收藏
+            if(!$(".eh-right i").hasClass('layui-icon-star-fill')){
+                $(".eh-right i").click(function () {
+                    var _this = $(this);
+                    var straid = $("#Id").text();// 攻略id
+                    console.log(straid)
+                    $.ajax({
+                        type: "post",
+                        url: "/strategy/straCollect",
+                        data:{'straId':straid},
+                        success: function(res){
+                            console.log('collect');
+                            if(res.code == 200){
+                                console.log('collect');
+                                layer.msg("收藏成功");
+                                _this.unbind("mouseenter").unbind("mouseleave");
+                                _this.removeClass("layui-icon-star");
+                                _this.addClass("layui-icon-star-fill");
+                            }
+                        },
+                        error: function (res) {
+                            layer.msg("请求错误");
+                        },
+                        complete : function(xhr, status) {
+
+                            //拦截器拦截没有权限跳转
+                            // 通过xhr取得响应头
+                            var REDIRECT = xhr.getResponseHeader("REDIRECT");
+                            //如果响应头中包含 REDIRECT 则说明是拦截器返回的
+                            if (REDIRECT == "REDIRECT")
+                            {
+                                document.location.href = xhr.getResponseHeader("CONTEXTPATH");
+                            }
+                        }
+                    });
+                });
+            }
+            var detailId = $("#detailId").text();
+            loadComment();
+            function loadComment() {
+                // 请求相关
+                var address = $('#address').text().split('-');
+                console.log(address[0]);
+                if(address[0] != null && ""!= address[0])
+                $.ajax({
+                    type: "post",
+                    url: "/comm/search-list",
+                    data: {'limit': 6, 'page': 1,'pattern':address[0]},
+                    success: function (res) {
+                        if(null != res.data && ""!= res.data){
+                            var layhot = document.getElementById('relate-mod').innerHTML;
+                            laytpl(layhot).render(res.data,function (html) {
+                                $("body #related").append(html);
+                            });
+                        }else{
+                            $("body #related").append('<li class="fly-none">暂无相关</li>')
+                        }
+                    }
+                });
+                //请求接口
+                $.ajax({
+                    type: "post",
+                    url: "/comm/strcomment",
+                    data:{'detailId':detailId,'page':compage},
+                    success: function(res){
+                        if(res.data != null && res.data != ""){
+                            compage++;
+                            // 获取节点
+                            var getTpl = document.getElementById('com-mod').innerHTML;
+                            // 执行tpl渲染
+                            laytpl(getTpl).render(res.data, function (html) {
+                                $("#reply").append(html);
+                            });
+                            // 检查是否是作者登录
+                            var author = $("#authorId").text();
+                            var user_id = $("#user-id").text();
+                            var reply = $(".author-reply");
+                            console.log(author+"userid"+user_id)
+                            if(user_id != undefined &&user_id != null){
+                                if(author == user_id){
+                                    reply.css("display",'inline-block');
+                                    reply.click(function () {
+                                        var _this = $(this);
+                                        var rep_id = $(this).data('id');
+                                        var straid = $("#Id").text();// 攻略id
+                                        layer.prompt({title: '填写回复', formType: 2}, function(rep_text, index){
+                                            layer.close(index);
+                                            $.ajax({
+                                                type: "post",
+                                                url: "/strategy/repstracomment",
+                                                data:{'straId':straid,'id':rep_id,'content':rep_text},
+                                                success: function(res){
+                                                    if(res.code == 200){
+                                                        layer.msg("回复成功");
+                                                        _this.css("display",'none');
+                                                        var dataindex = 'rev'+_this.data("index");
+                                                        console.log(dataindex)
+                                                        $("#"+dataindex).append("<div class=\"reply\">\n" +
+                                                            "                        <strong>回复: </strong>\n" +rep_text+
+                                                            "                    </div>");
+                                                    }
+                                                },
+                                                error: function (res) {
+                                                    layer.msg("请求错误");
+                                                }
+                                            });
+                                        });
+                                    });
+                                }
+                            }
+                        }
+                    },
+                    error: function (res) {
+                        layer.msg("请求错误");
+                    }
+                });
+            }
+            $("#submit").click(function () {
+                var id = $("#Id").text();
+                var text = $("#comment").val();
+                console.log("id"+id+"text"+text)
+                if(text != null && text != ""){
+                    $.ajax({
+                        type: "post",
+                        url: "/strategy/substracomment",
+                        data:{'id':id,'content':text},
+                        success: function(res){
+                            if(res.code == 200){
+                                data=[{}];
+                                layer.msg("评论成功")
+                                $("#comment").val("");
+                                $(".layui-colla-content").removeClass("layui-show");
+                            }
+                        },
+                        error: function (res) {
+                            layer.msg("请求错误");
+                        },
+                        complete : function(xhr, status) {
+                            layer.msg("正在跳转至登录页面....");
+                            //拦截器拦截没有权限跳转
+                            // 通过xhr取得响应头
+                            var REDIRECT = xhr.getResponseHeader("REDIRECT");
+                            //如果响应头中包含 REDIRECT 则说明是拦截器返回的
+                            if (REDIRECT == "REDIRECT")
+                            {
+                                document.location.href = xhr.getResponseHeader("CONTEXTPATH");
+                            }
+                        }
+                    });
+                }else{
+                    layer.msg("请输入内容",{icon:5});
+                }
+            });
+        });
+    </script>
+</div>
+<div class="micronews-footer-wrap">
+    <div class="micronews-footer w1000">
+        <div class="Copyright">
+            <span>Copyright&nbsp;</span>&nbsp;&copy;<span>旅游攻略平台&nbsp;&nbsp;</span>
+        </div>
+    </div>
+</div>
+</body>
+</html>

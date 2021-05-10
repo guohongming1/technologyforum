@@ -29,7 +29,7 @@
     insert into technology_detail (id, content)
     values (#{id,jdbcType=INTEGER}, #{content,jdbcType=LONGVARCHAR})
   </insert>
-  <insert id="insertSelective" parameterType="com.example.technologyforum.web.pojo.TechnologyDetail" >
+  <insert id="insertSelective" parameterType="com.example.technologyforum.web.pojo.TechnologyDetail"  useGeneratedKeys="true" keyProperty="id"  >
     insert into technology_detail
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >

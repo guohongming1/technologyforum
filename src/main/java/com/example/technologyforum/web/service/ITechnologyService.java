@@ -1,5 +1,7 @@
 package com.example.technologyforum.web.service;
 
+import com.example.technologyforum.result.Response;
+import com.example.technologyforum.web.dto.TechnologyDTO;
 import com.example.technologyforum.web.pojo.Technology;
 import com.example.technologyforum.web.pojo.TechnologyDetail;
 
@@ -28,4 +30,29 @@ public interface ITechnologyService {
      * @return
      */
     TechnologyDetail getDetailById(int detailId);
+
+    /**
+     * 创建帖子
+     * @param strategy
+     * @param content
+     * @return
+     */
+    public Response<String> createStrategy(Technology strategy, String content);
+
+    /**
+     * 更新帖子
+     * @param strategy
+     * @param content
+     * @return
+     */
+    Response<String> updateStrategy(Technology strategy,String content);
+
+    /**
+     * 根据id获取攻略
+     * @param id
+     * @return
+     */
+    public Technology selectStrategyById(int id);
+
+    public Response<TechnologyDTO> pullStrategy(int userId);
 }
