@@ -56,7 +56,7 @@ public class GroupServiceImpl implements GroupService {
     }
 
     /**
-     * 创建话题
+     *创建话题
      * @param topicDTO
      * @return
      */
