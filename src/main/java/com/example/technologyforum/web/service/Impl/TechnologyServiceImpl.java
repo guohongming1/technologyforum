@@ -80,6 +80,13 @@ public class TechnologyServiceImpl implements ITechnologyService {
             detail.setContent(content);
             technologyDetailMapper.updateByPrimaryKeySelective(detail);
             return Response.success("成功");
+        }else{
+            TechnologyDetail strategyDetail = new TechnologyDetail();
+            strategyDetail.setContent(content);
+            technologyDetailMapper.insertSelective(strategyDetail);
+            strategy.setDetailId(strategyDetail.getId());
+            strategy.setDelFlag((byte)0);
+            return Response.success("成功");
         }
         return Response.fail(CodeMsg.ESSAY_PUSH_FAIL);
     }
