@@ -79,7 +79,7 @@ public class TechnologController {
         SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
         try {
             //使用SimpleDateFormat的parse()方法生成Date
-            Date date = sf.parse(strategyDTO.getDate());
+            Date date = sf.parse(new Date());
             strategy.setDate(date);
         } catch (ParseException e) {
             e.printStackTrace();
