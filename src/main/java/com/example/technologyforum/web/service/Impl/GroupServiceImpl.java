@@ -64,11 +64,11 @@ public class GroupServiceImpl implements GroupService {
     @Transactional
     public Response<String> createTopic(NewTopicDTO topicDTO) {
         if(this.checkGroupMById(Integer.parseInt(topicDTO.getGroupId()),topicDTO.getUserId())){
-            Group travelGroup = groupMapper.selectByPrimaryKey(Integer.parseInt(topicDTO.getGroupId()));
-            if(travelGroup != null){
-                travelGroup.setTopicNum(travelGroup.getTopicNum()==null? 0:travelGroup.getTopicNum()+1);
+            Group technologyGroup = groupMapper.selectByPrimaryKey(Integer.parseInt(topicDTO.getGroupId()));
+            if(technologyGroup != null){
+                technologyGroup.setTopicNum(technologyGroup.getTopicNum()==null? 0:technologyGroup.getTopicNum()+1);
                 //更新小组话题数量
-                groupMapper.updateByPrimaryKeySelective(Group); // TODO 最好更新指定字段
+                groupMapper.updateByPrimaryKeySelective(technologyGroup); // TODO 最好更新指定字段
                 // 话题明细
                 TopicDetail detail = new TopicDetail();
                 detail.setUserId(topicDTO.getUserId());
@@ -80,8 +80,8 @@ public class GroupServiceImpl implements GroupService {
                 Topic topic = new Topic();
                 topic.setTitle(topicDTO.getTitle());
                 topic.setTags(topicDTO.getTags());
-                topic.setGroupId(travelGroup.getId());
-                topic.setGroupName(travelGroup.getTitle());
+                topic.setGroupId(technologyGroup.getId());
+                topic.setGroupName(technologyGroup.getTitle());
                 topic.setUserId(topicDTO.getUserId());
                 topic.setGrDeId(detail.getId());
                 topicMapper.insertSelective(topic);
