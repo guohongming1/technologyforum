@@ -433,12 +433,12 @@
                                 form.val("streategyform", { //streategyform 即 class="layui-form" 所在元素属性 lay-filter="" 对应的值
                                     title: data.title
                                     ,headImgUrl: data.headImgUrl
-                                    ,address: data.address
-                                    ,date: data.date
-                                    ,days: data.days
-                                    ,money: data.money
-                                    ,people: data.people
-                                    ,advice: data.advice
+                                    //,address: data.address
+                                   // ,date: data.date
+                                   // ,days: data.days
+                                   // ,money: data.money
+                                  ///  ,people: data.people
+                                  ///  ,advice: data.advice
                                     ,sketch: data.sketch
                                 });
                                 form.render(null, 'streategyform');
@@ -447,7 +447,7 @@
                                     $(".head_img").html('<img src="'+data.headImgUrl + '" width="200px" height="200px"> ');
                                     $(".head_img").show();
                                 }
-                                loadRouteData(data.route)
+                              //  loadRouteData(data.route)
                             }
                         });
                     } else {
