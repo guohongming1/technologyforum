@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.springframework.org/schema/data/jaxb">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>首页</title>
@@ -30,7 +30,7 @@
             <a href="/front/index" target="_blank">首页</a>
             <a href="/front/group"  target="_blank" class="active">小组</a>
             <a href="/front/question"  target="_blank">问答</a>
-            <a href="/strategy/newstrategy"  target="_blank">发表</a>
+            <a href="/strategy/newstrategy"  target="_blank">发表攻略</a>
         </p>
         <div class="search-bar">
             <form class="layui-form" action="">
@@ -57,7 +57,7 @@
                     <a href="javascript:;" style="font-size: 16px;color: #222;"><img th:src="${session.userinfo.getImgUrl()}" style="height: 30px; width: 30px;" class="layui-nav-img" onerror="getdefaultImg(event)">&nbsp;&nbsp;</a>
                     <dl class="layui-nav-child">
                         <dd style="text-align: center"><a href="/front/userset"><i class="layui-icon layui-icon-user"></i>&nbsp;个人资料</a></dd>
-                        <dd style="text-align: center"><a href="/front/userstrategy"><i class="layui-icon layui-icon-note"></i>&nbsp;发表/问答</a></dd>
+                        <dd style="text-align: center"><a href="/front/userstrategy"><i class="layui-icon layui-icon-note"></i>&nbsp;攻略/问答</a></dd>
                         <dd style="text-align: center"><a href="/front/usergroup"><i class="layui-icon layui-icon-rate"></i>&nbsp;小组</a></dd>
                         <dd layadmin-event="logout" style="text-align: center"><a href="javascript:;"><i class="layui-icon layui-icon-logout"></i>&nbsp;登出</a></dd>
                     </dl>
@@ -93,7 +93,7 @@
         <li class="layui-nav-item">
             <a href="/front/userstrategy">
                 <i class="layui-icon layui-icon-note"></i>
-                发表
+                攻略
             </a>
         </li>
         <li class="layui-nav-item">
@@ -121,6 +121,216 @@
             </a>
         </li>
     </ul>
-    
+
+    <div class="site-tree-mobile layui-hide">
+        <i class="layui-icon">&#xe602;</i>
+    </div>
+    <div class="site-mobile-shade"></div>
+
+    <div class="site-tree-mobile layui-hide">
+        <i class="layui-icon">&#xe602;</i>
+    </div>
+    <div class="site-mobile-shade"></div>
+
+
+    <div class="fly-panel fly-panel-user" pad20>
+        <!--
+        <div class="fly-msg" style="margin-top: 15px;">
+          您的邮箱尚未验证，这比较影响您的帐号安全，<a href="activate.html">立即去激活？</a>
+        </div>
+        -->
+        <div class="layui-tab layui-tab-brief" lay-filter="user">
+            <ul class="layui-tab-title" id="LAY_mine">
+                <li class="layui-this" lay-id="info">我的资料</li>
+                <li lay-id="avatar">头像</li>
+                <li lay-id="pass">密码</li>
+            </ul>
+            <div class="layui-tab-content" style="padding: 20px 0;">
+                <div class="layui-form layui-form-pane layui-tab-item layui-show">
+                    <form method="post">
+                        <div class="layui-form-item">
+                            <label for="L_email" class="layui-form-label">邮箱</label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="L_email" name="email" required lay-verify="email" autocomplete="off" th:value="${session.userinfo.getEmail()}" class="layui-input" readonly>
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">如果您要变更邮箱，需<a href="activate.html" style="font-size: 12px; color: #4f99cf;">重新绑定新邮箱</a>。</div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label for="L_username" class="layui-form-label">昵称</label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="L_username" name="name" th:value="${session.userinfo.getName()}" required lay-verify="required|username" autocomplete="off" value="" class="layui-input">
+                            </div>
+                            <div class="layui-inline">
+                                <div class="layui-input-inline" th:if="${session.userinfo.getSex() == null}">
+                                    <input type="radio" name="sex" value="0" title="男">
+                                    <input type="radio" name="sex" value="1" title="女">
+                                </div>
+                                <div class="layui-input-inline" th:if="${session.userinfo.getSex() == '0'}">
+                                    <input type="radio" name="sex" value="0" checked title="男">
+                                    <input type="radio" name="sex" value="1" title="女">
+                                </div>
+                                <div class="layui-input-inline" th:if="${session.userinfo.getSex() == '1'}">
+                                    <input type="radio" name="sex" value="0" title="男">
+                                    <input type="radio" name="sex" value="1" checked title="女">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label for="L_city" class="layui-form-label">城市</label>
+                            <div class="layui-input-inline">
+                                <input type="text" th:value="${session.userinfo.getRemark()}" id="L_city" name="remark" autocomplete="off" value="" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item layui-form-text">
+                            <label for="L_sign" class="layui-form-label">签名</label>
+                            <div class="layui-input-block">
+                                <textarea placeholder="随便写些什么刷下存在感" id="L_sign"  th:text="${session.userinfo.getTitle()}"   name="title" autocomplete="off" class="layui-textarea" style="height: 80px;"></textarea>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <button class="layui-btn" key="set-mine" lay-filter="userinfo" lay-submit>确认修改</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="layui-form layui-form-pane layui-tab-item">
+                    <div class="layui-form-item">
+                        <div class="avatar-add">
+                            <p>建议尺寸168*168，支持jpg、png、gif，最大不能超过50KB</p>
+                            <button type="button" id="uploadUserHeadImgbtn" class="layui-btn upload-img">
+                                <i class="layui-icon">&#xe67c;</i>上传头像
+                            </button>
+                            <img class="head_img" onerror="getdefaultImg(event)" th:src="${session.userinfo.getImgUrl()}">
+                            <span class="loading"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-form layui-form-pane layui-tab-item">
+                    <form method="post">
+                        <div class="layui-form-item">
+                            <label for="L_nowpass" class="layui-form-label">当前密码</label>
+                            <div class="layui-input-inline">
+                                <input type="password" id="L_nowpass" name="nowpass" required lay-verify="required|pass" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label for="L_pass" class="layui-form-label">新密码</label>
+                            <div class="layui-input-inline">
+                                <input type="password" id="L_pass" name="pass" required lay-verify="required|pass" autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">6到16个字符</div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label for="L_repass" class="layui-form-label">确认密码</label>
+                            <div class="layui-input-inline">
+                                <input type="password" id="L_repass" name="repass" required lay-verify="required|pass" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <button class="layui-btn" key="set-mine" lay-filter="repass" lay-submit>确认修改</button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+<script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+<script>
+    $('.search-btn').on('click', function () {
+        var inpVal = $(this).siblings('input').val();
+        // 搜索条件不为空串
+        if (inpVal !== '') {
+            var url = "/front/search-page";
+            // window.open(encodeURI(url + "?pattern=" + inpVal));
+            window.location.href = encodeURI(url + "?pattern=" + inpVal);
+            // window.location.href = "/front/page/search-page?pattern=" + inpVal;
+        }
+        return false;
+    });
+    layui.config({
+        version: "3.0.0"
+        ,base: '/mymods/'
+    }).extend({
+        travel: 'index',
+    }).use(['travel','element','laytpl','form','layer'],function () {
+        var element = layui.element; //导航的hover效果、二级菜单等功能，需要依赖element模块
+        var taytpl = layui.laytpl;
+        var layer = layui.layer;
+        var form = layui.form;
+        form.verify({
+            username: function(value, item){ //value：表单的值、item：表单的DOM对象
+                if(!new RegExp("^[a-zA-Z0-9_\u4e00-\u9fa5\\s·]+$").test(value)){
+                    return '用户名不能有特殊字符';
+                }
+                if(/(^\_)|(\__)|(\_+$)/.test(value)){
+                    return '用户名首尾不能出现下划线\'_\'';
+                }
+                if(/^\d+\d+\d$/.test(value)){
+                    return '用户名不能全为数字';
+                }
+                if(value.length >20){
+                    return '用户名过长';
+                }
+            }
+
+            //我们既支持上述函数式的方式，也支持下述数组的形式
+            //数组的两个值分别代表：[正则匹配、匹配不符时的提示文字]
+            ,pass: [
+                /^[\S]{6,12}$/
+                ,'密码必须6到12位，且不能出现空格'
+            ]
+        });
+        form.on('submit(userinfo)', function(data){
+            var field = data.field;
+            console.log(field);
+           // return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+            $.ajax({
+                type:'post',
+                url:'/user/reuserinfo',
+                data:field,
+                success:function (res) {
+                    if(res.code == 200){
+                        layer.msg("修改成功")
+                    }else{
+                        layer.msg(res.msg);
+                    }
+                },
+                error:function (res) {
+                    layer.msg(res.msg);
+                }
+            });
+            return false;
+        });
+        form.on('submit(repass)', function(data){
+            var field = data.field;
+            if(field.nowpass != field.pass){
+                layer.msg("两次输入的密码不一致！");
+                return false;
+            }
+            console.log(field);
+            $.ajax({
+                type:'post',
+                url:'/user/repass',
+                data:field,
+                success:function (res) {
+                    if(res.code == 200){
+                        layer.msg(res.message);
+                      //  front//location.href = '、/login';
+                    }else{
+                        layer.msg(res.message);
+                    }
+                },
+                error:function (res) {
+                    layer.msg(res.msg);
+                }
+            });
+            return false;
+        });
+    });
+</script>
 </body>
 </html>
