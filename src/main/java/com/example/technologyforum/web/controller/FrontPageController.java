@@ -106,6 +106,10 @@ public class FrontPageController {
         return "front/group-detail";
     }
 
+    @RequestMapping("/group")
+    public String group(){
+        return "front/group";
+    }
     /**
      * 问题详情
      * @param session
