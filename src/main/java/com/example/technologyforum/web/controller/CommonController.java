@@ -8,9 +8,8 @@ import com.example.technologyforum.util.PageInfo;
 import com.example.technologyforum.util.PageQuery;
 import com.example.technologyforum.web.dto.*;
 import com.example.technologyforum.web.mapper.UserMapper;
-import com.example.technologyforum.web.pojo.Question;
-import com.example.technologyforum.web.pojo.QuestionComment;
-import com.example.technologyforum.web.pojo.User;
+import com.example.technologyforum.web.pojo.*;
+import com.example.technologyforum.web.service.GroupService;
 import com.example.technologyforum.web.service.ILuceneService;
 import com.example.technologyforum.web.service.Impl.CommonServiceImpl;
 import com.example.technologyforum.web.service.Impl.RedisService;
@@ -44,6 +43,9 @@ public class CommonController {
 
     @Autowired
     private ILuceneService service;
+
+    @Autowired
+    private GroupService groupService;
 
     @Autowired
     private CommonServiceImpl commonService;
@@ -254,5 +256,95 @@ public class CommonController {
     @ResponseBody
     public Response<List<CommentDTO>> straComment(int detailId, int page){
         return commonService.straComment(detailId,page);
+    }
+
+    /**
+     * 小组排名
+     * @return
+     */
+    @PostMapping("/topGroup")
+    @ResponseBody
+    public Response<List<Group>> topGroup(){
+        return Response.success(groupService.selectPageVoGroup(6,1));
+    }
+
+    /**
+     * 最新话题
+     * @param limit
+     * @param page
+     * @return
+     */
+    @PostMapping("/getnewtopic")
+    @ResponseBody
+    public TableResultDTO<List<Topic>> getnewtopic(int limit, int page){
+        List<Topic> list = groupService.selectPageVo(limit,page,null);
+        list.forEach(item->{
+            Number comNum = redisService.getViewNum(item.getId(), CollectionKey.TOPIC_KEY_COM_NUM);
+            if(!Objects.isNull(comNum)){
+                item.setReplyNum(comNum.intValue());
+            }else{
+                item.setReplyNum(0);
+            }
+            Number readNum = redisService.getViewNum(item.getId(), CollectionKey.TOPIC_KEY_COL_NUM);
+            if(!Objects.isNull(readNum)){
+                item.setReadNum(readNum.intValue());
+            }else{
+                item.setReadNum(0);
+            }
+        });
+        int count = groupService.getTopicCount(new QueryWrapper<Topic>());
+        return  new TableResultDTO<>(200, "", count, list);
+    }
+
+    /**
+     * 获取小组下的话题
+     * @param id
+     * @return
+     */
+    @PostMapping("/getgrouptopic")
+    @ResponseBody
+    public Response<List<Topic>> getgrouptopic(int id){
+        List<Topic> list = groupService.queryTopicByGroupId(id);
+        list.forEach(item->{
+            Number comNum = redisService.getViewNum(item.getId(), CollectionKey.TOPIC_KEY_COM_NUM);
+            if(!Objects.isNull(comNum)){
+                item.setReplyNum(comNum.intValue());
+            }else{
+                item.setReplyNum(0);
+            }
+            //话题热度
+            Number hotNum = redisService.getScore(Constants.TOPIC_HOT_NAME, item.getId());
+            if(!Objects.isNull(hotNum)){
+                item.setReadNum(hotNum.intValue());
+            }else{
+                item.setReadNum(0);
+            }
+            // tags字段存储用户名
+            item.setTags(userMapper.getUserInfoByPrimaryKey(item.getUserId()).getName());
+        });
+        return Response.success(list);
+    }
+
+    /**
+     * 获取全部小组
+     * @return
+     */
+    @PostMapping("/getgroup")
+    @ResponseBody
+    public Response<Map<String,List<Group>>> getAllGroup(){
+        List<GroupType> typeList = groupService.selectList(new QueryWrapper<GroupType>());
+        Map<String,List<Group>> groupMap = new HashMap<>();
+        if(typeList != null && typeList.size()>0){
+            for(int i=0;i<typeList.size();i++){
+                QueryWrapper<Group> queryWrapper = new QueryWrapper<>();
+                queryWrapper.eq("flag",Constants.PASS_YES);
+                queryWrapper.eq("type_id",typeList.get(i).getId());
+                List<Group> list = groupService.selectTravelGroup(queryWrapper);
+                if(list!=null && list.size()>0){
+                    groupMap.put(typeList.get(i).getName(),list);
+                }
+            }
+        }
+        return Response.success(groupMap);
     }
 }

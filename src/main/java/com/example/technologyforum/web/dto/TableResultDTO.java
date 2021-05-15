@@ -2,11 +2,6 @@ package com.example.technologyforum.web.dto;
 
 import java.io.Serializable;
 
-/**
- * @author 郭红明
- * @version 1.0
- * @Date: 2020/4/20
- */
 public class TableResultDTO<T> implements Serializable {
 
     private static final long serialVersionUID = -8226382031145206579L;

@@ -75,6 +75,7 @@ public class GroupController {
         model.addAttribute("groupId",groupId);
         return "front/newTopic";
     }
+
     @PostMapping("/newtopic")
     @ResponseBody
     public Response<String> createTopic(HttpSession session, NewTopicDTO topicDTO) {
@@ -88,7 +89,6 @@ public class GroupController {
         }
         return Response.fail(100,"参数错误");
     }
-
 
     /**
      *加入小组
