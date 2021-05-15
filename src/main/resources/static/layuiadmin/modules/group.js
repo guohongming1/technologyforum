@@ -1,6 +1,6 @@
 /**
  * 小组
- * @Author: 郭红明
+ * @Author: xq
  */
 layui.define(['carousel', 'jquery', 'element', 'flow', 'laytpl', 'element', 'laypage', 'form', 'util'], function (exports) {
     var carousel = layui.carousel
