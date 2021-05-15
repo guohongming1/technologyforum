@@ -20,15 +20,15 @@
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
     <include refid="Base_Column_List" />
-    from group
+    from t_group
     where id = #{id,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
-    delete from group
+    delete from t_group
     where id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.example.technologyforum.web.pojo.Group" >
-    insert into group (id, type_id, user_id, 
+    insert into t_group (id, type_id, user_id,
       title, tags, content, 
       member, topic_num, head_img, 
       flag, date)
@@ -37,8 +37,8 @@
       #{member,jdbcType=INTEGER}, #{topicNum,jdbcType=INTEGER}, #{headImg,jdbcType=VARCHAR}, 
       #{flag,jdbcType=TINYINT}, #{date,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" parameterType="com.example.technologyforum.web.pojo.Group" >
-    insert into group
+  <insert id="insertSelective" parameterType="com.example.technologyforum.web.pojo.Group" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_group
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >
         id,
@@ -111,7 +111,7 @@
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.example.technologyforum.web.pojo.Group" >
-    update group
+    update t_group
     <set >
       <if test="typeId != null" >
         type_id = #{typeId,jdbcType=INTEGER},
@@ -147,7 +147,7 @@
     where id = #{id,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.example.technologyforum.web.pojo.Group" >
-    update group
+    update t_group
     set type_id = #{typeId,jdbcType=INTEGER},
       user_id = #{userId,jdbcType=INTEGER},
       title = #{title,jdbcType=VARCHAR},
@@ -160,4 +160,11 @@
       date = #{date,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
+  <select id="selectPageVo" resultMap="BaseResultMap">
+    select * from t_group
+    <if test="flag != null" >
+      where flag = #{flag,jdbcType=TINYINT}
+    </if>
+    order by topic_num desc
+  </select>
 </mapper>

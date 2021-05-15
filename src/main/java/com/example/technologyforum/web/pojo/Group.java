@@ -2,9 +2,11 @@ package com.example.technologyforum.web.pojo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.util.Date;
 
+@TableName("t_group")
 public class Group {
     @TableId(value = "id",type = IdType.AUTO)
     private Integer id;

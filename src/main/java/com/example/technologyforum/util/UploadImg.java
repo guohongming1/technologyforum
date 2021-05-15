@@ -49,7 +49,7 @@ public class UploadImg {
           // 文件上传路径
           String path = SysParamCache.getParam(Constants.UPLOAD_PATH);
           if(path == null){
-              path = "D:\\Picturesupload";
+              path = "D:\\Picturesuploads";
           }
           //目标文件
           File descFile = new File(path + File.separator + dateDirs + File.separator + filename);

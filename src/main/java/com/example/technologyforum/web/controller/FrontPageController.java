@@ -74,6 +74,11 @@ public class FrontPageController {
         return "front/search";
     }
 
+    @RequestMapping("/newgroup")
+    public String newgroup(){
+        return "front/newGroup";
+    }
+
     /**
      * 小组id
      * @param model

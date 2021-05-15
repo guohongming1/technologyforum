@@ -50,7 +50,7 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public Response<String> createGroup(Group group) {
         if(groupMapper.insertSelective(group)>0){
-            return Response.success("成功");
+            return Response.success(String.valueOf(group.getId()));
         }
         return Response.fail(CodeMsg.FAIL);
     }
