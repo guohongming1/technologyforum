@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>创建话题</title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" type="text/css" th:href="@{/layui/css/layui.css}">
+    <script type="text/javascript" th:src="@{/myfile/js/jquery.min.js}"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/myfile/css/main.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/myfile/css/global.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/myfile/css/autostyles.css}">
+</head>
+<body class="micronews">
+<div class="micronews-header-wrap">
+    <div class="micronews-header w1000 layui-clear">
+        <h1 class="logo">
+            <a href="/">
+                <img width="66px" height="22px" th:src="@{/layuiadmin/myfile/images/logo3.png}" alt="logo">
+                <span class="layui-hide">logo</span>
+            </a>
+        </h1>
+        <p class="nav">
+            <a href="/front/index" target="_blank">首页</a>
+            <a href="/front/group"  target="_blank" class="active">小组</a>
+            <a href="/front/question"  target="_blank">问答</a>
+            <a href="/strategy/newstrategy"  target="_blank">发表攻略</a>
+        </p>
+        <div class="search-bar">
+            <form class="layui-form" action="">
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <input type="text" name="title" placeholder="搜索你要的内容" autocomplete="off" class="layui-input">
+                        <button class="layui-btn search-btn" formnovalidate><i class="layui-icon layui-icon-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="login">
+            <a th:if="${session.userinfo == null}" href="/front/login">
+                登录
+            </a>
+            <!--<img th:src="@{/layuiadmin/myfile/images/header.png}" style="width: 36px; height: 36px;">-->
+            <ul th:if="${session.userinfo != null}" class="layui-nav" style="background-color: #fff;">
+                <span id="user-id" style="display:none" th:text="${session.userinfo.getId()}"></span>
+                <li class="layui-nav-item">
+                    <a href="/front/usermsg" style="font-size: 16px;color: #222;">消息<span th:text="${session.msgnum}" class="layui-badge"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+                </li>
+                <li class="layui-nav-item" lay-unselect="">
+                    <a href="javascript:;" style="font-size: 16px;color: #222;"><img th:src="${session.userinfo.getImgUrl()}" style="height: 30px; width: 30px;" class="layui-nav-img" onerror="getdefaultImg(event)">&nbsp;&nbsp;</a>
+                    <dl class="layui-nav-child">
+                        <dd style="text-align: center"><a href="/front/userset"><i class="layui-icon layui-icon-user"></i>&nbsp;个人资料</a></dd>
+                        <dd style="text-align: center"><a href="/front/userstrategy"><i class="layui-icon layui-icon-note"></i>&nbsp;攻略/问答</a></dd>
+                        <dd style="text-align: center"><a href="/front/usergroup"><i class="layui-icon layui-icon-rate"></i>&nbsp;小组</a></dd>
+                        <dd layadmin-event="logout" style="text-align: center"><a href="javascript:;"><i class="layui-icon layui-icon-logout"></i>&nbsp;登出</a></dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<style type="text/css">
+    * {
+        font-family: 微软雅黑;
+        margin: 0px;
+        padding: 0px;
+        list-style: none;
+    }
+    body{
+        background-color: #F2F2F2;
+    }
+    .wrap{
+        margin: 10px auto;
+    }
+    .fxAnswer{
+        min-height: 250px;
+        border: 1px solid #bdbfc2;
+        padding: 10px;
+    }
+    .fxAnswer img{
+        margin: 3px 3px;
+        max-width: 800px;
+        max-height: 400px;
+    }
+    .fxAnswer a{
+        text-decoration: underline;
+        color: #1E9FFF;
+    }
+    .fxAnswer a:hover{
+        cursor: pointer;
+    }
+</style>
+<div class="layui-container wrap">
+    <div class="fly-panel" pad20 style="padding-top: 5px;">
+        <div class="layui-form layui-form-pane">
+            <div class="layui-tab layui-tab-brief">
+                <ul class="layui-tab-title">
+                    <li class="layui-this">发表话题</li>
+                </ul>
+                <div class="layui-form layui-tab-content" style="padding: 20px 0;">
+                    <div class="layui-tab-item layui-show">
+                        <form action="" method="post">
+                            <div class="layui-row layui-col-space15 layui-form-item">
+                                <div class="layui-col-md12">
+                                    <label for="L_title" class="layui-form-label">标题</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" id="groupid" name="groupid" style="display: none" th:value="${groupId}" autocomplete="off" class="layui-input"/>
+                                        <input type="text" id="L_title" placeholder="字数小于20" name="title" required lay-verify="title" autocomplete="off" class="layui-input autocomplete" maxlength="20"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-inline">
+                                <label class="layui-form-label">选择标签</label>
+                                <div id="tagscheck" class="layui-input-block">
+                                    <span th:each="item:${tags}">
+                                    <input class="tag" lay-filter="tags" type="checkbox" th:name="${item}"  th:title="${item}" th:value="${item}">
+                                     </span>
+                                </div>
+                                    <div class="layui-form-mid layui-word-aux">标签来源于小组标签，选择合理的标签有助于话题讨论</div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item layui-form-text">
+                                <span class="ask-title">详细</span><hr>
+                                <div class="layui-input-block">
+                                    <div class="layui-collapse">
+                                        <div class="layui-colla-item">
+                                            <h2 class="layui-colla-title editor-focus">点击开始</h2>
+                                            <!--弹出进度条-->
+                                            <div id="uploadLoadingDiv" style="display: none;">
+                                                <div class="layui-progress layui-progress-big" lay-showpercent="true" lay-filter="js_upload_progress" style="margin-top: 20px;">
+                                                    <div class="layui-progress-bar layui-bg-red" lay-percent="0%"></div>
+                                                </div>
+                                            </div>
+                                            <div class="layui-colla-content" style="margin: 0px;padding: 0px">
+                                                <div class="layui-colla-item">
+                                                    <div contenteditable="true" class="fxAnswer fly-editor"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <button type="submit" class="layui-btn" lay-submit lay-filter="topic">立即发布</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/myfile/js/jquery.autocomplete.js}"></script>
+<script>
+    $('.search-btn').on('click', function () {
+        var inpVal = $(this).siblings('input').val();
+        // 搜索条件不为空串
+        if (inpVal !== '') {
+            var url = "/front/search-page";
+            // window.open(encodeURI(url + "?pattern=" + inpVal));
+            window.location.href = encodeURI(url + "?pattern=" + inpVal);
+            // window.location.href = "/front/page/search-page?pattern=" + inpVal;
+        }
+        return false;
+    });
+    layui.config({
+        version: "3.0.0"
+        ,base: '/mymods/'
+    }).extend({
+        travel: 'index',
+    }).use(['travel','element','form','layer','laytpl'], function(){
+        var element = layui.element;
+        var travel = layui.travel;
+        var form = layui.form;
+        var layer = layui.layer;
+        var laytpl = layui.laytpl;
+        //自定义验证规则
+        form.verify({
+            title: function(value){
+                if(value.length < 2){
+                    return '标题至少得2个字符啊';
+                }
+                if(value.length >20 ){
+                    return '标题最多得20个字符啊';
+                }
+            }
+        });
+        form.on('checkbox(tags)',function(data){
+            var len=$(".tag:checked").length;
+            if(len>3){
+                $(data.elem).next().attr("class","layui-unselect layui-form-checkbox");
+                $(data.elem).prop("checked",false);
+                layer.msg('最多只能选3项！',{icon:5,time:1000});
+                return false;
+            }
+        });
+        /*
+         * 监听表格提交
+         */
+        form.on('submit(topic)', function (data) {
+            var field={};
+            var arr_box = "";
+            $("body .tag:checked").each(function() {
+                arr_box +="#" + $(this).val();
+            });
+            var title = $("#L_title").val();
+            if(title != null && title != ""){
+                field['title'] = title;
+            }
+            if(arr_box == ""){
+                layer.msg("请至少选择一个标签！", {icon: 5});
+                return false;
+            }else{
+                field['tags'] = arr_box;
+            }
+            var text = $(".fly-editor").html();
+            if(text == null || text == ""){
+                //layui-show
+                $(".layui-colla-content").attr("class","layui-show");
+                $(".fly-editor").focus();
+                layer.msg("请完成详情描述", {icon: 5});
+                return false;
+            }
+            field["content"]= text;
+            field["groupId"] = $("#groupid").val();
+            var userId = $('#user-id').text();
+            if(userId == undefined|| userId==null || userId==''){
+                layer.msg("请先登录", {icon: 5});
+                location.href = '/login';
+                return false;
+            }
+            field["userId"] = userId;
+            var index = layer.load(1, {
+                shade: [0.5,'#fff'] //0.1透明度的白色背景
+            });
+            //请求接口
+            $.ajax({
+                type: "post",
+                url: "/group/newtopic",
+                data: field,
+                success: function(res){
+                    if (res.code === 200) {
+                        layer.close(index)
+                        layer.msg('发表成功,正在跳转至小组页...', {
+                            offset: '15px'
+                            , icon: 1
+                            , time: 1000
+                        }, function () {
+                            location.href = '/front/usergroup'; //跳转到该小组明细页面
+                        });
+                    } else {
+                        layer.close(index)
+                        layer.msg(res.message);
+                    }
+                },
+                error: function (res) {
+                    layer.close(index)
+                    layer.msg("系统错误:"+res.message);
+                }});
+            return false; //TODO
+        });
+
+    });
+</script>
+</body>
+</html>

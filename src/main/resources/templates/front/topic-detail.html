@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>话题详情</title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" type="text/css" th:href="@{/layui/css/layui.css}">
+    <script type="text/javascript" th:src="@{/myfile/js/jquery.min.js}"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/myfile/css/main.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/myfile/css/global.css}">
+</head>
+<body class="micronews">
+<div class="micronews-header-wrap">
+    <div class="micronews-header w1000 layui-clear">
+        <h1 class="logo">
+            <a href="/">
+                <img width="66px" height="22px" th:src="@{/layuiadmin/myfile/images/logo3.png}" alt="logo">
+                <span class="layui-hide">logo</span>
+            </a>
+        </h1>
+        <p class="nav">
+            <a href="/front/index" target="_blank">首页</a>
+            <a href="/front/group"  target="_blank" class="active">小组</a>
+            <a href="/front/question"  target="_blank">问答</a>
+            <a href="/strategy/newstrategy"  target="_blank">发表攻略</a>
+        </p>
+        <div class="search-bar">
+            <form class="layui-form" action="">
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <input type="text" name="title" placeholder="搜索你要的内容" autocomplete="off" class="layui-input">
+                        <button class="layui-btn search-btn" formnovalidate><i class="layui-icon layui-icon-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="login">
+            <a th:if="${session.userinfo == null}" href="/front/login">
+                登录
+            </a>
+            <!--<img th:src="@{/layuiadmin/myfile/images/header.png}" style="width: 36px; height: 36px;">-->
+            <ul th:if="${session.userinfo != null}" class="layui-nav" style="background-color: #fff;">
+                <span id="user-id" style="display:none" th:text="${session.userinfo.getId()}"></span>
+                <li class="layui-nav-item">
+                    <a href="/front/usermsg" style="font-size: 16px;color: #222;">消息<span th:text="${session.msgnum}" class="layui-badge"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+                </li>
+                <li class="layui-nav-item" lay-unselect="">
+                    <a href="javascript:;" style="font-size: 16px;color: #222;"><img th:src="${session.userinfo.getImgUrl()}" style="height: 30px; width: 30px;" class="layui-nav-img" onerror="getdefaultImg(event)">&nbsp;&nbsp;</a>
+                    <dl class="layui-nav-child">
+                        <dd style="text-align: center"><a href="/front/userset"><i class="layui-icon layui-icon-user"></i>&nbsp;个人资料</a></dd>
+                        <dd style="text-align: center"><a href="/front/userstrategy"><i class="layui-icon layui-icon-note"></i>&nbsp;攻略/问答</a></dd>
+                        <dd style="text-align: center"><a href="/front/usergroup"><i class="layui-icon layui-icon-rate"></i>&nbsp;小组</a></dd>
+                        <dd layadmin-event="logout" style="text-align: center"><a href="javascript:;"><i class="layui-icon layui-icon-logout"></i>&nbsp;登出</a></dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<style type="text/css">
+    .wrap{
+        margin: 20px auto;
+        max-width: 1000px;
+    }
+    #topic-info{height:48px;line-height:48px;margin-bottom:20px}
+    #topic-info h1{
+        display: inline;
+        margin: 0;
+        padding: 0;
+        vertical-align: middle;
+        font-size: 26px;
+        font-weight: bold;
+        color: #494949;
+    }
+    #topic-info img{
+        margin-right: 5px;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        overflow: hidden;
+        vertical-align: middle;
+    }
+    .author a{color: #6294B5;}
+    .author a:hover{text-decoration: underline;}
+    .time{color: #999;font-size: 13px;margin-left: 10px;}
+    .topic_author{margin:-5px 0px 10px 30px;position: relative;}
+    .topic-detail{
+        margin: 60px 20px 20px 20px;
+        padding: 5px 8px;
+        border: 2px dotted #999 ;
+    }
+    .topic_talk{
+        margin: 10px;
+        overflow: hidden;
+    }
+    .topic_talk ul li{list-style: none;}
+    .topic-reply{
+        width: 100%;
+        word-wrap: break-word;
+        overflow: hidden;
+        padding: 20px 0 0;
+    }
+    .topic-reply li {
+        margin-bottom: 30px;
+        background: #fff;
+        position: relative;
+    }
+    .user h4{
+        margin-left: 5px;
+        margin-top: 5px;
+    }
+    .topic-reply .user img{
+        float: left;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        overflow: hidden;
+        vertical-align: middle;
+    }
+    .topic-reply .reply-doc{
+        line-height: 40px;
+        margin-left: 40px;
+    }
+    .reply-content{
+        margin: 5px;
+    }
+    .operation_div{
+        float: right;
+        margin-right: 5px;
+        margin-top: -10px;
+    }
+    .operation_div span{
+        color: #c0c0c0;
+    }
+    .operation_div span:hover{cursor: pointer;}
+    .replys{margin: 10px 0px 0px 5px;overflow: hidden}
+    .replys .replys-content{
+        font-size: 14px;
+        padding: 5px;
+        background-color: #f5f5f5;
+        border-radius: 2px;
+    }
+
+    .eh-right{
+        position: absolute;
+        right: 20px;
+        bottom: 1px;
+        color: #6294b5;
+        font-size: 12px;
+        line-height: normal;
+    }
+    .eh-right i{
+        display: block;
+        color: #6294b5;
+        font-size: 30px;
+    }
+    .eh-right p{
+        margin-left: 3px;
+    }
+    .eh-right i:hover{
+        cursor: pointer;
+    }
+</style>
+<div class="layui-container wrap">
+    <div class="layui-col-md9">
+        <div id="topic-info">
+            <span id="topicId" th:text="${topic.getId()}" style="display:none;"></span>
+            <h1 th:text="${topic.getTitle()}"></h1>
+            <div class="topic_author">
+                <img th:src="${topicDetail.getTitle()}">
+                <span>来自：</span>
+                <span class="author" id="authorId" th:attr="data-id=${topic.getUserId()}"><a th:href="'userInfo?id='+${topic.getUserId()}" th:text="${topic.getTags()}"></a> </span>
+                <span class="time" th:text="${#dates.format(topic.getDate(),'YYYY-mm-dd')}"></span>
+                <div class="eh-right collect" th:if="${colflag=='2'}">
+                    <i class="layui-icon layui-icon-star"></i>
+                    <p>收藏</p>
+                </div>
+            </div>
+        </div>
+        <div class="topic-detail" th:utext="${topicDetail.getContent()}">
+
+        </div>
+        <div class="fly-panel detail-box" id="flyReply">
+            <fieldset class="layui-elem-field layui-field-title" style="text-align: center;">
+                <legend>回答</legend>
+            </fieldset>
+            <ul class="jieda" id="jieda">
+
+            </ul>
+            <div class="layui-form layui-form-pane">
+                <form action="" method="post">
+                    <div class="layui-form-item layui-form-text">
+                        <a name="comment"></a>
+                        <div class="layui-input-block">
+                            <div id="replyUser" style="background-color:#e2e2e2;height: 50px;margin-bottom: 2px;line-height: 50px;display: none">
+                                <span style="margin: 0 5px 0 3px;color: #FF5722">回复：</span>
+                                <span class="name" style="color: #01AAED;margin-right: 10px"></span>
+                                <span class="value" style="display: none"></span>
+                                <button type="button" class="layui-btn layui-btn-sm layui-btn-primary">
+                                    <i class="layui-icon layui-icon-close"></i>
+                                </button>
+                            </div>
+                            <textarea id="L_content" name="content" required lay-verify="required" placeholder="请输入内容"  class="layui-textarea fly-editor" style="height: 150px;"></textarea>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <input type="hidden" name="jid" value="123">
+                        <button class="layui-btn" lay-filter="*" lay-submit>提交回复</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="layui-col-md3"></div>
+</div>
+<script id="comment-mod" type="text/html">
+    {{# layui.each(d,function(index,item){}}
+    <li data-id="{{item.id}}" class="jieda-daan">
+        <a name="item-1"></a>
+        <div class="detail-about detail-about-reply">
+            <a class="fly-avatar" href="">
+                <img src="{{item.userImg}}" alt=" ">
+            </a>
+            <div class="fly-detail-user">
+                <a href="/front/userInfo?id={{item.userId}}" class="fly-link">
+                    <cite data-id="{{item.userId}}">{{item.userName}}</cite>
+                </a>
+                {{# var authorId = $('#authorId').data('id'); if(item.userId== authorId){ }}
+                <span>(楼主)</span>
+                {{#}}}
+            </div>
+            <div class="detail-hits">
+                <span>{{item.date}}</span>
+            </div>
+        </div>
+        <div class="detail-body jieda-body photos">
+            <p>{{item.content}}</p>
+        </div>
+        <div class="jieda-reply">
+            <!--<span class="jieda-zan zanok" type="zan">-->
+            <!--<i class="layui-icon layui-icon-praise"></i>-->
+            <!--<em>{{item.zan}}</em>-->
+            <!--</span>-->
+            <!--<span class="jieda-zan" type="zan">-->
+            <!--<i class="layui-icon layui-icon-tread"></i>-->
+            <!--<em>{{item.tread}}</em>-->
+            <!--</span>-->
+            {{# var sessionUserId = $('#user-id').text(); if(sessionUserId=='' || item.userId!= sessionUserId){ }}
+            <span type="reply" class="reply">
+                <i class="layui-icon layui-icon-reply-fill"></i>
+                回复
+              </span>
+            {{#}}}
+            <div class="jieda-admin" data-id="{{item.id}}">
+                {{# var sessionUserId = $('#user-id').text(); if(item.userId== sessionUserId){ }}
+                <span data-type="del">删除</span>
+                {{#}}}
+            </div>
+        </div>
+    </li>
+    {{#});}}
+</script>
+<script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+<script>
+    $('.search-btn').on('click', function () {
+        var inpVal = $(this).siblings('input').val();
+        // 搜索条件不为空串
+        if (inpVal !== '') {
+            var url = "/front/search-page";
+            // window.open(encodeURI(url + "?pattern=" + inpVal));
+            window.location.href = encodeURI(url + "?pattern=" + inpVal);
+            // window.location.href = "/front/page/search-page?pattern=" + inpVal;
+        }
+        return false;
+    });
+    layui.use(['element','carousel','laytpl','form'], function(){
+        var element = layui.element; //导航的hover效果、二级菜单等功能，需要依赖element模块
+        var carousel = layui.carousel; // 轮播框设置
+        var laytpl = layui.laytpl,
+            layer = layui.layer,
+            form = layui.form;
+        $('body').on('click','#jieda li .reply',function () {
+            $('#replyUser').show();
+            var val =  $('#replyUser .name').text();
+            var idVal = $('#replyUser .value').text().trim();
+            var aite = '@'+ $(this).parent().parent('li').find('.fly-detail-user cite').text().replace(/\s/g, '');
+            $('#L_content').focus()
+            if(val.indexOf(aite) !== -1) return;
+            $('#replyUser .name').text(aite +' ' + val);
+            $('#replyUser .value').text($(this).parent().parent('li').find('.fly-detail-user cite').data('id')+'-'+idVal);
+        });
+        $('#replyUser button').click(function () {
+            $('#replyUser .name').text('');
+            $('#replyUser .value').text('');
+            $('#replyUser').hide();
+        });
+        loacDataComment();
+        function loacDataComment(){
+            var topicId = $('#topicId').text();
+            $.ajax({
+                type:'post',
+                url:'/comm/getTopicComment',
+                data:{'topicId':topicId},
+                success:function (res) {
+                    if(res.data.length == 0){
+                        $("#jieda").html('<li class="fly-none">消灭零回复</li>');
+                    }
+                    var laycom = document.getElementById('comment-mod').innerHTML;
+                    laytpl(laycom).render(res.data,function (html) {
+                        $("#jieda").html(html);
+                    });
+                },
+                error:function (res) {
+                }
+            });
+        }
+        $('body').on('click','.jieda-admin span',function () {
+            var othis = $(this), type = othis.data('type');
+            var id = othis.parent().data('id');
+            if(type == 'del'){
+                var topicId = $('#topicId').text();
+                layer.confirm('是否确认删除这条评论？', function(index){
+                    layer.close(index);
+                    $.ajax({
+                        type:'post',
+                        url:'/group/delTopicComment',
+                        data:{'id':id,'topicId':topicId},
+                        success:function (res) {
+                            layer.msg("删除成功");
+                            othis.parent().parent().parent('li').remove();
+                        }
+                    });
+                });
+            }
+        });
+        form.on('submit(*)', function(data){
+            var name = $('#replyUser .name').text();
+            var vlaue = $('#replyUser .value').text();
+            var val =  $('#L_content').val();
+            var topicId = $('#topicId').text();
+            if(val.trim() == null){
+                layer.msg("内容不能为空");
+                return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+            }else{
+                if(name!=null){
+                    val = name +val;
+                }
+                if(vlaue.trim()==null){
+                    vlaue = 'null';
+                }
+                $.ajax({
+                    type:'post',
+                    url:'/group/createTopicComment',
+                    data:{'userIds':vlaue,'topicId':topicId,'content':val},
+                    success:function (res) {
+                        layer.msg("发表成功");
+                        // othis.remove();
+                        // othis.parent().parent().parent('li').find('.detail-about').append('<i class="iconfont icon-caina" title="最佳答案"></i>');
+                    },
+                    complete : function(xhr, status) {
+                        layer.msg("正在跳转至登录页面....");
+                        //拦截器拦截没有权限跳转
+                        // 通过xhr取得响应头
+                        var REDIRECT = xhr.getResponseHeader("REDIRECT");
+                        //如果响应头中包含 REDIRECT 则说明是拦截器返回的
+                        if (REDIRECT == "REDIRECT")
+                        {
+                            document.location.href = xhr.getResponseHeader("CONTEXTPATH");
+                        }
+                    }
+                });
+            }
+        });
+        // 收藏
+        $('.collect').click(function () {
+            var topicId = $('#topicId').text();
+            var othis = $(this);
+            $.ajax({
+                type:'post',
+                url:'/group/collectTopic',
+                data:{'topicId':topicId},
+                success:function (res) {
+                    layer.msg("收藏成功");
+                    othis.find('i').removeClass('layui-icon-star');
+                    othis.find('i').addClass('layui-icon-star-fill');
+                    othis.find('p').text("已收藏");
+                    othis.unbind();
+                },
+                complete : function(xhr, status) {
+                    layer.msg("正在跳转至登录页面....");
+                    //拦截器拦截没有权限跳转
+                    // 通过xhr取得响应头
+                    var REDIRECT = xhr.getResponseHeader("REDIRECT");
+                    //如果响应头中包含 REDIRECT 则说明是拦截器返回的
+                    if (REDIRECT == "REDIRECT")
+                    {
+                        document.location.href = xhr.getResponseHeader("CONTEXTPATH");
+                    }
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>
