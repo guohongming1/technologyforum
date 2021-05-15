@@ -88,7 +88,7 @@ public class TechnologyServiceImpl implements ITechnologyService {
             strategy.setDelFlag((byte)0);
             return Response.success("成功");
         }
-        return Response.fail(CodeMsg.ESSAY_PUSH_FAIL);
+        //return Response.fail(CodeMsg.ESSAY_PUSH_FAIL);
     }
 
     /**
@@ -106,7 +106,7 @@ public class TechnologyServiceImpl implements ITechnologyService {
     }
 
     /**
-     * 获取未发表攻略
+     * 获取未发表内容
      * @param userId
      * @return
      */

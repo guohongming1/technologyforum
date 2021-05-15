@@ -101,8 +101,8 @@ public class GroupController {
     public Response<String> joinGroup(HttpSession session, int id){
         User user = (User)session.getAttribute("userinfo");
         // 验证小组是否存在
-        Group travelGroup = groupService.queryTravelGroupById(id);
-        if(travelGroup == null){
+        Group group = groupService.queryTravelGroupById(id);
+        if(group == null){
             return Response.fail(CodeMsg.FAIL);
         }
         if(user!=null && !Objects.isNull(id) && !groupService.checkGroupMById(id,user.getId())){
@@ -110,8 +110,8 @@ public class GroupController {
                redisService.addHot(id,"2",Constants.TOPIC_HOT_NAME);
                // 发送消息
                String content = "来自小组:<a href='/userInfo?id="+user.getId()+"'><cite>"+user.getName()+ "</cite></a>加入了你的小组："+
-                       "<a href='/front/group_detail?id="+travelGroup.getId()+"'><cite>"+travelGroup.getTitle()+"</cite></a>";
-               messageService.sendMsg(user.getId(),travelGroup.getUserId(),content);
+                       "<a href='/front/group_detail?id="+group.getId()+"'><cite>"+group.getTitle()+"</cite></a>";
+               messageService.sendMsg(user.getId(),group.getUserId(),content);
                return Response.success("加入成功");
            }
         }

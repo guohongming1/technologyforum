@@ -52,7 +52,7 @@ public class TechnologController {
     public CommonServiceImpl commonService;
 
     /**
-     * 创建攻略
+     * 创建
      * @param strategyDTO
      * @return
      */
@@ -79,9 +79,9 @@ public class TechnologController {
         SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
         try {
             //使用SimpleDateFormat的parse()方法生成Date
-            Date date = sf.parse(new Date());
+            Date date = new Date();
             strategy.setDate(date);
-        } catch (ParseException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         User user = (User)session.getAttribute("userinfo");
@@ -91,7 +91,7 @@ public class TechnologController {
     }
 
     /**
-     * 更新攻略
+     * 更新
      * @param strategyDTO
      * @return
      */
@@ -122,11 +122,7 @@ public class TechnologController {
         return technologyService.updateStrategy(strategy,strategyDTO.getContent());
     }
 
-    /**
-     * 拉取上次未发表攻略
-     * @param session
-     * @return
-     */
+
     @PostMapping("/pull")
     @ResponseBody
     public Response<TechnologyDTO> pullStrategy(HttpSession session){
@@ -135,9 +131,9 @@ public class TechnologController {
     }
 
     /**
-     * 攻略评论
+     * 评论
      * @param session
-     * @param id 攻略id
+     * @param id
      * @return
      */
     @PostMapping("/substracomment")
@@ -150,7 +146,7 @@ public class TechnologController {
             redisService.setCommentNum(id, CollectionKey.ESSAY_KEY_COM_NUM);
             Technology strategy = technologyService.selectStrategyById(id);
             //组装消息
-            String msgcontent = "<a href='/userInfo?id="+user.getId()+"'><cite>"+user.getName()+"</cite></a>评论了您的攻略:"+
+            String msgcontent = "<a href='/userInfo?id="+user.getId()+"'><cite>"+user.getName()+"</cite></a>评论了您:"+
                     "<a href='/front/strategydetail?id="+strategy.getId()+"&detailId=+"+strategy.getDetailId()+"'><cite>"+strategy.getTitle()+"</cite></a>";
             //发送消息
             if(strategy.getUserId() != user.getId()){

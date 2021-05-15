@@ -7,6 +7,7 @@ import com.example.technologyforum.web.dto.QuestionDTO;
 import com.example.technologyforum.web.mapper.CollectMapper;
 import com.example.technologyforum.web.mapper.UserMapper;
 import com.example.technologyforum.web.pojo.*;
+import com.example.technologyforum.web.service.GroupService;
 import com.example.technologyforum.web.service.ITechnologyService;
 import com.example.technologyforum.web.service.Impl.CommonServiceImpl;
 import com.example.technologyforum.web.service.Impl.RedisService;
@@ -47,6 +48,9 @@ public class FrontPageController {
     private CommonServiceImpl commonService;
 
     @Autowired
+    private GroupService groupService;
+
+    @Autowired
     private ITechnologyService technologyService;
 
     @RequestMapping("login")
@@ -68,6 +72,38 @@ public class FrontPageController {
     public String searchPage(HttpServletRequest request, String title){
         request.setAttribute("pattern", title);
         return "front/search";
+    }
+
+    /**
+     * 小组id
+     * @param model
+     * @param id
+     * @return
+     */
+    @RequestMapping("/group_detail")
+    public String group_detail(HttpSession session,Model model,int id){
+        User user = (User)session.getAttribute("userinfo");
+        QueryWrapper<Group> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id",id);
+        queryWrapper.eq("flag",Constants.PASS_YES);
+        Group technologyGroup = groupService.selectTravelGroup(queryWrapper).size()==0?null:groupService.selectTravelGroup(queryWrapper).get(0);
+        if(technologyGroup!=null)
+            model.addAttribute("authorName",userMapper.getUserInfoByPrimaryKey(technologyGroup.getUserId()).getName());
+        if(user != null){
+            // 查询用户是否加入了该小组
+            QueryWrapper<GroupMember> query = new QueryWrapper<>();
+            query.eq("group_id",id);
+            query.eq("user_id",user.getId());
+            if(groupService.getCountMember(query)>0 || technologyGroup.getUserId() == user.getId()){
+                model.addAttribute("gflag","1");
+            }else{
+                model.addAttribute("gflag","2");
+            }
+        }else{
+            model.addAttribute("gflag","2");
+        }
+        model.addAttribute("Group",technologyGroup);
+        return "front/group-detail";
     }
 
     /**

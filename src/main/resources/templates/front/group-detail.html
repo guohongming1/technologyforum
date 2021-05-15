@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>小组详情</title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" type="text/css" th:href="@{/layui/css/layui.css}">
+    <script type="text/javascript" th:src="@{/myfile/js/jquery.min.js}"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/myfile/css/main.css}">
+</head>
+<body class="micronews">
+<div class="micronews-header-wrap">
+    <div class="micronews-header w1000 layui-clear">
+        <h1 class="logo">
+            <a href="/">
+                <img width="66px" height="22px" th:src="@{/layuiadmin/myfile/images/logo3.png}" alt="logo">
+                <span class="layui-hide">logo</span>
+            </a>
+        </h1>
+        <p class="nav">
+            <a href="/front/index" target="_blank">首页</a>
+            <a href="/front/group"  target="_blank" class="active">小组</a>
+            <a href="/front/question"  target="_blank">问答</a>
+            <a href="/strategy/newstrategy"  target="_blank">发表</a>
+        </p>
+        <div class="search-bar">
+            <form class="layui-form" action="">
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <input type="text" name="title" placeholder="搜索你要的内容" autocomplete="off" class="layui-input">
+                        <button class="layui-btn search-btn" formnovalidate><i class="layui-icon layui-icon-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="login">
+            <a th:if="${session.userinfo == null}" href="/front/login">
+                登录
+            </a>
+            <!--<img th:src="@{/layuiadmin/myfile/images/header.png}" style="width: 36px; height: 36px;">-->
+            <ul th:if="${session.userinfo != null}" class="layui-nav" style="background-color: #fff;">
+                <span id="user-id" style="display:none" th:text="${session.userinfo.getId()}"></span>
+                <li class="layui-nav-item">
+                    <a href="/front/usermsg" style="font-size: 16px;color: #222;">消息<span th:text="${session.msgnum}" class="layui-badge"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+                </li>
+                <li class="layui-nav-item" lay-unselect="">
+                    <a href="javascript:;" style="font-size: 16px;color: #222;"><img th:src="${session.userinfo.getImgUrl()}" style="height: 30px; width: 30px;" class="layui-nav-img" onerror="getdefaultImg(event)">&nbsp;&nbsp;</a>
+                    <dl class="layui-nav-child">
+                        <dd style="text-align: center"><a href="/front/userset"><i class="layui-icon layui-icon-user"></i>&nbsp;个人资料</a></dd>
+                        <dd style="text-align: center"><a href="/front/userstrategy"><i class="layui-icon layui-icon-note"></i>&nbsp;发表/问答</a></dd>
+                        <dd style="text-align: center"><a href="/front/usergroup"><i class="layui-icon layui-icon-rate"></i>&nbsp;小组</a></dd>
+                        <dd layadmin-event="logout" style="text-align: center"><a href="javascript:;"><i class="layui-icon layui-icon-logout"></i>&nbsp;登出</a></dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<style type="text/css">
+    /* 主体*/
+    .wrap-main{
+        margin: 30px auto;
+        max-width: 1000px;
+    }
+    #group-info{height:48px;line-height:48px;margin-bottom:20px}
+    #group-info .group-desc{
+        width: 800px;
+        margin: 0px auto;
+    }
+    #group-info .group-desc img{
+        height: 48px;
+        width: 48px;
+        padding-right: 10px;
+    }
+    #group-info h1{
+        display: inline;
+        margin: 0;
+        padding: 0;
+        vertical-align: middle;
+        font-size: 26px;
+        font-weight: bold;
+        color: #494949;
+    }
+    .group-misc{
+        display: inline-block;
+        position: relative;
+    }
+    .bn-join-group{display:inline-block;*display:inline;zoom:1;padding:6px 10px;line-height:1.2;-webkit-border-radius:3px;-moz-border-radius:3px;-o-border-radius:3px;border-radius:3px}.bn-join-group:link,.bn-join-group:visited,.bn-join-group:hover,.bn-join-group:active{background: rgba(98, 148, 181, 0.8);;color:#fff}
+    .group-detail{
+        width: 800px;
+        height: 400px;
+        margin: 20px auto;
+        background: #fff4e8;
+        border-radius: 5px;
+    }
+    .group-detail p{
+        margin-left: 25px;
+        padding-top: 25px;
+    }
+    .group-intrc{
+        margin: 20px;
+        height: 250px;
+        color: #222;
+        word-wrap: break-word;
+        overflow: hidden;
+    }
+    .group-tags{
+        margin-left: 25px;
+        margin-top: 30px;
+    }
+    .group-tags span{
+        color: #01AAED;
+        margin-left: 5px;
+        overflow: hidden;
+    }
+    /*小组话题*/
+    #group-topics{
+        width: 800px;
+        margin: 20px auto;
+    }
+    .mod{zoom:1;clear:both;margin-bottom:30px}
+    .mod:before,.mod:after{content:'\0020';display:block;clear:both}
+    #group-new-topic-bar{padding:30px 0 15px}
+    #group-new-topic-bar .bns{position:relative;float:right;margin-right: 10px;}
+    #group-new-topic-bar .bn-post-link i{left:6px;top:4px}
+    .topic-search{
+        margin-left: 10px;
+       display: inline-block;
+    }
+
+    .olt{margin-bottom:10px;font-size: 13px}
+    .olt .th td{color:#666;font-size: 16px; }
+    .olt .time{padding-right:0;color:#999}
+    .title{font-size:13px;width: 500px;}
+    .title a{
+        color: #6294B5
+    }
+    .title a:hover{
+        background-color: #6294B5;
+        color: #fff;
+    }
+    .olt td {
+        border-bottom: 1px dashed #DDDDDD;
+        padding: 8px 30px 8px 0;
+        word-wrap: break-word;
+        word-break: break-word;
+    }
+    .on{
+        color: #6294B5;
+        font-size: 18px;
+    }
+</style>
+<div class="layui-container wrap-main">
+    <div id="group-info">
+        <span id="group-id" th:text="${Group.getId()}" style="display: none"></span>
+        <div class="group-desc">
+            <img th:src="${Group.getHeadImg()}"alt="">
+            <h1 th:text="${Group.getTitle()}">
+            </h1>&nbsp;&nbsp;
+            <div class="group-misc" th:if="${gflag=='2'}">
+                <a id="joinGroup" href="javascript:" class="bn-join-group" rel="nofollow">
+                    <span>加入小组</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="group-detail">
+        <div class="group-board">
+            <p>创建于<span th:text="${#dates.format(Group.getDate(),'YYYY-mm-dd')}"></span> &nbsp;&nbsp;&nbsp;组长：<a th:href="'/front/userInfo?id='+${travelGroup.getUserId()}" th:text="${authorName}"></a> </p>
+            <div class="group-intrc" th:utext="${Group.getContent()}">
+            </div>
+            <div class="group-tags">
+                小组标签:&nbsp;&nbsp;<span th:text="${Group.getTags()}"></span>
+            </div>
+        </div>
+    </div>
+    <div id="group-topics" class="mod">
+        <div id="group-new-topic-bar">
+            <div class="bns" th:if="${gflag=='1'}">
+                <a th:href="'/group/tonewtopic?groupId='+${Group.getId()}" target="_blank" class="layui-btn layui-btn-radius layui-btn-sm "><i class="layui-icon">&#xe608;</i>发言</a>
+            </div>
+            <div class="bns" th:if="${gflag=='2'}">
+                <button th:href="'/group/tonewtopic?groupId='+${Group.getId()}" type="button" title="加入小组后才可发言" class="layui-btn layui-btn-radius layui-btn-sm layui-btn-disabled"><i class="layui-icon">&#xe608;</i>发言</button>
+            </div>
+            <div class="topic-tab">
+                <a href="https://www.douban.com/group/68529/#topics" class="on">最近讨论</a>
+                <!--<i>/</i>-->
+                <!--<a href="https://www.douban.com/group/68529/?type=essence#topics">最热讨论</a>-->
+                <div class="topic-search">
+                    <div class="layui-input-inline" style="width: 200px;margin: 0px;">
+                        <input style="margin: 0px;" type="text" name="type" placeholder="搜索小组话题" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-input-inline" style="margin: 0px;"><button class="layui-btn search-btn" formnovalidate><i class="layui-icon layui-icon-search" style="font-size: 15px;"></i>
+                    </button></div>
+                </div>
+            </div>
+        </div>
+        <div class="">
+            <table class="olt">
+                <tbody id="topic"><tr class="th">
+                    <td>讨论</td>
+                    <td>作者</td>
+                    <td nowrap="nowrap">回复</td>
+                    <td nowrap="nowrap">创建时间</td>
+                </tr>
+
+                </tbody></table>
+        </div>
+    </div>
+</div>
+<script id="topic-mod" type="text/html">
+    {{#layui.each(d,function(index,item){ }}
+    <tr class="">
+        <td class="title">
+            <a href="/front/topic_detail?id={{item.id}}" title="" class="">
+                {{item.title}}
+            </a>
+        </td>
+        <td nowrap="nowrap"><a href="/front/userInfo?id={{item.userId}}" class="">{{item.tags}}</a></td>
+        <td nowrap="nowrap" class="">{{item.replyNum}}评论/{{item.readNum}}热度</td>
+        <td nowrap="nowrap" class="time">{{item.date}}</td>
+    </tr>
+    {{# });}}
+</script>
+<script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+<script>
+    $('.search-btn').on('click', function () {
+        var inpVal = $(this).siblings('input').val();
+        // 搜索条件不为空串
+        if (inpVal !== '') {
+            var url = "/front/search-page";
+            // window.open(encodeURI(url + "?pattern=" + inpVal));
+            window.location.href = encodeURI(url + "?pattern=" + inpVal);
+            // window.location.href = "/front/page/search-page?pattern=" + inpVal;
+        }
+        return false;
+    });
+    layui.use(['element','carousel','laytpl','layer'], function(){
+        var element = layui.element; //导航的hover效果、二级菜单等功能，需要依赖element模块
+        var carousel = layui.carousel; // 轮播框设置
+        var laytpl= layui.laytpl;
+        var layer = layui.layer;
+        /*旅游攻略页面*/
+        /*left nav*/
+        $('.nav-item').hover(function() {
+            $('.gonglve-nav').css('border-right-color', '#fff');
+            $('.nav-item .nav-panel').eq($(this).index()).css('display', 'block');
+        }, function() {
+            $('.gonglve-nav').css('border-right-color', '#ddd');
+            $('.nav-panel').css('display', 'none');
+        });
+        loadTopic();
+        function loadTopic() {
+            var groupId = $('#group-id').text();
+            if(groupId != null){
+                $.ajax({
+                    type:'post',
+                    url:'/comm/getgrouptopic',
+                    data:{'id':groupId},
+                    success:function (res) {
+                        var layhot = document.getElementById('topic-mod').innerHTML;
+                        laytpl(layhot).render(res.data,function (html) {
+                            $("body #topic").append(html);
+                        });
+                    }
+                });
+            }
+        }
+        // 加入小组
+        $("#joinGroup").click(function () {
+            var groupId = $('#group-id').text();
+            var index = layer.load();
+            var othis = $(this);
+            if(groupId != null){
+                $.ajax({
+                    type:'post',
+                    url:'/group/joinGroup',
+                    data:{'id':groupId},
+                    success:function (res) {
+                        othis.remove();
+                        layer.close(index);
+                        layer.msg(res.data);
+                        // 发言按钮解除禁用
+                        var a = '<a th:href="/group/tonewtopic?groupId="'+groupId+' target="_blank" class="layui-btn layui-btn-radius layui-btn-sm "><i class="layui-icon">&#xe608;</i>发言</a>';
+                        $('.bns').find('button').remove();
+                        $('.bns').append(a);
+                    },
+                    complete : function(xhr, status) {
+                        //拦截器拦截没有权限跳转
+                        // 通过xhr取得响应头
+                        var REDIRECT = xhr.getResponseHeader("REDIRECT");
+                        //如果响应头中包含 REDIRECT 则说明是拦截器返回的
+                        if (REDIRECT == "REDIRECT")
+                        {
+                            document.location.href = xhr.getResponseHeader("CONTEXTPATH");
+                        }
+                    }
+                });
+            }
+        });
+        //创建话题
+        function createTopic() {
+            layer.open({
+                type: 2,
+                title: '很多时候，我们想最大化看，比如像这个页面。',
+                shadeClose: true,
+                shade: false,
+                maxmin: true, //开启最大化最小化按钮
+                area: ['893px', '600px'],
+                content: '//fly.layui.com/'
+            });
+        }
+    });
+</script>
+</body>
+</html>
