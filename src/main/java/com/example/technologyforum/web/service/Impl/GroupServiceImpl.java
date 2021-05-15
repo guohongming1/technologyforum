@@ -85,7 +85,7 @@ public class GroupServiceImpl implements GroupService {
                 topic.setUserId(topicDTO.getUserId());
                 topic.setGrDeId(detail.getId());
                 topicMapper.insertSelective(topic);
-                return Response.success("成功");
+                return Response.success(String.valueOf(topic.getId()));
             }
         }
         return Response.fail(CodeMsg.FAIL);

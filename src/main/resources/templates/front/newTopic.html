@@ -249,7 +249,7 @@
                             , icon: 1
                             , time: 1000
                         }, function () {
-                            location.href = '/front/usergroup'; //跳转到该小组明细页面
+                            location.href = '/front/group_detail?id='+res.data; //跳转到该话题明细页面
                         });
                     } else {
                         layer.close(index)
