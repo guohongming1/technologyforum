@@ -413,8 +413,8 @@ public class CommonController {
                 if(question != null && question.getImgUrl()==null){
                     User user = userMapper.getUserInfoByPrimaryKey(question.getUserId());
                     question.setImgUrl(user.getImgUrl());
+                    result.add(question);
                 }
-                result.add(question);
             });
         }
         if(result != null && result.size()>0){

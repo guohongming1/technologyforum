@@ -9,6 +9,7 @@ import com.example.technologyforum.result.Response;
 import com.example.technologyforum.web.dto.TechnologyDTO;
 import com.example.technologyforum.web.mapper.TechnologyDetailMapper;
 import com.example.technologyforum.web.mapper.TechnologyMapper;
+import com.example.technologyforum.web.mapper.TechnologyRecomdMapper;
 import com.example.technologyforum.web.pojo.Technology;
 import com.example.technologyforum.web.pojo.TechnologyDetail;
 import com.example.technologyforum.web.service.ITechnologyService;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 功能描述：
@@ -33,6 +35,8 @@ public class TechnologyServiceImpl implements ITechnologyService {
 
     @Autowired
     private TechnologyDetailMapper technologyDetailMapper;
+    @Autowired
+    private TechnologyRecomdMapper technologyRecomdMapper;
     @Override
     public List<Technology> adminGetList(int limit, int page, String title) {
         Page<Technology> pageHelper = new Page<>();
@@ -135,5 +139,27 @@ public class TechnologyServiceImpl implements ITechnologyService {
         BeanUtils.copyProperties(strategy,result,"date");
         result.setContent(strategyDetail.getContent());
         return Response.success(result);
+    }
+
+    /**
+     * 批次删除
+     * @param ids
+     * @return
+     */
+    @Transactional
+    public int delBatchStrategy(List<Integer> ids){
+        ids.forEach(item->{
+            Technology strategy = technologyMapper.selectByPrimaryKey(item);
+            if(strategy != null){
+                TechnologyDetail strategyDetail = technologyDetailMapper.selectByPrimaryKey(strategy.getDetailId());
+                // 删除评论
+                technologyRecomdMapper.delCommentByStrategyId(strategyDetail.getId());
+                technologyDetailMapper.deleteByPrimaryKey(strategyDetail.getId());
+            }
+        });
+        if(ids!=null && ids.size()>0){
+            return technologyMapper.deleteBatchIds(ids);
+        }
+        return 0;
     }
 }

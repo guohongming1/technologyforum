@@ -56,4 +56,5 @@ public interface ITechnologyService {
     public Technology selectStrategyById(int id);
 
     public Response<TechnologyDTO> pullStrategy(int userId);
+    int delBatchStrategy(List<Integer> ids);
 }

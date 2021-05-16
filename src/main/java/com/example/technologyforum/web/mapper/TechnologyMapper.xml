@@ -156,4 +156,13 @@
       del_flag = #{delFlag,jdbcType=TINYINT}
     where id = #{id,jdbcType=INTEGER}
   </update>
+  <select id="admidSelectPageVo" resultMap="BaseResultMap">
+    select * from technology
+    <where>
+      <if test="title != null">
+        and title like CONCAT(CONCAT('%',#{title}),'%')
+      </if>
+    </where>
+    order by date desc
+  </select>
 </mapper>

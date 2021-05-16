@@ -129,7 +129,7 @@ layui.define(['table', 'form'], function (exports) {
             layer.confirm('审核通过确认？', function (index) {
                 obj.del();
                 admin.req({
-                    url: '/admin/shenhe'
+                    url: '/admin/grouppass'
                     , type: 'post'
                     , data: {'id':data.id,'flag':'1'}
                 });
@@ -140,7 +140,7 @@ layui.define(['table', 'form'], function (exports) {
             layer.confirm('审核驳回确认？', function (index) {
                 obj.del();
                 admin.req({
-                    url: '/admin/shenhe'
+                    url: '/admin/grouppass'
                     , type: 'post'
                     , data: {'id':data.id,'flag':'0'}
                 });

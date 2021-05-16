@@ -27,4 +27,5 @@ public interface TechnologyRecomdMapper extends BaseMapper<TechnologyRecomd> {
      * @return
      */
     IPage<TechnologyRecomd> selectPageVo(Page page);
+    int delCommentByStrategyId(int id);
 }

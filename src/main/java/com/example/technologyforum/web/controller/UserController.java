@@ -45,6 +45,21 @@ public class UserController {
         }
         return userService.login(user,session);
     }
+    /**
+     * 用户登出
+     *
+     * @return
+     */
+    @PostMapping("/logout")
+    @ResponseBody
+    public Response<Boolean> logout(HttpSession session) {
+        if (session != null) {
+            session.removeAttribute("userinfo");
+            session.removeAttribute("msgnum");
+            session.invalidate();
+        }
+        return Response.success(true);
+    }
 
     /**
      * 发送邮箱随机数
