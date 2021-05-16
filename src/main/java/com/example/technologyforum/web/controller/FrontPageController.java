@@ -308,6 +308,7 @@ public class FrontPageController {
         model.addAttribute("id",strategy.getId());
         model.addAttribute("detailId",strategy.getDetailId());
         model.addAttribute("title",strategy.getTitle());
+        model.addAttribute("date",strategy.getDate());
         User author = userMapper.getUserInfoByPrimaryKey(strategy.getUserId());
         model.addAttribute("authorId",author.getId());
         model.addAttribute("authorName",author.getName());

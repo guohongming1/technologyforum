@@ -526,7 +526,7 @@
                         }, function () {
                             layer.msg(res.data);
                             flag = true;
-                            location.href = '/front/userstrategy';
+                            location.href = '/front/strategydetail?id='+res.data+'&detailId=0';
                         });
                     } else {
                         layer.msg("参数错误:检查是否含有特殊字符，或参数不合理");

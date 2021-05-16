@@ -345,7 +345,7 @@
                     <a th:href="'/front/userInfo?id='+${authorId}" th:text="${authorName}"></a>
                     <!--&lt;!&ndash;<a href="#"><img th:src="@{/myfile/image/sixin.png}" title="私信"></a>&ndash;&gt;-->
                     <i class="layui-icon layui-icon-date" title="日期"></i>
-                    <span th:text="${#dates.format(table.date,'yyyy-MM-dd HH:mm:ss')}"></span>
+                    <span th:text="${#dates.format(date,'yyyy-MM-dd HH:mm:ss')}"></span>
                     <i class="layui-icon layui-icon-fire" title="热度"></i>
                     <span th:text="${hotnum}"></span>
                     <i class="layui-icon layui-icon-dialogue" title="评论"></i>
