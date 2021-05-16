@@ -30,7 +30,7 @@
       #{content,jdbcType=VARCHAR}, #{reply,jdbcType=VARCHAR}, #{date,jdbcType=TIMESTAMP}
       )
   </insert>
-  <insert id="insertSelective" parameterType="com.example.technologyforum.web.pojo.TechnologyComment" >
+  <insert id="insertSelective" parameterType="com.example.technologyforum.web.pojo.TechnologyComment" useGeneratedKeys="true" keyProperty="id">
     insert into technology_comment
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >

@@ -37,7 +37,7 @@
       #{userId,jdbcType=INTEGER}, #{date,jdbcType=TIMESTAMP}, #{pushFlag,jdbcType=TINYINT}, 
       #{delFlag,jdbcType=TINYINT})
   </insert>
-  <insert id="insertSelective" parameterType="com.example.technologyforum.web.pojo.Technology" >
+  <insert id="insertSelective" parameterType="com.example.technologyforum.web.pojo.Technology" useGeneratedKeys="true" keyProperty="id">
     insert into technology
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >

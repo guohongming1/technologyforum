@@ -34,7 +34,7 @@
     values (#{id,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, #{userId,jdbcType=INTEGER}, 
       #{date,jdbcType=TIMESTAMP}, #{content,jdbcType=LONGVARCHAR})
   </insert>
-  <insert id="insertSelective" parameterType="com.example.technologyforum.web.pojo.TopicDetail" >
+  <insert id="insertSelective" parameterType="com.example.technologyforum.web.pojo.TopicDetail" useGeneratedKeys="true" keyProperty="id">
     insert into topic_detail
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >

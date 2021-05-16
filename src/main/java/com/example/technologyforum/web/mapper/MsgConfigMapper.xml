@@ -35,7 +35,7 @@
       #{reserve1,jdbcType=TINYINT}, #{reserve2,jdbcType=TINYINT}, #{reserve3,jdbcType=TINYINT}
       )
   </insert>
-  <insert id="insertSelective" parameterType="com.example.technologyforum.web.pojo.MsgConfig" >
+  <insert id="insertSelective" parameterType="com.example.technologyforum.web.pojo.MsgConfig" useGeneratedKeys="true" keyProperty="id">
     insert into msg_config
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >

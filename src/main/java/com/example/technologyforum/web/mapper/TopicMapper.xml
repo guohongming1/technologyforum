@@ -41,7 +41,7 @@
       #{lastReplyId,jdbcType=INTEGER}, #{lastReplyDate,jdbcType=TIMESTAMP}, #{date,jdbcType=TIMESTAMP}
       )
   </insert>
-  <insert id="insertSelective" parameterType="com.example.technologyforum.web.pojo.Topic" >
+  <insert id="insertSelective" parameterType="com.example.technologyforum.web.pojo.Topic" useGeneratedKeys="true" keyProperty="id">
     insert into topic
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >

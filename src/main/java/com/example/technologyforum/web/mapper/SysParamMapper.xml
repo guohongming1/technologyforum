@@ -26,7 +26,7 @@
     values (#{id,jdbcType=INTEGER}, #{paramValue,jdbcType=VARCHAR}, #{paramName,jdbcType=VARCHAR}, 
       #{paramText,jdbcType=VARCHAR})
   </insert>
-  <insert id="insertSelective" parameterType="com.example.technologyforum.web.pojo.SysParam" >
+  <insert id="insertSelective" parameterType="com.example.technologyforum.web.pojo.SysParam" useGeneratedKeys="true" keyProperty="id">
     insert into sys_param
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >

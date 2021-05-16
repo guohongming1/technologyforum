@@ -38,11 +38,11 @@
       #{userId,jdbcType=INTEGER}, #{date,jdbcType=TIMESTAMP}, #{reserve1,jdbcType=VARCHAR}, 
       #{reserve2,jdbcType=VARCHAR}, #{reserve3,jdbcType=VARCHAR})
   </insert>
-  <delete id="delCommentByStrategyId" parameterType="java.lang.Integer" >
-    delete from strategy_comment
-    where stra_de_id = #{id,jdbcType=INTEGER}
-  </delete>
-  <insert id="insertSelective" parameterType="com.example.technologyforum.web.pojo.TechnologyRecomd" >
+    <delete id="delCommentByStrategyId" parameterType="java.lang.Integer" >
+        delete from strategy_comment
+        where stra_de_id = #{id,jdbcType=INTEGER}
+    </delete>
+  <insert id="insertSelective" parameterType="com.example.technologyforum.web.pojo.TechnologyRecomd" useGeneratedKeys="true" keyProperty="id">
     insert into technology_recomd
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >

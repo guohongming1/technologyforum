@@ -30,7 +30,7 @@
       #{proId,jdbcType=INTEGER}, #{date,jdbcType=TIMESTAMP}, #{flag,jdbcType=TINYINT}
       )
   </insert>
-  <insert id="insertSelective" parameterType="com.example.technologyforum.web.pojo.Collect" >
+  <insert id="insertSelective" parameterType="com.example.technologyforum.web.pojo.Collect"  useGeneratedKeys="true" keyProperty="id">
     insert into collect
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >

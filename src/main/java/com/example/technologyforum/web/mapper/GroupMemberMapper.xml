@@ -26,7 +26,7 @@
     values (#{id,jdbcType=INTEGER}, #{groupId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, 
       #{msgFlag,jdbcType=TINYINT})
   </insert>
-  <insert id="insertSelective" parameterType="com.example.technologyforum.web.pojo.GroupMember" >
+  <insert id="insertSelective" parameterType="com.example.technologyforum.web.pojo.GroupMember" useGeneratedKeys="true" keyProperty="id">
     insert into group_member
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >

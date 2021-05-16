@@ -27,7 +27,7 @@
     values (#{id,jdbcType=INTEGER}, #{readflag,jdbcType=TINYINT}, #{userId,jdbcType=INTEGER}, 
       #{notifyId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" parameterType="com.example.technologyforum.web.pojo.UserNotify" >
+  <insert id="insertSelective" parameterType="com.example.technologyforum.web.pojo.UserNotify" useGeneratedKeys="true" keyProperty="id">
     insert into user_notify
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >

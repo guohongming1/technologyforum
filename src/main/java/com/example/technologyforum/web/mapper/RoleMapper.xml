@@ -25,7 +25,7 @@
     values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{type,jdbcType=TINYINT}
       )
   </insert>
-  <insert id="insertSelective" parameterType="com.example.technologyforum.web.pojo.Role" >
+  <insert id="insertSelective" parameterType="com.example.technologyforum.web.pojo.Role" useGeneratedKeys="true" keyProperty="id">
     insert into role
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >

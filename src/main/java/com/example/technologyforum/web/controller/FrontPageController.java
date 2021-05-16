@@ -113,6 +113,40 @@ public class FrontPageController {
         return "front/index";
     }
 
+    /**
+     * 话题明细页面
+     * @param session
+     * @param model
+     * @param id topic表的id
+     * @return
+     */
+    @RequestMapping("/topic_detail")
+    public String topic(HttpSession session,Model model,int id){
+        Topic topic = groupService.queryTopicById(id);
+        if(topic != null){
+            TopicDetail topicDetail = groupService.queryTopicDetail(topic.getGrDeId());
+            // 查询用户收藏 和是否是用户本人操作
+            User user = (User)session.getAttribute("userinfo");
+            if(user != null){
+                if(commonService.queryCollect(user.getId(),(byte)3,id) || user.getId() == topic.getUserId()){
+                    model.addAttribute("colflag","1");
+                }else{
+                    model.addAttribute("colflag","2");
+                }
+            }else{
+                model.addAttribute("colflag","2");
+            }
+            // 查询作者 tags字段存储用户名
+            User author = userMapper.getUserInfoByPrimaryKey(topic.getUserId());
+            topic.setTags(author.getName());
+            // title字段存储用户头像url
+            topicDetail.setTitle(author.getImgUrl());
+            model.addAttribute("topicDetail",topicDetail);
+        }
+        model.addAttribute("topic",topic);
+        return "front/topic-detail";
+    }
+
     @RequestMapping("login")
     public String login(){
         return "login";

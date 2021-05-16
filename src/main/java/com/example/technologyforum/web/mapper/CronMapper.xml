@@ -27,7 +27,7 @@
     values (#{id,jdbcType=INTEGER}, #{cron,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}, 
       #{state,jdbcType=VARCHAR}, #{date,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" parameterType="com.example.technologyforum.web.pojo.Cron" >
+  <insert id="insertSelective" parameterType="com.example.technologyforum.web.pojo.Cron" useGeneratedKeys="true" keyProperty="id">
     insert into cron
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >

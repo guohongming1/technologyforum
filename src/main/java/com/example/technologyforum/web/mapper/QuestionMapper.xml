@@ -35,7 +35,7 @@
       #{commentNum,jdbcType=INTEGER}, #{flag,jdbcType=TINYINT}, #{date,jdbcType=TIMESTAMP}
       )
   </insert>
-  <insert id="insertSelective" parameterType="com.example.technologyforum.web.pojo.Question" >
+  <insert id="insertSelective" parameterType="com.example.technologyforum.web.pojo.Question" useGeneratedKeys="true" keyProperty="id">
     insert into question
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >

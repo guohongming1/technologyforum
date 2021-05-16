@@ -22,7 +22,7 @@
     insert into group_type (id, name)
     values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR})
   </insert>
-  <insert id="insertSelective" parameterType="com.example.technologyforum.web.pojo.GroupType" >
+  <insert id="insertSelective" parameterType="com.example.technologyforum.web.pojo.GroupType" useGeneratedKeys="true" keyProperty="id">
     insert into group_type
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >
