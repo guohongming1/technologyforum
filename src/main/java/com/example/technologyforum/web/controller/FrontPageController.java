@@ -338,5 +338,32 @@ public class FrontPageController {
         }
         return "front/strategy-detail";
     }
+
+    @RequestMapping("/userInfo")
+    public String user(Model model,int id){
+        User user = null;
+        if(!Objects.isNull(id)){
+            user = userMapper.selectByPrimaryKey(id);
+        }
+        // TODO 可能不需要暴露整个用户信息
+        model.addAttribute("info",user);
+        return "user/index";
+    }
+    @RequestMapping("/usergroup")
+    public String usergroup(){
+        return "user/group";
+    }
+    @RequestMapping("/userquestion")
+    public String userquestion(){
+        return "user/question";
+    }
+    @RequestMapping("/userstrategy")
+    public String userstrategy(){
+        return "user/strategy";
+    }
+    @RequestMapping("/forget")
+    public String forget(){
+        return "forget";
+    }
 }
 

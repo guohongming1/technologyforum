@@ -71,7 +71,7 @@
         del_flag,
       </if>
       <if test="headImgUrl != null" >
-        headImgUrl,
+        head_img_url,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >

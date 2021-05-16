@@ -7,11 +7,9 @@ import com.example.technologyforum.result.CodeMsg;
 import com.example.technologyforum.result.Response;
 import com.example.technologyforum.web.dto.QuestionCommentDTO;
 import com.example.technologyforum.web.mapper.CollectMapper;
+import com.example.technologyforum.web.mapper.MsgConfigMapper;
 import com.example.technologyforum.web.mapper.UserMapper;
-import com.example.technologyforum.web.pojo.Collect;
-import com.example.technologyforum.web.pojo.Question;
-import com.example.technologyforum.web.pojo.QuestionComment;
-import com.example.technologyforum.web.pojo.User;
+import com.example.technologyforum.web.pojo.*;
 import com.example.technologyforum.web.service.Impl.RedisService;
 import com.example.technologyforum.web.service.MessageService;
 import com.example.technologyforum.web.service.QuestionService;
@@ -23,9 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * 功能描述：
@@ -49,6 +45,9 @@ public class QuestionController {
 
     @Autowired
     private CollectMapper collectMapper;
+
+    @Autowired
+    private MsgConfigMapper msgConfigMapper;
 
     @RequestMapping("/newquestion")
     public String newquestion(){
@@ -218,5 +217,86 @@ public class QuestionController {
             result.add(dto);
         });
         return result;
+    }
+    /**
+     * 获取个人问答/收藏
+     * @param session
+     * @return
+     */
+    @PostMapping("/getPerquestion")
+    @ResponseBody
+    public Response<Map<String,Object>> getPerstrategy(HttpSession session){
+        User sessionuser = (User)session.getAttribute("userinfo");
+        Map<String,Object> map = new HashMap<>();
+        List<Question> list = questionService.getQuestionListByUserId(sessionuser.getId());
+        map.put("question",list);
+        QueryWrapper<Collect> query = new QueryWrapper<>();
+        query.eq("user_id",sessionuser.getId());
+        query.eq("type",(byte)2);
+        List<Collect> collectList = collectMapper.selectList(query);
+        List<Integer> colList = new ArrayList<>();
+        if(collectList != null && collectList.size()>0){
+            collectList.forEach(item->colList.add(item.getProId()));
+        }
+        List<Question> colQuestionList = new ArrayList<>();
+        colList.forEach(item->{
+            colQuestionList.add(questionService.selectById(item));
+        });
+        map.put("colquestion",colQuestionList);
+        return Response.success(map);
+    }
+    @PostMapping("/delQuestion")
+    @ResponseBody
+    public Response<String> delQuestion(HttpSession session,int id,int type){
+        User user = (User)session.getAttribute("userinfo");
+        if(user != null){
+            if(type == 1){//删除自己的问答消息 非物理删除
+                Question question = questionService.selectById(id);
+                if(question.getUserId() == user.getId()) {//验证问答
+                    question.setFlag((byte)3);
+                    if(questionService.updateQuestion(question)>0){
+                        return Response.success("删除成功");
+                    }
+                }
+            }
+            if(type == 2){
+                // 物理删除
+                QueryWrapper<Collect> queryWrapper = new QueryWrapper<>();
+                queryWrapper.eq("user_id",user.getId());
+                queryWrapper.eq("type",(byte)2);
+                queryWrapper.eq("pro_id",id);
+                Collect collect = collectMapper.selectOne(queryWrapper);
+                if(collect != null && collect.getUserId()==user.getId()){
+                    if(collectMapper.deleteByPrimaryKey(collect.getId())>0){
+                        return Response.success("删除成功");
+                    }
+                }
+            }
+        }
+        return Response.fail(CodeMsg.FAIL);
+    }
+    /**
+     * 消息设置
+     * @param id
+     * @return
+     */
+    public Response<String> questionMsgConfig(HttpSession session,int id,int type){
+        User user = (User)session.getAttribute("userinfo");
+        if(user != null){
+            if(type == 1){//屏蔽自己的问答消息
+                Question question = questionService.selectById(id);
+                if(question.getUserId() == user.getId()){//验证问答
+                    QueryWrapper<MsgConfig> query = new QueryWrapper<>();
+                    query.eq("user_id",user.getId());
+                    query.eq("target_id",id);
+                    query.eq("type","1");
+                    MsgConfig msgConfig = msgConfigMapper.selectOne(query);
+                    if(msgConfig == null){
+                        // TODO
+                    }
+                }
+            }
+        }
+        return null;
     }
 }

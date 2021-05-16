@@ -193,6 +193,25 @@ public class UserController {
     }
 
     /**
+     * 发送私信
+     * @param session
+     * @param acpter
+     * @param content
+     * @return
+     */
+    @PostMapping("/sendpermsg")
+    @ResponseBody
+    public Response<String> sendPerMsg(HttpSession session,int acpter,String content){
+        User user = (User)session.getAttribute("userinfo");
+        if(user != null){
+            // 组装消息
+            String msg = "<a href='/front/userInfo?id="+user.getId()+"'><cite>"+user.getName()+"</cite></a>"+"向您发送了一条信息:"+content;
+            return messageService.sendMsg(user.getId(),acpter,msg);
+        }
+        return Response.fail(CodeMsg.FAIL);
+    }
+
+    /**
      * 修改密码
      * @param session
      * @param nowpass
@@ -218,6 +237,17 @@ public class UserController {
         }else{
             return Response.success("密码错误");
         }
+    }
+    /**
+     * 忘记密码
+     */
+    @PostMapping("/forgetpass")
+    @ResponseBody
+    public Response<String> forgetpass(User user,String vercode){
+        if (StringUtils.isEmpty(user.getEmail()) || StringUtils.isEmpty(user.getPassword())) {
+            return Response.fail(CodeMsg.FAIL);
+        }
+        return userService.forgetpass(user,vercode);
     }
 }
 

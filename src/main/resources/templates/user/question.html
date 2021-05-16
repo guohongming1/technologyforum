@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>首页</title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" type="text/css" th:href="@{/layui/css/layui.css}">
+    <script type="text/javascript" th:src="@{/myfile/js/jquery.min.js}"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/myfile/css/main.css}">
+    <script type="text/javascript" th:src="@{/myfile/js/jquery.min.js}"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/myfile/css/global.css}">
+</head>
+<body class="micronews">
+<div class="micronews-header-wrap">
+    <div class="micronews-header w1000 layui-clear">
+        <h1 class="logo">
+            <a href="/">
+                <img width="66px" height="22px" th:src="@{/layuiadmin/myfile/images/logo3.png}" alt="logo">
+                <span class="layui-hide">logo</span>
+            </a>
+        </h1>
+        <p class="nav">
+            <a href="/front/index" target="_blank">首页</a>
+            <a href="/front/group"  target="_blank" class="active">小组</a>
+            <a href="/front/question"  target="_blank">问答</a>
+            <a href="/strategy/newstrategy"  target="_blank">发表</a>
+        </p>
+        <div class="search-bar">
+            <form class="layui-form" action="">
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <input type="text" name="title" placeholder="搜索你要的内容" autocomplete="off" class="layui-input">
+                        <button class="layui-btn search-btn" formnovalidate><i class="layui-icon layui-icon-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="login">
+            <a th:if="${session.userinfo == null}" href="/front/login">
+                登录
+            </a>
+            <!--<img th:src="@{/layuiadmin/myfile/images/header.png}" style="width: 36px; height: 36px;">-->
+            <ul th:if="${session.userinfo != null}" class="layui-nav" style="background-color: #fff;">
+                <span id="user-id" style="display:none" th:text="${session.userinfo.getId()}"></span>
+                <li class="layui-nav-item">
+                    <a href="/front/usermsg" style="font-size: 16px;color: #222;">消息<span th:text="${session.msgnum}" class="layui-badge"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+                </li>
+                <li class="layui-nav-item" lay-unselect="">
+                    <a href="javascript:;" style="font-size: 16px;color: #222;"><img th:src="${session.userinfo.getImgUrl()}" style="height: 30px; width: 30px;" class="layui-nav-img" onerror="getdefaultImg(event)">&nbsp;&nbsp;</a>
+                    <dl class="layui-nav-child">
+                        <dd style="text-align: center"><a href="/front/userset"><i class="layui-icon layui-icon-user"></i>&nbsp;个人资料</a></dd>
+                        <dd style="text-align: center"><a href="/front/userstrategy"><i class="layui-icon layui-icon-note"></i>&nbsp;发表/问答</a></dd>
+                        <dd style="text-align: center"><a href="/front/usergroup"><i class="layui-icon layui-icon-rate"></i>&nbsp;小组</a></dd>
+                        <dd layadmin-event="logout" style="text-align: center"><a href="javascript:;"><i class="layui-icon layui-icon-logout"></i>&nbsp;登出</a></dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<style type="text/css">
+    .wrap{
+        margin: 10px auto;
+        max-width: 1000px;
+    }
+    * {
+        font-family: 微软雅黑;
+        margin: 0px;
+        padding: 0px;
+        list-style: none;
+    }
+    body{
+        background-color: #F2F2F2;
+    }
+
+</style>
+<div class="layui-container fly-marginTop fly-user-main">
+    <ul class="layui-nav layui-nav-tree layui-inline" lay-filter="user">
+        <li class="layui-nav-item">
+            <a th:href="'/front/userInfo?id='+${session.userinfo.getId()}">
+                <i class="layui-icon">&#xe609;</i>
+                我的主页
+            </a>
+        </li>
+        <li class="layui-nav-item">
+            <a href="/front/userstrategy">
+                <i class="layui-icon layui-icon-note"></i>
+                攻略
+            </a>
+        </li>
+        <li class="layui-nav-item">
+            <a href="/front/usergroup">
+                <i class="layui-icon layui-icon-group"></i>
+                小组
+            </a>
+        </li>
+        <li class="layui-nav-item layui-this">
+            <a href="/front/userquestion">
+                <i class="layui-icon layui-icon-survey"></i>
+                问答
+            </a>
+        </li>
+        <li class="layui-nav-item">
+            <a href="/front/userset">
+                <i class="layui-icon">&#xe620;</i>
+                基本设置
+            </a>
+        </li>
+        <li class="layui-nav-item">
+            <a href="/front/usermsg">
+                <i class="layui-icon">&#xe611;</i>
+                我的消息
+            </a>
+        </li>
+    </ul>
+
+    <div class="site-tree-mobile layui-hide">
+        <i class="layui-icon">&#xe602;</i>
+    </div>
+    <div class="site-mobile-shade"></div>
+
+    <div class="site-tree-mobile layui-hide">
+        <i class="layui-icon">&#xe602;</i>
+    </div>
+    <div class="site-mobile-shade"></div>
+
+
+    <div class="fly-panel fly-panel-user" pad20>
+        <!--
+        <div class="fly-msg" style="margin-top: 15px;">
+          您的邮箱尚未验证，这比较影响您的帐号安全，<a href="activate.html">立即去激活？</a>
+        </div>
+        -->
+        <div class="layui-tab layui-tab-brief" lay-filter="user">
+            <ul class="layui-tab-title" id="LAY_mine">
+                <li data-type="myquestion" lay-id="myquestion" class="layui-this">我的提问（<span id="ques-num"></span>）</li>
+                <li data-type="collection" lay-id="collection">收藏（<span id="col-num"></span>）</li>
+            </ul>
+            <div class="layui-tab-content" style="padding: 20px 0;">
+                <div class="layui-tab-item layui-show" id="myquestion">
+                    <ul class="mine-view jie-row" id="QUE_mine">
+                    </ul>
+                    <div id="LAY_page3"></div>
+                </div>
+                <div class="layui-tab-item" id="collection">
+                    <ul class="mine-view jie-row" id="COL_mine">
+
+                    </ul>
+                    <div id="LAY_page2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+<script id="question-mod" type="text/html">
+    {{#layui.each(d,function(index,item){}}
+    <li>
+        <a class="jie-title" href="/front/questionDetail?id={{item.id}}" target="_blank">{{item.title}}</a>
+        <i>{{item.date}}</i>
+        <!--<a class="mine-acpt" data-id="{{item.id}}" href="javascript:">接收消息</a>-->
+        <a class="mine-del" data-id="{{item.id}}" href="javascript:">删除</a>
+        {{#if(item.flag==2){}}
+        <em><span class="layui-badge layui-hide-xs" style="background-color: #5FB878">已结</span></em>
+        {{#}}}
+    </li>
+    {{#});}}
+</script>
+<script>
+    $('.search-btn').on('click', function () {
+        var inpVal = $(this).siblings('input').val();
+        // 搜索条件不为空串
+        if (inpVal !== '') {
+            var url = "/front/search-page";
+            // window.open(encodeURI(url + "?pattern=" + inpVal));
+            window.location.href = encodeURI(url + "?pattern=" + inpVal);
+            // window.location.href = "/front/page/search-page?pattern=" + inpVal;
+        }
+        return false;
+    });
+    layui.use(['element','laytpl','layer'],function () {
+        var element = layui.element; //导航的hover效果、二级菜单等功能，需要依赖element模块
+        var laytpl = layui.laytpl;
+        element.on('tab(user)', function(data){
+            var id = '#' + $(this).attr('data-type');
+        });
+        loadData();
+        function loadData() {
+            $.ajax({
+                type:'post',
+                url:'/question/getPerquestion',
+                success:function (res) {
+                    if(res.code == 200){
+                        if(res.data.question.length != 0){
+                            var straTpl = document.getElementById('question-mod').innerHTML;
+                            laytpl(straTpl).render(res.data.question,function (html) {
+                                $('#QUE_mine').append(html);
+                            });
+                            $("#ques-num").text(res.data.question.length);
+                        }else{
+                            $("#QUE_mine").append('<div class="fly-none" style="min-height: 50px; padding:30px 0; height:auto;"><i style="font-size:14px;">空空如也</i></div>');
+                            $("#ques-num").text(res.data.question.length);
+                        }
+                        if(res.data.colquestion.length != 0){
+                            var straTpl = document.getElementById('question-mod').innerHTML;
+                            laytpl(straTpl).render(res.data.colquestion,function (html) {
+                                $("#COL_mine").append(html);
+                            });
+                            $("#col-num").text(res.data.colquestion.length);
+                        }else{
+                            $("#COL_mine").append('<div class="fly-none" style="min-height: 50px; padding:30px 0; height:auto;"><i style="font-size:14px;">空空如也</i></div>');
+                            $("#col-num").text(res.data.colquestion.length);
+                        }
+                    }
+                },
+                error:function (res) {
+
+                }
+            });
+        }
+        //接受和屏蔽消息
+        $("body").on('click','#QUE_mine li .mine-acpt',function () {
+            var id = $(this).data('id');
+            var othis = $(this);
+            msgjson(othis,{'id':id,'type':1});
+        });
+        $("body").on('click','#COL_mine li .mine-acpt',function () {
+            var id = $(this).data('id');
+            var othis = $(this);
+            msgjson(othis,{'id':id,'type':2});
+        });
+        $("body").on('click','#QUE_mine li .mine-del',function () {
+            var id = $(this).data('id');
+            var othis = $(this);
+            deljson(othis,{'id':id,'type':1},'QUE_mine');//删除自己的问答
+        });
+        $("body").on('click','#COL_mine li .mine-del',function () {
+            var id = $(this).data('id');
+            var othis = $(this);
+            deljson(othis,{'id':id,'type':2},'COL_mine');//删除收藏的问答
+        });
+        function msgjson(elem,data) {
+            $.ajax({
+                type:'post',
+                url:'/question/questionMsgConfig',
+                data:data,
+                success:function(res){
+                    if(res.code == 200){
+                        layer.msg(res.data,{icon:6});
+                        if(elem.hasClass('mine-acpt')){
+                            elem.removeClass('mine-acpt');
+                            elem.addClass('mine-screen');
+                        }else{
+                            elem.removeClass('mine-screen');
+                            elem.addClass('mine-acpt');
+                        }
+                    }
+                },
+                error:function (res) {
+                    layer.msg("失败");
+                }
+            });
+        }
+        function deljson(elem,data,id) {
+            $.ajax({
+                type:'post',
+                url:'/question/delQuestion',
+                data:data,
+                success:function(res){
+                    if(res.code == 200){
+                        elem.parent().remove();
+                        layer.msg("删除成功",{icon:6});
+                        delEnd(id);
+                    }
+                },
+                error:function (res) {
+                    layer.msg("失败");
+                }
+            });
+        }
+        var delEnd = function(elemId){
+            if($("#"+elemId).find('li').length === 0){
+                $("#"+elemId).html('<div class="fly-none">您暂时没有最新消息</div>');
+            }
+        }
+    });
+</script>
+</body>
+</html>
