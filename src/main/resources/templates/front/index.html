@@ -494,7 +494,7 @@
 <div class="layui-container" style="margin: 15px auto;max-width: 1100px;">
     <div class="layui-row">
         <!-- 攻略导航栏-left-->
-        <div class="layui-col-xs3 layui-col-sm3 layui-col-md3">
+        <div class="layui-col-xs3 layui-col-sm3 layui-col-md3" style="display: none">
             <div class="gonglve-nav">
                 <div class="nav-item">
                     <div class="nav-title">
@@ -552,7 +552,7 @@
             </div>
         </div>
         <!--  轮播框-->
-        <div class="layui-col-xs9 layui-col-sm9 layui-col-md9">
+        <div class="layui-col-xs9 layui-col-sm9 layui-col-md12">
             <div class="layui-carousel nav-car" id="test1">
                 <div carousel-item class="nav-img" id="carousel">
                     <!--<div>-->
@@ -629,7 +629,7 @@
 <div class="micronews-footer-wrap">
     <div class="micronews-footer w1000">
         <div class="Copyright">
-            <span>Copyright&nbsp;</span>&nbsp;&copy;<span>旅游攻略平台&nbsp;&nbsp;</span>
+            <span>Copyright&nbsp;</span>&nbsp;&copy;<span>技术平台&nbsp;&nbsp;</span>
         </div>
     </div>
 </div>
@@ -826,45 +826,45 @@
             });
         });
         function loadData() {
-             admin.req({
-                 url: '/comm/hotstra-list'
-                 , type: 'post'
-                 , async: false
-                 , success: function (res) {
-                     // 获取节点
-                     var getTpl = document.getElementById('leftnav-mod').innerHTML;
-                     // 执行tpl渲染
-                     laytpl(getTpl).render(res.data, function (html) {
-                         document.getElementById('hottop').innerHTML = html;
-                     });
-                 }
-             });
-            admin.req({
-                url: '/comm/around_strategy'
-                , type: 'post'
-                , async: false
-                , success: function (res) {
-                    // 获取节点
-                    var getTpl = document.getElementById('leftnav-mod').innerHTML;
-                    // 执行tpl渲染
-                    laytpl(getTpl).render(res.data, function (html) {
-                        document.getElementById('around').innerHTML = html;
-                    });
-                }
-            });
-            admin.req({
-                url: '/comm/besnew_strategy'
-                , type: 'post'
-                , async: false
-                , success: function (res) {
-                    // 获取节点
-                    var getTpl = document.getElementById('leftnav-mod').innerHTML;
-                    // 执行tpl渲染
-                    laytpl(getTpl).render(res.data, function (html) {
-                        document.getElementById('besnew').innerHTML = html;
-                    });
-                }
-            });
+            //  admin.req({
+            //      url: '/comm/hotstra-list'
+            //      , type: 'post'
+            //      , async: false
+            //      , success: function (res) {
+            //          // 获取节点
+            //          var getTpl = document.getElementById('leftnav-mod').innerHTML;
+            //          // 执行tpl渲染
+            //          laytpl(getTpl).render(res.data, function (html) {
+            //              document.getElementById('hottop').innerHTML = html;
+            //          });
+            //      }
+            //  });
+            // admin.req({
+            //     url: '/comm/around_strategy'
+            //     , type: 'post'
+            //     , async: false
+            //     , success: function (res) {
+            //         // 获取节点
+            //         var getTpl = document.getElementById('leftnav-mod').innerHTML;
+            //         // 执行tpl渲染
+            //         laytpl(getTpl).render(res.data, function (html) {
+            //             document.getElementById('around').innerHTML = html;
+            //         });
+            //     }
+            // });
+            // admin.req({
+            //     url: '/comm/besnew_strategy'
+            //     , type: 'post'
+            //     , async: false
+            //     , success: function (res) {
+            //         // 获取节点
+            //         var getTpl = document.getElementById('leftnav-mod').innerHTML;
+            //         // 执行tpl渲染
+            //         laytpl(getTpl).render(res.data, function (html) {
+            //             document.getElementById('besnew').innerHTML = html;
+            //         });
+            //     }
+            // });
             admin.req({
                 url: '/comm/hotquestion-list'
                 , type: 'post'

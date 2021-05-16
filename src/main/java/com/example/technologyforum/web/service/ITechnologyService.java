@@ -1,5 +1,6 @@
 package com.example.technologyforum.web.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.example.technologyforum.result.Response;
 import com.example.technologyforum.web.dto.TechnologyDTO;
 import com.example.technologyforum.web.pojo.Technology;
@@ -21,7 +22,7 @@ public interface ITechnologyService {
      * @return
      */
     List<Technology> adminGetList(int limit, int page, String title);
-
+    List<Technology> queryStrategy(QueryWrapper<Technology> query);
     public int getCount();
 
     /**

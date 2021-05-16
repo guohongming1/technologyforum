@@ -14,11 +14,13 @@ import com.example.technologyforum.web.service.ILuceneService;
 import com.example.technologyforum.web.service.Impl.CommonServiceImpl;
 import com.example.technologyforum.web.service.Impl.RedisService;
 import com.example.technologyforum.web.service.QuestionService;
+import com.example.technologyforum.web.service.RecommentService;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.highlight.InvalidTokenOffsetsException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -49,6 +51,9 @@ public class CommonController {
 
     @Autowired
     private CommonServiceImpl commonService;
+
+    @Autowired
+    private RecommentService recommentService;
 
 
     /**
@@ -346,5 +351,97 @@ public class CommonController {
             }
         }
         return Response.success(groupMap);
+    }
+
+    /**
+     * 返回技术帖子推荐
+     * @param limit
+     * @param page
+     * @return
+     */
+    @PostMapping("/strategy-list")
+    @ResponseBody
+    @Transactional
+    public TableResultDTO<List<TechnologyDTO>> strategyList(int limit,int page){
+        if(limit > 0 && page > 0){
+            // 返回游记推荐
+            List<TechnologyRecomd> list = recommentService.getList(limit,page);
+            List<TechnologyDTO> result = new ArrayList<>();
+            for(int i=0;i<list.size();i++){
+                TechnologyDTO strategyDTO = new TechnologyDTO();
+                BeanUtils.copyProperties(list.get(i),strategyDTO);
+                strategyDTO.setHeadImgUrl(list.get(i).getReserve3());
+                User user = userMapper.selectByPrimaryKey(list.get(i).getUserId());
+                strategyDTO.setUserHeadImg(user.getImgUrl());
+                strategyDTO.setUserName(user.getName());
+                Number hotNum = redisService.getViewNum(list.get(i).getId(), CollectionKey.ESSAY_KEY_HOT);
+                if(!Objects.isNull(hotNum)){
+                    strategyDTO.setViewNum(hotNum.intValue());
+                }else{
+                    strategyDTO.setViewNum(0);
+                }
+                Number colNum = redisService.getViewNum(list.get(i).getId(), CollectionKey.ESSAY_KEY_COL_NUM);
+                if(!Objects.isNull(colNum)){
+                    strategyDTO.setCollectnum(colNum.intValue());
+                }else{
+                    strategyDTO.setCollectnum(0);
+                }
+                Number comNum = redisService.getViewNum(list.get(i).getId(), CollectionKey.ESSAY_KEY_COM_NUM);
+                if(!Objects.isNull(colNum)){
+                    strategyDTO.setCommentnum(comNum.intValue());
+                }else{
+                    strategyDTO.setCommentnum(0);
+                }
+                result.add(strategyDTO);
+            }
+            return new TableResultDTO<>(200, "", page+1, result);
+        }
+        return new TableResultDTO<>(500, "参数错误", 0, null);
+    }
+
+    /**
+     * 获取热度前十的问答
+     */
+    @PostMapping("/hotquestion-list")
+    @ResponseBody
+    public Response<List<Question>> topQuesion(){
+        List<Integer> listId = redisService.getTopNum(Constants.QUESTION_HOT_NAME);
+        List<Question> result = new ArrayList<>();
+        if(listId != null && listId.size() >0){
+            listId.forEach(id->{
+                Question question = questionService.selectById(id);
+                if(question != null && question.getImgUrl()==null){
+                    User user = userMapper.getUserInfoByPrimaryKey(question.getUserId());
+                    question.setImgUrl(user.getImgUrl());
+                }
+                result.add(question);
+            });
+        }
+        if(result != null && result.size()>0){
+            return Response.success(result);
+        }
+        return Response.success(null);
+    }
+
+    /**
+     * 获取热度前十的话题
+     * @return
+     */
+    @PostMapping("/hottopic-list")
+    @ResponseBody
+    public Response<List<Topic>> topTopic(){
+        List<Integer> listId = redisService.getTopNum(Constants.TOPIC_HOT_NAME);
+        List<Topic> result = new ArrayList<>();
+        if(listId != null && listId.size() >0){
+            listId.forEach(id->{
+                Topic topic = groupService.queryTopicById(id);
+                if(topic != null){
+                    User user = userMapper.getUserInfoByPrimaryKey(topic.getUserId());
+                    topic.setTags(user.getImgUrl());
+                }
+                result.add(topic);
+            });
+        }
+        return Response.success(result);
     }
 }

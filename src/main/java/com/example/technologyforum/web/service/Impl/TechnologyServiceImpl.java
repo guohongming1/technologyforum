@@ -49,7 +49,15 @@ public class TechnologyServiceImpl implements ITechnologyService {
     public int getCount(){
         return technologyMapper.selectCount(new QueryWrapper<Technology>());
     }
-
+    /**
+     * 根据条件获取攻略
+     * @param query
+     * @return
+     */
+    @Override
+    public List<Technology> queryStrategy(QueryWrapper<Technology> query){
+        return technologyMapper.selectList(query);
+    }
     public TechnologyDetail getDetailById(int detailId){
         return technologyDetailMapper.selectByPrimaryKey(detailId);
     }

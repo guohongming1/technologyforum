@@ -1,5 +1,6 @@
 package com.example.technologyforum.util;
 
+import com.example.technologyforum.web.pojo.Sort;
 import java.util.List;
 import java.util.Map;
 

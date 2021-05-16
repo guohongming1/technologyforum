@@ -161,4 +161,8 @@
       reserve3 = #{reserve3,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
+  <select id="selectPageVo" resultMap="BaseResultMap">
+    select * from technology_recomd
+    order by date desc
+  </select>
 </mapper>

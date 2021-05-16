@@ -9,6 +9,10 @@ import java.io.Serializable;
 public class TechnologyDTO implements Serializable {
 
     private static final long serialVersionUID = 9142745612906850648L;
+
+    private Integer id;
+
+    private Integer detailId;
     private String title;
     private String headImgUrl;
     private String address;
@@ -21,6 +25,68 @@ public class TechnologyDTO implements Serializable {
     private String content;
     private String route;
     private Boolean pushFlag;
+    private String userName;
+    private String userHeadImg;
+    private Integer collectnum;
+    private Integer commentnum;
+    private Integer viewNum;
+
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getDetailId() {
+        return detailId;
+    }
+
+    public void setDetailId(Integer detailId) {
+        this.detailId = detailId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getUserHeadImg() {
+        return userHeadImg;
+    }
+
+    public void setUserHeadImg(String userHeadImg) {
+        this.userHeadImg = userHeadImg;
+    }
+
+    public Integer getCollectnum() {
+        return collectnum;
+    }
+
+    public void setCollectnum(Integer collectnum) {
+        this.collectnum = collectnum;
+    }
+
+    public Integer getCommentnum() {
+        return commentnum;
+    }
+
+    public void setCommentnum(Integer commentnum) {
+        this.commentnum = commentnum;
+    }
+
+    public Integer getViewNum() {
+        return viewNum;
+    }
+
+    public void setViewNum(Integer viewNum) {
+        this.viewNum = viewNum;
+    }
 
     public String getTitle() {
         return title;
