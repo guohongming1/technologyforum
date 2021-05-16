@@ -86,7 +86,9 @@ public class TechnologyServiceImpl implements ITechnologyService {
         query.eq("push_flag", Constants.PUSH_NO);
         Technology recod = technologyMapper.selectOne(query);
         if(recod != null){
+
             strategy.setDetailId(recod.getDetailId());
+            strategy.setDelFlag((byte)0);
             strategy.setId(recod.getId());
             technologyMapper.updateByPrimaryKeySelective(strategy);
             TechnologyDetail detail = technologyDetailMapper.selectByPrimaryKey(recod.getDetailId());
@@ -99,6 +101,7 @@ public class TechnologyServiceImpl implements ITechnologyService {
             technologyDetailMapper.insertSelective(strategyDetail);
             strategy.setDetailId(strategyDetail.getId());
             strategy.setDelFlag((byte)0);
+            technologyMapper.insertSelective(strategy);
             return Response.success("成功");
         }
         //return Response.fail(CodeMsg.ESSAY_PUSH_FAIL);

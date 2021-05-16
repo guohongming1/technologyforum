@@ -168,7 +168,7 @@
     </div>
     <div class="group-detail">
         <div class="group-board">
-            <p>创建于<span th:text="${#dates.format(Group.getDate(),'YYYY-mm-dd')}"></span> &nbsp;&nbsp;&nbsp;组长：<a th:href="'/front/userInfo?id='+${travelGroup.getUserId()}" th:text="${authorName}"></a> </p>
+            <p>创建于<span th:text="${#dates.format(Group.getDate(),'YYYY-mm-dd')}"></span> &nbsp;&nbsp;&nbsp;组长：<a th:href="'/front/userInfo?id='+${Group.getUserId()}" th:text="${authorName}"></a> </p>
             <div class="group-intrc" th:utext="${Group.getContent()}">
             </div>
             <div class="group-tags">

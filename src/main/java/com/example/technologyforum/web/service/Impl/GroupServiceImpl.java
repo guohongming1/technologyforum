@@ -84,8 +84,9 @@ public class GroupServiceImpl implements GroupService {
                 topic.setGroupName(technologyGroup.getTitle());
                 topic.setUserId(topicDTO.getUserId());
                 topic.setGrDeId(detail.getId());
+                topic.setDate(new Date());
                 topicMapper.insertSelective(topic);
-                return Response.success(String.valueOf(topic.getId()));
+                return Response.success(String.valueOf(technologyGroup.getId()));
             }
         }
         return Response.fail(CodeMsg.FAIL);
@@ -101,6 +102,11 @@ public class GroupServiceImpl implements GroupService {
         QueryWrapper<GroupMember> query = new QueryWrapper<>();
         query.eq("group_id",groupId);
         query.eq("user_id",userId);
+        // 如果是组长，直接返回true
+        Group group = groupMapper.selectByPrimaryKey(groupId);
+        if(group != null && group.getUserId()==userId){
+            return true;
+        }
         if(groupMemberMapper.selectCount(query)>0){
             return true;
         }
