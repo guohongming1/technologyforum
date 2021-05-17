@@ -1,12 +1,22 @@
 package com.example.technologyforum.web.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.example.technologyforum.cache.CollectionKey;
+import com.example.technologyforum.constants.Constants;
 import com.example.technologyforum.result.CodeMsg;
 import com.example.technologyforum.result.Response;
+import com.example.technologyforum.web.dto.TechnologyDTO;
 import com.example.technologyforum.web.dto.UserDTO;
+import com.example.technologyforum.web.pojo.Collect;
 import com.example.technologyforum.web.pojo.Notify;
+import com.example.technologyforum.web.pojo.Technology;
 import com.example.technologyforum.web.pojo.User;
+import com.example.technologyforum.web.service.ITechnologyService;
+import com.example.technologyforum.web.service.Impl.CommonServiceImpl;
+import com.example.technologyforum.web.service.Impl.RedisService;
 import com.example.technologyforum.web.service.MessageService;
 import com.example.technologyforum.web.service.UserService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
@@ -15,9 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * 功能描述：
@@ -32,6 +40,13 @@ public class UserController {
 
     @Autowired
     private MessageService messageService;
+    @Autowired
+    private CommonServiceImpl commonService;
+    @Autowired
+    private ITechnologyService technologyService;
+
+    @Autowired
+    private RedisService redisService;
 
 
     /*
@@ -248,6 +263,96 @@ public class UserController {
             return Response.fail(CodeMsg.FAIL);
         }
         return userService.forgetpass(user,vercode);
+    }
+
+    /**
+     * 个人攻略 收藏
+     * @param session
+     * @return
+     */
+    @PostMapping("/getPerstrategy")
+    @ResponseBody
+    public Response<Map<String,Object>> getPerstrategy(HttpSession session){
+        User sessionuser = (User)session.getAttribute("userinfo");
+        List<Technology> list = technologyService.getStrategyByUserId(sessionuser.getId());
+        Map<String,Object> map = new HashMap<>();
+        map.put("strategy",this.queryList(list));
+        // 查询收藏
+        List<Collect> collectList = commonService.getCollectList(sessionuser.getId(),(byte)1);
+        List<Technology> collectStraList = new ArrayList<>();
+        if(collectList != null){
+            collectList.forEach(item->{
+                collectStraList.add(technologyService.selectStrategyById(item.getProId()));
+            });
+        }
+        map.put("colstrategy",this.queryList(collectStraList));
+        return Response.success(map);
+    }
+
+    /**
+     * 删除攻略  非物理删除
+     * @param session
+     * @param id
+     * @return
+     */
+    @PostMapping("/delOneStrategy")
+    @ResponseBody
+    public Response<String> delOneStrategy(HttpSession session,int id){
+        User sessionuser = (User)session.getAttribute("userinfo");
+        QueryWrapper<Technology> query = new QueryWrapper<>();
+        query.eq("user_id",sessionuser.getId());
+        query.eq("id",id);
+        query.eq("del_flag",(byte)0);
+        List<Technology> list = technologyService.queryStrategy(query);
+        if(list != null && list.size() >0){
+            Technology strategy = new Technology();
+            strategy.setId(list.get(0).getId());
+            strategy.setDelFlag((byte)1);
+            if(redisService.delHot(id,Constants.ESSAY_HOT_NAME)){
+                if(technologyService.updateStrategy(strategy)>0){
+                    // 删除热度
+                    redisService.delHot(strategy.getId(),Constants.ESSAY_HOT_NAME);
+                    return Response.success("成功");
+                }
+            }
+        }
+        return Response.fail(CodeMsg.FAIL);
+    }
+
+    /**
+     * 封装攻略DTO
+     * @param list
+     * @return
+     */
+    public List<TechnologyDTO> queryList(List<Technology> list){
+        List<TechnologyDTO> result = new ArrayList<>();
+        for(int i=0;i<list.size();i++){
+            TechnologyDTO strategyDTO = new TechnologyDTO();
+            BeanUtils.copyProperties(list.get(i),strategyDTO);
+            User user = userService.queryUserById(list.get(i).getUserId());
+            strategyDTO.setUserHeadImg(user.getImgUrl());
+            strategyDTO.setUserName(user.getName());
+            Number hotNum = redisService.getScore(Constants.ESSAY_HOT_NAME, list.get(i).getId());
+            if(!Objects.isNull(hotNum)){
+                strategyDTO.setViewNum(hotNum.intValue());
+            }else{
+                strategyDTO.setViewNum(0);
+            }
+            Number colNum = redisService.getViewNum(list.get(i).getId(), CollectionKey.ESSAY_KEY_COL_NUM);
+            if(!Objects.isNull(colNum)){
+                strategyDTO.setCollectnum(colNum.intValue());
+            }else{
+                strategyDTO.setCollectnum(0);
+            }
+            Number comNum = redisService.getViewNum(list.get(i).getId(), CollectionKey.ESSAY_KEY_COM_NUM);
+            if(!Objects.isNull(comNum)){
+                strategyDTO.setCommentnum(comNum.intValue());
+            }else{
+                strategyDTO.setCommentnum(0);
+            }
+            result.add(strategyDTO);
+        }
+        return result;
     }
 }
 

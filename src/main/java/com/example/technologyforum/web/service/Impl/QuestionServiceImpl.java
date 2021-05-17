@@ -46,7 +46,10 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public List<Question> getQuestionListByUserId(int id) {
-        return null;
+        QueryWrapper<Question> query = new QueryWrapper<>();
+        query.eq("user_id",id);
+        query.ne("flag",(byte)3);
+        return questionMapper.selectList(query);
     }
 
     @Override

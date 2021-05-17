@@ -52,7 +52,7 @@ layui.define(['table', 'form'], function (exports) {
                 });
                 layer.close(index);
             });
-        } else if (obj.event === 'edit') {
+        } else if (obj.event === 'add') {// 加入推荐
             var id = obj.data.id;
         }
     });

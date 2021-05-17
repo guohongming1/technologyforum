@@ -165,4 +165,11 @@
     </where>
     order by date desc
   </select>
+  <select id="selectPageVo" resultMap="BaseResultMap">
+    select * from technology
+    <where>
+      del_flag = 0
+    </where>
+    order by date desc
+  </select>
 </mapper>

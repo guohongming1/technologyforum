@@ -26,6 +26,7 @@ import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -64,6 +65,13 @@ public class LuceneDaoImpl implements ILuceneDao {
                 doc.add(new TextField("address","NULL", Field.Store.YES));
             }else{
                 doc.add(new TextField("address", p.getAddress(), Field.Store.YES));
+            }
+            if(p.getDate() == null){
+                doc.add(new TextField("date","NULL", Field.Store.YES));
+            }else{
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd"); // 规定日期格式
+                String now = formatter.format(p.getDate());
+                doc.add(new TextField("date", now, Field.Store.YES));
             }
             docs.add(doc);
         }
@@ -147,6 +155,7 @@ public class LuceneDaoImpl implements ILuceneDao {
             }
             product.setTags(doc.get("tags"));
             product.setType(Integer.parseInt(doc.get("type")));
+            product.setDateStr(doc.get("date"));
             pList.add(product);
         }
         pageQuery.setResults(pList);

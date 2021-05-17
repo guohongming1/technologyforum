@@ -5,6 +5,8 @@ import com.example.technologyforum.constants.Constants;
 import com.example.technologyforum.result.CodeMsg;
 import com.example.technologyforum.result.Response;
 import com.example.technologyforum.web.dto.TechnologyDTO;
+import com.example.technologyforum.web.mapper.CollectMapper;
+import com.example.technologyforum.web.pojo.Collect;
 import com.example.technologyforum.web.pojo.Technology;
 import com.example.technologyforum.web.pojo.TechnologyComment;
 import com.example.technologyforum.web.pojo.User;
@@ -14,6 +16,7 @@ import com.example.technologyforum.web.service.Impl.RedisService;
 import com.example.technologyforum.web.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -50,6 +53,9 @@ public class TechnologController {
 
     @Autowired
     public CommonServiceImpl commonService;
+
+    @Autowired
+    public CollectMapper collectMapper;
 
     /**
      * 创建
@@ -164,4 +170,55 @@ public class TechnologController {
         }
         return Response.fail(CodeMsg.FAIL);
     }
+
+    @PostMapping("/repstracomment")
+    @ResponseBody
+    @Transactional
+    public Response<String> repstracomment(HttpSession session,int straId,int id,String content){
+        User user = (User)session.getAttribute("userinfo");
+        TechnologyComment strategyComment = commonService.queryById(id);
+        if(strategyComment == null){
+            return Response.fail(CodeMsg.FAIL);
+        }
+        strategyComment.setReply(content);
+        //组装消息
+        Technology strategy = technologyService.selectStrategyById(straId);
+        String msgcontent = "来自攻略"+"<a href='/front/strategydetail?id="+strategy.getId()+"&detailId=+"+strategy.getDetailId()+"'><cite>"+strategy.getTitle()+"</cite></a>"+"回复您："+content;
+        //发送消息
+        messageService.sendMsg(user.getId(),strategyComment.getUserId(),msgcontent);
+        commonService.updateStraComment(strategyComment);
+        return Response.success("成功");
+    }
+
+    /**
+     * 攻略收藏
+     * @param session
+     * @param straId 攻略表ID
+     * @return
+     */
+    @PostMapping("/straCollect")
+    @ResponseBody
+    public Response<String> straCollect(HttpSession session,int straId){
+        User user = (User)session.getAttribute("userinfo");
+        if(user != null){
+            redisService.addHot(straId, "3",Constants.ESSAY_HOT_NAME);//增加热度
+            Technology strategy = technologyService.selectStrategyById(straId);
+            //组装消息
+            String msgcontent = "<a href='/userInfo?id="+user.getId()+"'><cite>"+user.getName()+"</cite></a>收藏了您的攻略:"+
+                    "<a href='/front/strategydetail?id="+strategy.getId()+"&detailId=+"+strategy.getDetailId()+"'><cite>"+strategy.getTitle()+"</cite></a>";
+            //发送消息
+            messageService.sendRemind(straId,Constants.STRATEGY_MSG,Constants.COLLECT_MSG,user.getId(),msgcontent);
+            Collect collect = new Collect();
+            collect.setDate(new Date());
+            collect.setProId(straId);
+            collect.setType((byte)1);
+            collect.setUserId(user.getId());
+            collectMapper.insertSelective(collect);
+            //收藏数量加一
+            redisService.setCollectNum(straId,CollectionKey.ESSAY_KEY_COL_NUM);
+            return Response.success("成功");
+        }
+        return Response.fail(CodeMsg.FAIL);
+    }
+
 }

@@ -78,6 +78,9 @@ public class TechnologyServiceImpl implements ITechnologyService {
         return Response.success(String.valueOf(strategy.getId()));
     }
 
+    public int updateStrategy(Technology strategy){
+       return technologyMapper.updateByPrimaryKeySelective(strategy);
+    }
     @Override
     public Response<String> updateStrategy(Technology strategy, String content) {
         // 查询用户是否有未发表的攻略
@@ -165,5 +168,22 @@ public class TechnologyServiceImpl implements ITechnologyService {
             return technologyMapper.deleteBatchIds(ids);
         }
         return 0;
+    }
+
+    @Override
+    public List<Technology> getList(int limit, int page) {
+        Page<Technology> pageHelper = new Page<>();
+        pageHelper.setCurrent(page);
+        pageHelper.setSize(limit);
+        IPage<Technology> pageVo = technologyMapper.selectPageVo(pageHelper,null);
+        return pageVo.getRecords();
+    }
+
+    @Override
+    public List<Technology> getStrategyByUserId(int id){
+        QueryWrapper<Technology> query = new QueryWrapper<>();
+        query.eq("user_id",id);
+        query.eq("del_flag",(byte)0);
+        return technologyMapper.selectList(query);
     }
 }

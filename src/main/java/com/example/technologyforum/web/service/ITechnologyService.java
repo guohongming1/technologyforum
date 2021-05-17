@@ -49,6 +49,14 @@ public interface ITechnologyService {
     Response<String> updateStrategy(Technology strategy,String content);
 
     /**
+     * 更新帖子
+     * @param strategy
+     * @param content
+     * @return
+     */
+    int updateStrategy(Technology strategy);
+
+    /**
      * 根据id获取攻略
      * @param id
      * @return
@@ -57,4 +65,6 @@ public interface ITechnologyService {
 
     public Response<TechnologyDTO> pullStrategy(int userId);
     int delBatchStrategy(List<Integer> ids);
+    List<Technology> getList(int limit,int page);
+    List<Technology> getStrategyByUserId(int id);
 }

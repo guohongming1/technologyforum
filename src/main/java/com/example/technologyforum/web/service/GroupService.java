@@ -64,4 +64,6 @@ public interface GroupService {
     int delTopic(int userId, int topicId);
 
     Topic queryTopic(int id);
+
+    List<Group> getList(int page,int pageSize);
 }

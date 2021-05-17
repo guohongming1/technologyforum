@@ -46,6 +46,8 @@
                     <a href="/front/usermsg" style="font-size: 16px;color: #222;">消息<span th:text="${session.msgnum}" class="layui-badge"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
                 </li>
                 <li class="layui-nav-item" lay-unselect="">
+                    <span id="userImg" th:text="${session.userinfo.getImgUrl()}" style="display:none;"></span>
+                    <span id="userName" th:text="${session.userinfo.getName()}" style="display:none;"></span>
                     <a href="javascript:;" style="font-size: 16px;color: #222;"><img th:src="${session.userinfo.getImgUrl()}" style="height: 30px; width: 30px;" class="layui-nav-img" onerror="getdefaultImg(event)">&nbsp;&nbsp;</a>
                     <dl class="layui-nav-child">
                         <dd style="text-align: center"><a href="/front/userset"><i class="layui-icon layui-icon-user"></i>&nbsp;个人资料</a></dd>
@@ -337,7 +339,7 @@
             </div>
             <div class="eh-title">
                 <div class="eht-top">
-                    <h1 class="eh-text" th:text="${title}"></h1>
+                    <h1 class="eh-text" id="contentTiltle" th:text="${title}"></h1>
                 </div>
                 <hr style="margin-bottom:20px;border:none;border-top:2px solid #E4E4E4;" />
                 <div class="eh-sundry">
@@ -537,6 +539,25 @@
         </div>
         {{# }); }}
 </script>
+    <script id="inscom-mod" type="text/html">
+        {{#  layui.each(d, function(index, item){ }}
+        <div class="rev-list">
+            <ul>
+                <li class="rev-item">
+                    <div class="user">
+                 <span class="avatar">
+                 <img src="{{item.img}}" width="32" height="32">
+                  </span>
+                        <span>{{item.userName}}}</span>
+                    </div>
+                    <p class="txt">{{item.content}}</p>
+                    <div class="img clearfix"></div>
+                    <span class="time">{{item.tdate}}</span>
+                </li>
+            </ul>
+        </div>
+        {{# }); }}
+    </script>
     <script id="relate-mod" type="text/html">
         {{#  layui.each(d, function(index, item){ }}
           {{#var id = $('#Id').text(); if(item.id != id ){}}
@@ -544,7 +565,7 @@
             <li><a href="/front/strategydetail?id={{item.id}}&detailId=0"><b class="layui-elip">{{item.title}}</b></a>
                 <p>
                     <span class="tulanum"><a href="/">攻略</a></span>
-                    <span class="tutime">{{item.date}}</span>
+                    <span class="tutime">{{item.dateStr}}</span>
                 </p>
             </li>
         {{#}}}
@@ -552,7 +573,7 @@
         <li><a href="/front/questionDetail?id={{item.id}}"><b class="layui-elip">{{item.title}}</b></a>
             <p>
                 <span class="tulanum"><a href="/">问答</a></span>
-                <span class="tutime">{{item.date}}</span>
+                <span class="tutime">{{item.dateStr}}</span>
             </p>
         </li>
         {{#}}}
@@ -560,7 +581,7 @@
         <li><a href="/front/topic_detail?id={{item.id}}"><b class="layui-elip">{{item.title}}</b></a>
             <p>
                 <span class="tulanum"><a href="/">话题</a></span>
-                <span class="tutime">{{item.date}}</span>
+                <span class="tutime">{{item.dateStr}}</span>
             </p>
         </li>
         {{#}}}
@@ -646,7 +667,7 @@
             loadComment();
             function loadComment() {
                 // 请求相关
-                var address = $('#address').text().split('-');
+                var address = $('#contentTiltle').text();
                 console.log(address[0]);
                 if(address[0] != null && ""!= address[0])
                 $.ajax({
@@ -714,6 +735,8 @@
                                         });
                                     });
                                 }
+                            }else{
+
                             }
                         }
                     },
@@ -733,26 +756,47 @@
                         data:{'id':id,'content':text},
                         success: function(res){
                             if(res.code == 200){
-                                data=[{}];
+                                var userImg = $("#userImg").html();
+                                var userName = $("#userName").html();
+                                var myDate = new Date();
+                                console.log(userName+userImg+"test");
+                                var cdata=[{content:text,tdata:myDate.toLocaleString(),img:userImg,userName:userName}];
                                 layer.msg("评论成功")
                                 $("#comment").val("");
+                                var html = "<div class=\"rev-list\">\n" +
+                                    "            <ul>\n" +
+                                    "                <li class=\"rev-item\">\n" +
+                                    "                    <div class=\"user\">\n" +
+                                    "                 <span class=\"avatar\">\n" +
+                                    "                 <img src=\""+userImg+"\" width=\"32\" height=\"32\">\n" +
+                                    "                  </span>\n" +
+                                    "                        <span>"+userName+"</span>\n" +
+                                    "                    </div>\n" +
+                                    "                    <p class=\"txt\">"+text+"</p>\n" +
+                                    "                    <div class=\"img clearfix\"></div>\n" +
+                                    "                    <span class=\"time\">刚刚</span>\n" +
+                                    "                </li>\n" +
+                                    "            </ul>\n" +
+                                    "        </div>";
                                 $(".layui-colla-content").removeClass("layui-show");
+                                $("body #reply").append(html);
                             }
                         },
                         error: function (res) {
                             layer.msg("请求错误");
-                        },
-                        complete : function(xhr, status) {
-                            layer.msg("正在跳转至登录页面....");
-                            //拦截器拦截没有权限跳转
-                            // 通过xhr取得响应头
-                            var REDIRECT = xhr.getResponseHeader("REDIRECT");
-                            //如果响应头中包含 REDIRECT 则说明是拦截器返回的
-                            if (REDIRECT == "REDIRECT")
-                            {
-                                document.location.href = xhr.getResponseHeader("CONTEXTPATH");
-                            }
                         }
+                        // ,
+                        // complete : function(xhr, status) {
+                        //     layer.msg("正在跳转至登录页面....");
+                        //     //拦截器拦截没有权限跳转
+                        //     // 通过xhr取得响应头
+                        //     var REDIRECT = xhr.getResponseHeader("REDIRECT");
+                        //     //如果响应头中包含 REDIRECT 则说明是拦截器返回的
+                        //     if (REDIRECT == "REDIRECT")
+                        //     {
+                        //         document.location.href = xhr.getResponseHeader("CONTEXTPATH");
+                        //     }
+                        // }
                     });
                 }else{
                     layer.msg("请输入内容",{icon:5});
@@ -764,7 +808,7 @@
 <div class="micronews-footer-wrap">
     <div class="micronews-footer w1000">
         <div class="Copyright">
-            <span>Copyright&nbsp;</span>&nbsp;&copy;<span>旅游攻略平台&nbsp;&nbsp;</span>
+            <span>Copyright&nbsp;</span>&nbsp;&copy;<span>攻略平台&nbsp;&nbsp;</span>
         </div>
     </div>
 </div>

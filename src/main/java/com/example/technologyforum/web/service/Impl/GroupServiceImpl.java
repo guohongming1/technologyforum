@@ -333,4 +333,11 @@ public class GroupServiceImpl implements GroupService {
     public List<Topic> queryListTopic(QueryWrapper<Topic> query){
         return topicMapper.selectList(query);
     }
+
+    public List<Group> getList(int page,int pageSize){
+        Page<Group> pageHelper = new Page<>();
+        pageHelper.setCurrent(page);
+        pageHelper.setSize(pageSize);
+        return groupMapper.selectPageVo(pageHelper,(byte)2).getRecords();
+    }
 }

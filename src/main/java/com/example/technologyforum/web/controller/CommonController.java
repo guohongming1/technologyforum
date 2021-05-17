@@ -3,18 +3,16 @@ package com.example.technologyforum.web.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.example.technologyforum.cache.CollectionKey;
 import com.example.technologyforum.constants.Constants;
+import com.example.technologyforum.result.CodeMsg;
 import com.example.technologyforum.result.Response;
 import com.example.technologyforum.util.PageInfo;
 import com.example.technologyforum.util.PageQuery;
 import com.example.technologyforum.web.dto.*;
 import com.example.technologyforum.web.mapper.UserMapper;
 import com.example.technologyforum.web.pojo.*;
-import com.example.technologyforum.web.service.GroupService;
-import com.example.technologyforum.web.service.ILuceneService;
+import com.example.technologyforum.web.service.*;
 import com.example.technologyforum.web.service.Impl.CommonServiceImpl;
 import com.example.technologyforum.web.service.Impl.RedisService;
-import com.example.technologyforum.web.service.QuestionService;
-import com.example.technologyforum.web.service.RecommentService;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.highlight.InvalidTokenOffsetsException;
 import org.springframework.beans.BeanUtils;
@@ -25,6 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.*;
 
@@ -54,6 +53,8 @@ public class CommonController {
 
     @Autowired
     private RecommentService recommentService;
+    @Autowired
+    private ITechnologyService technologyService;
 
 
     /**
@@ -445,4 +446,91 @@ public class CommonController {
         return Response.success(result);
     }
 
+    /**
+     * 获取热度前十的攻略
+     * @return
+     */
+    @PostMapping("/hotstra-list")
+    @ResponseBody
+    public Response<List<Technology>> topRecommendTenList() {
+        List<Integer> listId = redisService.getTopNum(Constants.ESSAY_HOT_NAME);
+        List<Technology> result = new ArrayList<>();
+        if(listId != null && listId.size()>0){
+            listId.forEach(id-> {
+                Technology technology = technologyService.selectStrategyById(id);
+                if(technology != null){
+                    result.add(technology);
+                }
+            });
+        }
+        return Response.success(result);
+    }
+
+    /**
+     * 最新攻略
+     * @return
+     */
+    @PostMapping("/besnew_strategy")
+    @ResponseBody
+    public Response<List<Technology>> bestNewStrategy() {
+        return Response.success(technologyService.getList(10,1));
+    }
+
+    /**
+     * 用户小组
+     * @param session
+     * @return
+     */
+    @PostMapping("/around_strategy")
+    @ResponseBody
+    public Response<List<Group>> aroundStrategy(HttpSession session) {
+        return Response.success(groupService.getList(10,1));
+    }
+
+    /**
+     * 获取话题评论
+     * @param topicId
+     * @return
+     */
+    @PostMapping("/getTopicComment")
+    @ResponseBody
+    public Response<List<TopicCommentDTO>> getTopicComment(int topicId){
+        return Response.success(this.setTopicCommentData(groupService.selectTopicCommemnt(topicId)));
+    }
+    /**
+     *  组装前端数据
+     * @param list
+     * @return
+     */
+    public List<TopicCommentDTO> setTopicCommentData(List<TopicComment> list){
+        List<TopicCommentDTO> result = new ArrayList<>();
+        list.forEach(item->{
+            User user = userMapper.getUserInfoByPrimaryKey(item.getUserId());
+            TopicCommentDTO dto = new TopicCommentDTO();
+            BeanUtils.copyProperties(item,dto);
+            dto.setUserImg(user.getImgUrl());
+            dto.setUserName(user.getName());
+            result.add(dto);
+        });
+        return result;
+    }
+
+    /**
+     * 用户主页
+     * @param id
+     * @return
+     */
+    @PostMapping("/userslive")
+    @ResponseBody
+    public Response<Map<String,Object>> userslive(int id){
+        Map<String,Object> result = new HashMap<>();
+        if(!Objects.isNull(id)){
+            List<Technology> strategyList = technologyService.getStrategyByUserId(id);
+            result.put("strategy",strategyList);
+            List<Question> questionList = questionService.getQuestionListByUserId(id);
+            result.put("question",questionList);
+            return Response.success(result);
+        }
+        return Response.fail(CodeMsg.FAIL);
+    }
 }

@@ -19,6 +19,15 @@ public class SearchResultDTO implements Serializable {
     private String address;
     @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date date;
+    private String dateStr;
+
+    public String getDateStr() {
+        return dateStr;
+    }
+
+    public void setDateStr(String dateStr) {
+        this.dateStr = dateStr;
+    }
 
     public int getId() {
         return id;
