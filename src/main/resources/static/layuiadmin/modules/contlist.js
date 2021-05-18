@@ -53,7 +53,18 @@ layui.define(['table', 'form'], function (exports) {
                 layer.close(index);
             });
         } else if (obj.event === 'add') {// 加入推荐
-            var id = obj.data.id;
+            layer.confirm('确定推荐此文章？', function (index) {
+                obj.del();
+                var arr = [];
+                arr.push(obj.data);
+                admin.req({
+                    url: '/admin/addRecom'
+                    , type: 'post'
+                    , contentType: 'application/json'
+                    , data: JSON.stringify(arr)
+                });
+                layer.close(index);
+            });
         }
     });
     //问答管理

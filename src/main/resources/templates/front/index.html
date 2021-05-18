@@ -59,7 +59,7 @@
                         <dd style="text-align: center"><a href="/front/userstrategy"><i class="layui-icon layui-icon-note"></i>&nbsp;发表/问答</a></dd>
                         <dd style="text-align: center"><a href="/front/usergroup"><i class="layui-icon layui-icon-rate"></i>&nbsp;小组</a></dd>
                         <dd style="text-align: center"><a href="/question/newquestion"><i class="layui-icon layui-icon-rate"></i>&nbsp;我要提问</a></dd>
-                        <dd style="text-align: center"><a href="/group/newgroup"><i class="layui-icon layui-icon-rate"></i>&nbsp;创建小组</a></dd>
+                        <dd style="text-align: center"><a href="/front/newgroup"><i class="layui-icon layui-icon-rate"></i>&nbsp;创建小组</a></dd>
                         <dd layadmin-event="logout" style="text-align: center"><a href="javascript:;"><i class="layui-icon layui-icon-logout"></i>&nbsp;登出</a></dd>
                     </dl>
                 </li>
@@ -687,9 +687,9 @@
     <li class="top layui-elip">
         <em class="rank-num">{{index+1}}</em>
 
-        <strong><a href="/front/group_detail?id={{item.id}}"  target="_blank" title="">{{item.tags}}</a></strong>
+        <strong><a href="/front/group_detail?id={{item.id}}"  target="_blank" title="">{{item.title}}</a></strong>
 
-        <a href="" title="">{{item.title}}</a>
+        <a href="" title="">{{item.tags}}</a>
         </li>
     {{#  }); }}
 </script>

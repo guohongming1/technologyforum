@@ -74,7 +74,12 @@ public class TechnologyServiceImpl implements ITechnologyService {
         technologyDetailMapper.insertSelective(strategyDetail);
         strategy.setDetailId(strategyDetail.getId());
         strategy.setDelFlag((byte)0);
-        technologyMapper.insertSelective(strategy);
+        if(strategy.getId() != null){
+            this.updateStrategy(strategy);
+
+        }else{
+            technologyMapper.insertSelective(strategy);
+        }
         return Response.success(String.valueOf(strategy.getId()));
     }
 

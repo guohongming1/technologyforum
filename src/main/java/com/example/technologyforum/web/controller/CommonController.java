@@ -484,7 +484,7 @@ public class CommonController {
     @PostMapping("/around_strategy")
     @ResponseBody
     public Response<List<Group>> aroundStrategy(HttpSession session) {
-        return Response.success(groupService.getList(10,1));
+        return Response.success(groupService.getList(1,10));
     }
 
     /**

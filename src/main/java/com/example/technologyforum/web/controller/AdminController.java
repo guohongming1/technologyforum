@@ -7,10 +7,12 @@ import com.example.technologyforum.result.CodeMsg;
 import com.example.technologyforum.result.Response;
 import com.example.technologyforum.web.dto.TableResultDTO;
 import com.example.technologyforum.web.mapper.CronMapper;
+import com.example.technologyforum.web.mapper.TechnologyRecomdMapper;
 import com.example.technologyforum.web.mapper.UserMapper;
 import com.example.technologyforum.web.pojo.*;
 import com.example.technologyforum.web.service.*;
 import com.example.technologyforum.web.service.Impl.RedisService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -48,6 +50,8 @@ public class AdminController {
     private CronMapper cronMapper;
     @Autowired
     private TriggerTaskService triggerTaskService;
+    @Autowired
+    private TechnologyRecomdMapper technologyRecomdMapper;
 
 
     // 页面跳转 start
@@ -149,6 +153,31 @@ public class AdminController {
             return Response.success("删除成功");
         }
         return Response.fail(CodeMsg.FAIL);
+    }
+
+    /**
+     * 加入推荐
+     * @param session
+     * @param strategies
+     * @return
+     */
+    @PostMapping("/addRecom")
+    @ResponseBody
+    public Response<String> addRecom(HttpSession session, @RequestBody Technology[] strategies){
+        if(!checkUserRole((User)session.getAttribute("userinfo"))){
+            return null;
+        }
+        List<Integer> listIds = new ArrayList<>();
+        for(int i=0;i<strategies.length;i++){
+            Technology strategy = technologyService.selectStrategyById(strategies[i].getId());
+            if(strategy !=null){
+                TechnologyRecomd technologyRecomd = new TechnologyRecomd();
+                BeanUtils.copyProperties(strategy,technologyRecomd);
+                technologyRecomd.setId(null);
+                technologyRecomd.setReserve3(strategy.getHeadImgUrl());
+            }
+        }
+        return Response.success("推荐成功");
     }
 
     /**

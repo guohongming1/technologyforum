@@ -3,10 +3,12 @@ package com.example.technologyforum.web.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.example.technologyforum.cache.CollectionKey;
 import com.example.technologyforum.constants.Constants;
+import com.example.technologyforum.result.Response;
 import com.example.technologyforum.util.IPUtils;
 import com.example.technologyforum.web.dto.QuestionDTO;
 import com.example.technologyforum.web.dto.TechnologyDTO;
 import com.example.technologyforum.web.mapper.CollectMapper;
+import com.example.technologyforum.web.mapper.GroupTypeMapper;
 import com.example.technologyforum.web.mapper.UserMapper;
 import com.example.technologyforum.web.pojo.*;
 import com.example.technologyforum.web.service.GroupService;
@@ -20,7 +22,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -58,6 +62,9 @@ public class FrontPageController {
 
     @Autowired
     private RecommentService recommentService;
+
+    @Autowired
+    private GroupTypeMapper groupTypeMapper;
 
     @RequestMapping("/index")
     public String index(Model model, HttpSession session, HttpServletRequest request)throws Exception{
@@ -204,6 +211,15 @@ public class FrontPageController {
         model.addAttribute("Group",technologyGroup);
         return "front/group-detail";
     }
+
+    @PostMapping("/getGroupType")
+    @ResponseBody
+    public Response<List<GroupType>> getGroupType(HttpSession session){
+        QueryWrapper<GroupType> query = new QueryWrapper<>();
+        List<GroupType> groupTypeList = groupTypeMapper.selectList(query);
+        return Response.success(groupTypeList);
+    }
+
 
     @RequestMapping("/group")
     public String group(){

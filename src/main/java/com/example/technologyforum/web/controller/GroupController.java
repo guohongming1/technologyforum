@@ -53,6 +53,9 @@ public class GroupController {
         group.setTopicNum(0);
         group.setMember(0);
         group.setUserId(user.getId());
+        if(group.getHeadImg() == null){
+            group.setHeadImg(user.getImgUrl());
+        }
         return groupService.createGroup(group);
     }
     @RequestMapping("/tonewtopic")

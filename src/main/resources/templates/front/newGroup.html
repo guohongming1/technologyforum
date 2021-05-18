@@ -280,6 +280,17 @@
             <span class="g">软件</span>
         </div>
         <div class="question_des qb-layout-tit">
+            <i class="layui-icon layui-icon-group"></i>
+            <span class="ask-title f-pening">选择类别</span>
+        </div>
+        <div class="interest-tags">
+            <form class="layui-form" action="">
+                <select id="selectg" name="city" lay-verify="" lay-search>
+                    <option value="">请选择</option>
+                </select>
+            </form>
+        </div>
+        <div class="question_des qb-layout-tit">
             <i class="layui-icon layui-icon-tabs"></i>
             <span class="ask-title f-pening">小组介绍</span>
         </div>
@@ -333,10 +344,41 @@
             $(".questions").removeClass("fix")
         }
     });
-    layui.use(['element','layer','upload'], function(){
+    layui.use(['element','layer','upload','form'], function(){
         var element = layui.element; //导航的hover效果、二级菜单等功能，需要依赖element模块
         var layer = layui.layer; // 轮播框设置
         var upload = layui.upload;
+        var form = layui.form;
+      //  form.render();
+        loadData();
+
+        // 加载选择狂数据
+        function loadData(){
+            var data;
+            //请求接口
+            $.ajax({
+                type: "post",
+                url: "/front/getGroupType",
+                success: function(res){
+                    if (res.code === 200) {
+                        if(res.data != null){
+                            var html = "";
+                            for(var i=0;i<res.data.length;i++){
+                                html += "<option value=\""+res.data[i].id+"\">"+res.data[i].name+"</option>";
+                            }
+                            $("#selectg").append(html);
+                            form.render();
+                        }
+                    } else {
+                        data = "";
+                    }
+                },
+                error: function (res) {
+                    layer.msg(res.message);
+                    data = "";
+                }
+            });
+        }
         // 小组地址
         var groupHeadImgSrc="";
         /*旅游攻略页面*/
@@ -481,6 +523,22 @@
                 }
 
             });
+            var selectValue="";
+            var obj=document.getElementById("selectg");
+
+            for(i=0;i<obj.length;i++) {//下拉框的长度就是它的选项数.
+
+                if(obj[i].selected==true) {
+
+                    selectValue=obj[i].value;//获取当前选择项的值.
+
+                }
+
+            }
+            if(selectValue==""){
+                layer.msg("请选择小组类别！");
+                return false;
+            }
 
             var flag=true;
             // 空值校验
@@ -488,7 +546,7 @@
             if(content == null || content==""){flag = false;console.log(flag)}
             if(tags == null || tags == ""){flag = false;console.log(flag)}
             if(flag){
-                var data={'title':title,'address':address,'content':content,'tags':tags,'headImg':groupHeadImgSrc}
+                var data={'title':title,'address':address,'content':content,'tags':tags,'headImg':groupHeadImgSrc,'typeId':selectValue}
                 //请求接口
                 $.ajax({
                     type: "post",
@@ -501,7 +559,7 @@
                                 , icon: 1
                                 , time: 1000
                             }, function () {
-                                location.href = '/front/group_detail?id='+res.data;
+                                location.href = '/front/usergroup';
                             });
                         } else {
                             layer.msg(res.data);
