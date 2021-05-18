@@ -74,9 +74,14 @@ public class TechnologyServiceImpl implements ITechnologyService {
         technologyDetailMapper.insertSelective(strategyDetail);
         strategy.setDetailId(strategyDetail.getId());
         strategy.setDelFlag((byte)0);
-        if(strategy.getId() != null){
+        // 查询用户是否有未发表的攻略
+        QueryWrapper<Technology> query = new QueryWrapper<>();
+        query.eq("user_id",strategy.getUserId());
+        query.eq("push_flag", Constants.PUSH_NO);
+        Technology recod = technologyMapper.selectOne(query);
+        if(recod != null){
+            strategy.setId(recod.getId());
             this.updateStrategy(strategy);
-
         }else{
             technologyMapper.insertSelective(strategy);
         }
