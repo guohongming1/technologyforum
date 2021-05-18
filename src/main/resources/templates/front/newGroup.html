@@ -273,7 +273,7 @@
             <span class="ask-title f-pening">选择标签</span>
             <span class="addtag">+添加标签</span>
         </div>
-        <div class="interest-tags">
+        <div class="interest-tags" id="interest-tags">
             <span class="g">编程</span>
             <span class="g">网页</span>
             <span class="g">数据库</span>
@@ -437,7 +437,7 @@
                     flagtags++;
                     if(value != null && value != ""){
                         var str = "<span class=\"tag\" data-tag=\""+value+"\""+">"+value+"<i id='"+flagtags+"' class=\"closetag layui-icon layui-icon-close\" title=\"删除\"></i> </span>";
-                        $('.interest-tags').append(str);
+                        $('#interest-tags').append(str);
                         // 注册关闭事件
                         $("#"+flagtags).click(function () {
                             $(this).parent().remove();
