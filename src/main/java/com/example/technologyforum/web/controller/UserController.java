@@ -7,6 +7,7 @@ import com.example.technologyforum.result.CodeMsg;
 import com.example.technologyforum.result.Response;
 import com.example.technologyforum.web.dto.TechnologyDTO;
 import com.example.technologyforum.web.dto.UserDTO;
+import com.example.technologyforum.web.mapper.CollectMapper;
 import com.example.technologyforum.web.pojo.Collect;
 import com.example.technologyforum.web.pojo.Notify;
 import com.example.technologyforum.web.pojo.Technology;
@@ -47,7 +48,8 @@ public class UserController {
 
     @Autowired
     private RedisService redisService;
-
+    @Autowired
+    private CollectMapper collectMapper;
 
     /*
      用户登录
@@ -353,6 +355,23 @@ public class UserController {
             result.add(strategyDTO);
         }
         return result;
+    }
+    /**
+     * 删除攻略收藏 物理删除
+     * @param session
+     * @param id
+     * @return
+     */
+    @PostMapping("/delstraCol")
+    @ResponseBody
+    public Response<String> delstraCol(HttpSession session,int id){
+        User sessionuser = (User)session.getAttribute("userinfo");
+        if(sessionuser != null){
+            if(collectMapper.deleteByPrimaryKey(id)>0){
+                return Response.success("成功");
+            }
+        }
+        return Response.fail(CodeMsg.FAIL);
     }
 }
 

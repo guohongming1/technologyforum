@@ -1,6 +1,9 @@
 package com.example.technologyforum.web.dto;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * 功能描述：
@@ -17,6 +20,7 @@ public class TechnologyDTO implements Serializable {
     private String headImgUrl;
     private String address;
     private String people;
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private String date;
     private String advice;
     private String days;
@@ -124,7 +128,7 @@ public class TechnologyDTO implements Serializable {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(String  date) {
         this.date = date;
     }
 

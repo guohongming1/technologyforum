@@ -173,7 +173,7 @@
             {{#if(item.pushFlag==1){}}
             <a href="/front/strategydetail?id={{item.id}}&detailId={{item.detailId}}" title="" target="_blank">{{item.title}}</a>
             {{#}else{ }}
-            <a href="/newstrategy" title="" target="_blank" style="color: #FFB800;">{{item.title}}->去发表</a>
+            <a href="/strategy/newstrategy" title="" target="_blank" style="color: #FFB800;">{{item.title}}->去发表</a>
             {{#}}}
             <i>{{item.date}}</i>
             <a class="mine-del" href="javascript:" data-id="{{item.id}}">删除</a>
