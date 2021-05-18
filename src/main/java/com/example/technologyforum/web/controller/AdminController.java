@@ -171,10 +171,13 @@ public class AdminController {
         for(int i=0;i<strategies.length;i++){
             Technology strategy = technologyService.selectStrategyById(strategies[i].getId());
             if(strategy !=null){
+                if(technologyRecomdMapper.selectByPrimaryKey(strategy.getId()) != null){
+                    return Response.fail(CodeMsg.FAIL);
+                }
                 TechnologyRecomd technologyRecomd = new TechnologyRecomd();
                 BeanUtils.copyProperties(strategy,technologyRecomd);
-                technologyRecomd.setId(null);
                 technologyRecomd.setReserve3(strategy.getHeadImgUrl());
+                technologyRecomdMapper.insertSelective(technologyRecomd);
             }
         }
         return Response.success("推荐成功");
