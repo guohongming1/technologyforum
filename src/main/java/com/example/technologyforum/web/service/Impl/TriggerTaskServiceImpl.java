@@ -36,6 +36,7 @@ public class TriggerTaskServiceImpl implements TriggerTaskService {
         content = this.delStrategy();
         content += this.delQuestion();
         content += this.delMsg();
+        System.out.println("日终任务结束");
         return content;
     }
 
@@ -80,11 +81,13 @@ public class TriggerTaskServiceImpl implements TriggerTaskService {
         query.eq("readflag",(byte)2);
         List<UserNotify> notifyList = messageService.queryUserNotify(query);
         List<Integer> listIds = new ArrayList<>();
-         notifyList.forEach(item->{
-            //删除通知
-            messageService.delNotifyById(item.getNotifyId());
-            listIds.add(item.getId());
-        });
+         if(notifyList != null && notifyList.size()>0){
+             notifyList.forEach(item->{
+                 //删除通知
+                 messageService.delNotifyById(item.getNotifyId());
+                 listIds.add(item.getId());
+             });
+         }
          int ret = messageService.delBatchUserNotify(listIds);
          return "<p>消息应删：&nbsp;"+listIds.size()+"&nbsp;成功：&nbsp;"+ret+"</p>";
      }

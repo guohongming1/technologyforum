@@ -172,7 +172,7 @@ public class AdminController {
             Technology strategy = technologyService.selectStrategyById(strategies[i].getId());
             if(strategy !=null){
                 if(technologyRecomdMapper.selectByPrimaryKey(strategy.getId()) != null){
-                    return Response.fail(CodeMsg.FAIL);
+                    return Response.fail(CodeMsg.EXITES_FAIL);
                 }
                 TechnologyRecomd technologyRecomd = new TechnologyRecomd();
                 BeanUtils.copyProperties(strategy,technologyRecomd);

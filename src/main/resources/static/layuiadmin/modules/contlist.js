@@ -62,6 +62,9 @@ layui.define(['table', 'form'], function (exports) {
                     , type: 'post'
                     , contentType: 'application/json'
                     , data: JSON.stringify(arr)
+                    ,success: function (res){
+                        layer.msg(res.data);
+                    }
                 });
                 layer.close(index);
             });

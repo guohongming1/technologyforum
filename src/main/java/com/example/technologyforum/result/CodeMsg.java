@@ -13,6 +13,7 @@ public enum CodeMsg {
      * 失败响应结果
      */
     FAIL(500, "失败"),
+    EXITES_FAIL(500, "该文章已被推荐"),
     /**
      *
      */

@@ -39,8 +39,8 @@
       #{reserve2,jdbcType=VARCHAR}, #{reserve3,jdbcType=VARCHAR})
   </insert>
     <delete id="delCommentByStrategyId" parameterType="java.lang.Integer" >
-        delete from strategy_comment
-        where stra_de_id = #{id,jdbcType=INTEGER}
+        delete from technology_recomd
+        where detail_id = #{id,jdbcType=INTEGER}
     </delete>
   <insert id="insertSelective" parameterType="com.example.technologyforum.web.pojo.TechnologyRecomd" useGeneratedKeys="true" keyProperty="id">
     insert into technology_recomd

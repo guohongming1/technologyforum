@@ -42,7 +42,7 @@ public class DynamicScheduleTask implements SchedulingConfigurer {
                     //2.1 从数据库获取执行周期
                     String cron = cronMapper.selectByPrimaryKey(1).getCron();
                     //2.2 合法性校验.
-                    if (StringUtils.isEmpty(cron)) {
+                    if (!StringUtils.isEmpty(cron)) {
                         triggerTaskService.initTask();//执行定时任务
                     }
                     //2.3 返回执行周期(Date)
@@ -59,7 +59,7 @@ public class DynamicScheduleTask implements SchedulingConfigurer {
                     //2.1 从数据库获取执行周期
                     String cron = cronMapper.selectByPrimaryKey(2).getCron();
                     //2.2 合法性校验.
-                    if (StringUtils.isEmpty(cron)) {
+                    if (!StringUtils.isEmpty(cron)) {
                         try{
                             luceneService.synProductCreatIndex();//更新索引
                         }catch (Exception e){

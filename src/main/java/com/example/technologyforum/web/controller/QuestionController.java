@@ -252,7 +252,7 @@ public class QuestionController {
         if(user != null){
             if(type == 1){//删除自己的问答消息 非物理删除
                 Question question = questionService.selectById(id);
-                if(question.getUserId() == user.getId()) {//验证问答
+                if(question != null && question.getUserId() == user.getId()) {//验证问答
                     question.setFlag((byte)3);
                     if(questionService.updateQuestion(question)>0){
                         return Response.success("删除成功");

@@ -271,7 +271,7 @@ public class CommonController {
     @PostMapping("/topGroup")
     @ResponseBody
     public Response<List<Group>> topGroup(){
-        return Response.success(groupService.selectPageVoGroup(6,1));
+        return Response.success(groupService.selectPageVoGroupWithFlag(6,1,Constants.PASS_YES));
     }
 
     /**
@@ -458,7 +458,7 @@ public class CommonController {
         if(listId != null && listId.size()>0){
             listId.forEach(id-> {
                 Technology technology = technologyService.selectStrategyById(id);
-                if(technology != null){
+                if(technology != null && technology.getPushFlag() == Constants.PUSH_YES){
                     result.add(technology);
                 }
             });

@@ -86,3 +86,8 @@ mybatis-plus:
   type-aliases-package: com.example.technologyforum.web.pojo
   configuration:
     use-generated-keys: true
+# 控制台输出日志
+logging:
+  level:
+    com.example.technologyforum.web.mapper: debug
+

@@ -143,11 +143,14 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public int updateQuestion(Question question) {
-        return 0;
+        return questionMapper.updateByPrimaryKeySelective(question);
     }
 
     @Override
     public int delQuestionBatch(List<Integer> ids) {
+        if(ids!= null && ids.size()>0){
+            return questionMapper.deleteBatchIds(ids);
+        }
         return 0;
     }
 }

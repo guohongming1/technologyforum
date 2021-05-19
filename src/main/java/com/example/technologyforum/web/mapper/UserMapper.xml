@@ -165,4 +165,11 @@
       date = #{date,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
+  <select id="selectPageVo" resultMap="BaseResultMap">
+    select * from user u
+    where u.email != '000000'
+    <if test="pattern != null" >
+      and (u.id = #{pattern} or u.name like CONCAT(CONCAT('%',#{pattern}),'%'))
+    </if>
+  </select>
 </mapper>
