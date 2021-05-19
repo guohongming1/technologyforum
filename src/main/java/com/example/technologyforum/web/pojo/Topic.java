@@ -1,5 +1,6 @@
 package com.example.technologyforum.web.pojo;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 
@@ -29,6 +30,7 @@ public class Topic {
 
     private Date lastReplyDate;
 
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date date;
 
     public Integer getId() {
