@@ -13,11 +13,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 
 import java.util.List;
 
-/**
- * @author 郭红明
- * @version 1.0
- * @Date: 2020/4/6
- */
 @Configuration
 public class WebConfig extends WebMvcConfigurerAdapter {
 

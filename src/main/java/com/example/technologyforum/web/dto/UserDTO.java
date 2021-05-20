@@ -3,8 +3,6 @@ package com.example.technologyforum.web.dto;
 import java.io.Serializable;
 
 /**
- * @author 郭红明
- * @version 1.0
  * @Date: 2020/4/13
  */
 public class UserDTO implements Serializable {

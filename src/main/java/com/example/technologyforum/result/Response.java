@@ -5,8 +5,6 @@ package com.example.technologyforum.result;
 /**
  * 全局异常返回
  *
- * @author Monster
- * @since 1.0.0-SNAPSHOT
  */
 public class Response<T> {
     private Integer code;

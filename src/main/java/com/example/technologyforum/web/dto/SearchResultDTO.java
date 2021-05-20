@@ -6,8 +6,6 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * @author 郭红明
- * @version 1.0
  * @Date: 2020/4/28
  */
 public class SearchResultDTO implements Serializable {

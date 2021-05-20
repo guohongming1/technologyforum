@@ -14,11 +14,6 @@ import org.springframework.scheduling.support.CronTrigger;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
-/**
- * @author 郭红明
- * @version 1.0
- * @Date: 2020/5/12
- */
 @Configuration      //1.主要用于标记配置类，兼备Component的效果。
 @EnableScheduling   // 2.开启定时任务
 public class DynamicScheduleTask implements SchedulingConfigurer {

@@ -11,11 +11,7 @@ import org.springframework.stereotype.Service;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
-/**
- * @author 郭红明
- * @version 1.0
- * @Date: 2020/5/12
- */
+
 @Service
 public class IMailServiceImpl implements IMailService {
     /**

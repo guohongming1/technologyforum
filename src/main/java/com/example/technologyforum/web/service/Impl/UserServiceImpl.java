@@ -127,11 +127,12 @@ public class UserServiceImpl implements UserService {
         String verCode = CodeUtil.randomCode();
         // 邮件内容设置
         String content = "随机验证码：" + verCode + "\n" + "请在120秒内完整验证";
-        String emailFlag = SysParamCache.getParam("emailflag");
-        if(!"0".equals(emailFlag)){
-            mailService.sendHtmlMail(email,subject,content);
-        }
+        //String emailFlag = SysParamCache.getParam("emailflag");
+        //if(!"0".equals(emailFlag)){
+            //mailService.sendHtmlMail(email,subject,content);
+       // }
         // 缓存vercode至redis 缓存有效时间为60s
+        mailService.sendHtmlMail(email,subject,content);
         return redisUtil.set(UserKey.MAIL_KEY, mode, verCode)
                 ? Response.success(true)
                 : Response.fail(CodeMsg.SERVER_ERROR);

@@ -8,11 +8,7 @@ import org.apache.lucene.search.highlight.InvalidTokenOffsetsException;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * @author 郭红明
- * @version 1.0
- * @Date: 2020/5/28
- */
+
 public interface ILuceneDao {
     /**
      * 创建索引

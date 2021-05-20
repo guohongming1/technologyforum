@@ -7,11 +7,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-/**
- * @author 郭红明
- * @version 1.0
- * @Date: 2020/5/28
- */
+
 @Component
 @Order(value = 1)
 public class ProductRunner implements ApplicationRunner {

@@ -17,11 +17,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-/**
- * @author 郭红明
- * @version 1.0
- * @Date: 2020/5/28
- */
+
 @Configuration
 public class LuceneConfig {
     /**

@@ -439,8 +439,8 @@ public class CommonController {
                 if(topic != null){
                     User user = userMapper.getUserInfoByPrimaryKey(topic.getUserId());
                     topic.setTags(user.getImgUrl());
+                    result.add(topic);
                 }
-                result.add(topic);
             });
         }
         return Response.success(result);

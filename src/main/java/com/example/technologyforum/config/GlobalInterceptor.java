@@ -11,7 +11,6 @@ import javax.servlet.http.HttpSession;
 /**
  * 全局拦截器
  *
- * @author Monster
  * @since 1.0.0-SNAPSHOT
  */
 @Component

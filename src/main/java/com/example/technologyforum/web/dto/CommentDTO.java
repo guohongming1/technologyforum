@@ -5,11 +5,7 @@ import com.alibaba.fastjson.annotation.JSONField;
 import java.io.Serializable;
 import java.util.Date;
 
-/**
- * @author 郭红明
- * @version 1.0
- * @Date: 2020/4/21
- */
+
 public class CommentDTO implements Serializable {
     private static final long serialVersionUID = 6341038118185312255L;
 

@@ -1,9 +1,6 @@
 package com.example.technologyforum.result;
 
-/**
- * @author Monster
- * @since 1.0.0-SNAPSHOT
- */
+
 public enum CodeMsg {
     /**
      * 成功响应结果
